@@ -40,7 +40,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!result || result.status !== "valid") return;
-    if (!process.env.NEXT_PUBLIC_HF_TOKEN) return;
+    if (!process.env.NEXT_PUBLIC_GROQ_KEY) return;
     
     // Auto-run summary
     setAiSummaryLoading(true);
@@ -60,7 +60,7 @@ export default function Dashboard() {
   const handleRecommend = async (e: React.FormEvent) => {
       e.preventDefault();
       if (!useCase.trim() || !result) return;
-      if (!process.env.NEXT_PUBLIC_HF_TOKEN) return;
+      if (!process.env.NEXT_PUBLIC_GROQ_KEY) return;
       setRecommendLoading(true);
       setRecommendation(null);
       try {
@@ -425,7 +425,7 @@ export default function Dashboard() {
 
                     {result.status === 'valid' && (
                         <>
-                            {process.env.NEXT_PUBLIC_HF_TOKEN && (
+                            {process.env.NEXT_PUBLIC_GROQ_KEY && (
                                 <>
                                     <div className="w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
                                     <div className="res-stagger res-delay-1 py-8 flex flex-col items-start min-h-[100px]">
@@ -540,7 +540,7 @@ export default function Dashboard() {
                                 </>
                             )}
 
-                            {process.env.NEXT_PUBLIC_HF_TOKEN && (
+                            {process.env.NEXT_PUBLIC_GROQ_KEY && (
                                 <>
                                     <div className="res-stagger res-delay-4 w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
                                     <div className="res-stagger res-delay-4 py-8">
