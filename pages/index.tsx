@@ -14,20 +14,56 @@ export default function LandingPage() {
 
         const hoverElements = document.querySelectorAll('[data-hover], a, button');
         
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let cursorX = mouseX;
+        let cursorY = mouseY;
+        
+        const t1 = document.getElementById('t1');
+        const t2 = document.getElementById('t2');
+        const t3 = document.getElementById('t3');
+        const trail1 = { x: mouseX, y: mouseY };
+        const trail2 = { x: mouseX, y: mouseY };
+        const trail3 = { x: mouseX, y: mouseY };
+
         const moveCursor = (e: MouseEvent) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
+            mouseX = e.clientX;
+            mouseY = e.clientY;
         };
+
+        let rafId: number;
+        const renderCursor = () => {
+            cursorX += (mouseX - cursorX) * 0.12;
+            cursorY += (mouseY - cursorY) * 0.12;
+            
+            trail1.x += (cursorX - trail1.x) * 0.2;
+            trail1.y += (cursorY - trail1.y) * 0.2;
+            trail2.x += (trail1.x - trail2.x) * 0.2;
+            trail2.y += (trail1.y - trail2.y) * 0.2;
+            trail3.x += (trail2.x - trail3.x) * 0.2;
+            trail3.y += (trail2.y - trail3.y) * 0.2;
+
+            cursor.style.transform = `translate(calc(-50% + ${cursorX}px), calc(-50% + ${cursorY}px))`;
+            if (t1) t1.style.transform = `translate(calc(-50% + ${trail1.x}px), calc(-50% + ${trail1.y}px))`;
+            if (t2) t2.style.transform = `translate(calc(-50% + ${trail2.x}px), calc(-50% + ${trail2.y}px))`;
+            if (t3) t3.style.transform = `translate(calc(-50% + ${trail3.x}px), calc(-50% + ${trail3.y}px))`;
+            rafId = requestAnimationFrame(renderCursor);
+        };
+        rafId = requestAnimationFrame(renderCursor);
 
         document.addEventListener('mousemove', moveCursor);
 
-        const handleMouseEnter = () => cursor.classList.add('hovering');
-        const handleMouseLeave = () => cursor.classList.remove('hovering');
+        const handleMouseEnter = () => { cursor.classList.add('hovering'); [t1, t2, t3].forEach(t => t?.classList.add('hidden')); };
+        const handleMouseLeave = () => { cursor.classList.remove('hovering'); [t1, t2, t3].forEach(t => t?.classList.remove('hidden')); };
+        const handleMouseDown = () => cursor.classList.add('clicking');
+        const handleMouseUp = () => cursor.classList.remove('clicking');
 
         hoverElements.forEach(el => {
             el.addEventListener('mouseenter', handleMouseEnter);
             el.addEventListener('mouseleave', handleMouseLeave);
         });
+        document.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mouseup', handleMouseUp);
 
         // Intersection Observer
         const fadeElements = document.querySelectorAll('.fade-up');
@@ -38,7 +74,7 @@ export default function LandingPage() {
                     observerInstance.unobserve(entry.target);
                 }
             });
-        }, { rootMargin: '50px 0px', threshold: 0 });
+        }, { rootMargin: '0px 0px -15% 0px', threshold: 0 });
         fadeElements.forEach(el => observer.observe(el));
 
         // Navbar Scroll
@@ -47,11 +83,11 @@ export default function LandingPage() {
             const currentScroll = window.pageYOffset;
             const navbar = navRef.current;
             if (navbar) {
-                if (currentScroll > lastScroll && currentScroll > 100) {
-                    navbar.classList.add('hidden');
-                } else {
-                    navbar.classList.remove('hidden');
-                }
+                if (currentScroll > 10) navbar.classList.add('scrolled');
+                else navbar.classList.remove('scrolled');
+                
+                if (currentScroll > lastScroll && currentScroll > 100) navbar.classList.add('hidden');
+                else navbar.classList.remove('hidden');
             }
             lastScroll = currentScroll;
         };
@@ -69,6 +105,7 @@ export default function LandingPage() {
         
         let lineIdx = 0;
         let charIdx = 0;
+        let charsTyped = 0;
         let timeoutId: ReturnType<typeof setTimeout>;
         
         const typeWriter = () => {
@@ -83,19 +120,30 @@ export default function LandingPage() {
                 if (charIdx < lines[lineIdx].length) {
                     el.innerHTML += lines[lineIdx].charAt(charIdx);
                     charIdx++;
-                    timeoutId = setTimeout(typeWriter, 40);
+                    charsTyped++;
+                    
+                    let delay = Math.random() * 17 + 28;
+                    if (lines[lineIdx].includes('✓') && !lines[lineIdx].startsWith('> ✓')) delay = 45;
+                    else if (lines[lineIdx].startsWith('>')) delay = 20;
+                    
+                    if (charsTyped % (Math.floor(Math.random() * 3) + 3) === 0) delay += Math.random() * 100 + 50;
+                    
+                    timeoutId = setTimeout(typeWriter, delay);
                 } else {
                     lineIdx++;
                     charIdx = 0;
-                    timeoutId = setTimeout(typeWriter, 500);
+                    timeoutId = setTimeout(typeWriter, 400);
                 }
             }
         };
         
-        timeoutId = setTimeout(typeWriter, 1000);
+        timeoutId = setTimeout(typeWriter, 2400);
 
         return () => {
+            cancelAnimationFrame(rafId);
             document.removeEventListener('mousemove', moveCursor);
+            document.removeEventListener('mousedown', handleMouseDown);
+            document.removeEventListener('mouseup', handleMouseUp);
             window.removeEventListener('scroll', handleScroll);
             hoverElements.forEach(el => {
                 el.removeEventListener('mouseenter', handleMouseEnter);
@@ -124,13 +172,20 @@ export default function LandingPage() {
                 faqItems.forEach(faq => {
                     faq.classList.remove('active');
                     const a = faq.querySelector('.faq-a') as HTMLElement;
-                    if(a) a.style.height = '0px';
+                    if(a && faq !== item) {
+                        a.style.transitionTimingFunction = "var(--ease-in)";
+                        a.style.height = '0px';
+                    }
                 });
 
                 // open if wasn't active
                 if (!isActive) {
                     item.classList.add('active');
+                    answer.style.transitionTimingFunction = "var(--ease-io)";
                     answer.style.height = answer.scrollHeight + 'px';
+                } else {
+                    answer.style.transitionTimingFunction = "var(--ease-in)";
+                    answer.style.height = '0px';
                 }
             };
 
@@ -194,22 +249,27 @@ export default function LandingPage() {
         }
 
         /* CUSTOM CURSOR */
+        .cursor-trail {
+            width: 6px; height: 6px; background: var(--fg); border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 9998;
+            top: 0; left: 0;
+            transition: opacity 0.2s;
+        }
+        .cursor-trail.t1 { opacity: 0.3; } .cursor-trail.t2 { opacity: 0.15; } .cursor-trail.t3 { opacity: 0.08; }
+        .cursor-trail.hidden { opacity: 0; }
+
         .cursor {
-            width: 6px;
-            height: 6px;
-            background: var(--fg);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: width 0.2s, height 0.2s, background-color 0.2s, mix-blend-mode 0.2s;
+            width: 6px; height: 6px; background: var(--fg); border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 9999;
+            top: 0; left: 0;
+            transition: width 0.2s, height 0.2s, background-color 0.2s, border 0.2s, mix-blend-mode 0.2s;
         }
         .cursor.hovering {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 1);
-            mix-blend-mode: difference;
+            width: 40px; height: 40px; background: rgba(255, 255, 255, 1); border: 0.5px solid var(--fg); mix-blend-mode: difference;
+        }
+        .cursor.clicking {
+            transform: scale(0.8) !important;
+            transition: transform 150ms var(--ease-out), width 0.2s, height 0.2s, background-color 0.2s !important;
         }
 
         /* TYPOGRAPHY */
@@ -275,13 +335,21 @@ export default function LandingPage() {
         /* ANIMATIONS */
         .fade-up {
             opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(24px);
+            transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
         }
         .fade-up.visible {
             opacity: 1;
             transform: translateY(0);
         }
+        .fade-up > * { transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out); opacity: 0; transform: translateY(24px); }
+        .fade-up.visible > * { opacity: 1; transform: translateY(0); }
+        .fade-up.visible > *:nth-child(1) { transition-delay: 0ms; }
+        .fade-up.visible > *:nth-child(2) { transition-delay: 60ms; }
+        .fade-up.visible > *:nth-child(3) { transition-delay: 120ms; }
+        .fade-up.visible > *:nth-child(4) { transition-delay: 180ms; }
+        .fade-up.visible > *:nth-child(5) { transition-delay: 240ms; }
+        .fade-up.visible > *:nth-child(6) { transition-delay: 300ms; }
 
         /* NAVBAR */
         nav {
@@ -291,13 +359,22 @@ export default function LandingPage() {
             width: 100%;
             z-index: 100;
             border-bottom: 1px solid var(--border);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            background: rgba(0, 0, 0, 0.7);
-            transition: transform 0.4s ease;
+            transition: transform 250ms var(--ease-io), opacity 250ms var(--ease-io), backdrop-filter 300ms ease, background-color 300ms ease;
         }
         nav.hidden {
-            transform: translateY(-100%);
+            transform: translateY(-60px);
+            opacity: 0;
+        }
+        nav.scrolled {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background: rgba(0, 0, 0, 0.7);
+        }
+        nav:not(.scrolled) {
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+            background: transparent;
+            border-bottom-color: transparent;
         }
         .nav-inner {
             display: flex;
@@ -367,15 +444,33 @@ export default function LandingPage() {
             font-family: var(--font-mono);
             font-size: 0.9rem;
             color: var(--fg-muted);
-            border: 1px solid var(--border);
             padding: var(--spacing-md);
             max-width: 800px;
             min-height: 220px;
+            position: relative;
+            border: none;
         }
+        .term-border { position: absolute; background: var(--border); }
+        .term-border.top { top: 0; left: 0; width: 0%; height: 1px; animation: drawTop 200ms linear 1400ms forwards; }
+        .term-border.right { top: 0; right: 0; width: 1px; height: 0%; animation: drawHeight 200ms linear 1660ms forwards; }
+        .term-border.bottom { bottom: 0; right: 0; width: 0%; height: 1px; animation: drawTop 200ms linear 1920ms forwards; }
+        .term-border.left { bottom: 0; left: 0; width: 1px; height: 0%; animation: drawHeight 200ms linear 2180ms forwards; }
+        @keyframes drawTop { to { width: 100%; } }
+        @keyframes drawHeight { to { height: 100%; } }
+
         .cursor-blink {
-            animation: blink 1s step-end infinite;
+            animation: blinkAsym 1060ms infinite;
         }
-        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes blinkAsym { 0%, 49.9% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+        .word-mask { display: inline-flex; overflow: hidden; vertical-align: bottom; padding-bottom: 0.1em; margin-bottom: -0.1em; margin-right: 0.25em; }
+        .word { display: inline-block; transform: translateY(105%); animation: wordReveal 600ms var(--ease-out) forwards; }
+        @keyframes wordReveal { to { transform: translateY(0); } }
+
+        .fade-after { opacity: 0; animation: fadeIn 500ms ease-out 900ms forwards; }
+        .btn-fade-up { opacity: 0; transform: translateY(10px); animation: btnFadeUp 400ms var(--ease-out) forwards; }
+        @keyframes btnFadeUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { to { opacity: 1; } }
 
         /* TRUST BAR MARQUEE */
         .trust-bar {
@@ -385,6 +480,8 @@ export default function LandingPage() {
             overflow: hidden;
             white-space: nowrap;
             display: flex;
+            -webkit-mask-image: linear-gradient(90deg, transparent, black 15%, black 85%, transparent);
+            mask-image: linear-gradient(90deg, transparent, black 15%, black 85%, transparent);
         }
         .marquee {
             font-family: var(--font-display);
@@ -392,13 +489,17 @@ export default function LandingPage() {
             font-size: 0.8rem;
             letter-spacing: 0.3em;
             color: var(--fg-muted);
-            display: inline-block;
-            animation: scroll 20s linear infinite;
-            padding-right: 50px;
+            display: flex;
+            width: max-content;
+            animation: scroll 35s linear infinite;
+            transition: animation-duration 400ms var(--ease-io);
+        }
+        .trust-bar:hover .marquee {
+            animation-duration: 80s;
         }
         @keyframes scroll {
             0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
+            100% { transform: translateX(-50%); }
         }
 
         /* HOW IT WORKS / PROCESS */
@@ -454,15 +555,32 @@ export default function LandingPage() {
             padding: var(--spacing-lg) var(--spacing-md);
             border-right: 1px solid var(--border);
             border-bottom: 1px solid var(--border);
-            transition: background 0s, color 0s;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: color 200ms ease;
+        }
+        .feature-cell::before {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
+            background: var(--fg);
+            transform-origin: bottom;
+            transform: scaleY(0);
+            transition: transform 200ms var(--ease-io);
+            z-index: -1;
+        }
+        .feature-cell:hover::before {
+            transform: scaleY(1);
+            transition: transform 250ms var(--ease-io);
         }
         .feature-cell:hover {
-            background: var(--fg);
             color: var(--bg);
         }
         .feature-cell:hover .feature-label,
         .feature-cell:hover p {
             color: var(--bg);
+        }
+        .feature-label, .feature-cell p {
+            transition: color 200ms ease;
         }
         .feature-label {
             font-family: var(--font-display);
@@ -635,20 +753,30 @@ export default function LandingPage() {
         .faq-a {
             height: 0;
             overflow: hidden;
-            transition: height 0.4s ease;
+            transition: height 350ms var(--ease-io);
         }
         .faq-a p {
             padding-bottom: var(--spacing-md);
             color: var(--fg-muted);
             font-size: 0.95rem;
+            opacity: 0;
+            transition: opacity 200ms var(--ease-io);
+        }
+        .faq-item.active .faq-a p {
+            opacity: 1;
+            transition-delay: 100ms;
+        }
+        .faq-icon::before {
+            content: '+';
+            display: block;
+            transition: transform 200ms ease;
+        }
+        .faq-item.active .faq-icon::before {
+            transform: rotate(45deg);
         }
         .faq-icon {
             font-family: var(--font-mono);
             font-size: 1.2rem;
-            transition: transform 0.3s ease;
-        }
-        .faq-item.active .faq-icon {
-            transform: rotate(45deg);
         }
 
         /* FINAL CTA */
@@ -741,6 +869,9 @@ export default function LandingPage() {
 
 
     <div className="noise"></div>
+    <div className="cursor-trail t3" id="t3"></div>
+    <div className="cursor-trail t2" id="t2"></div>
+    <div className="cursor-trail t1" id="t1"></div>
     <div className="cursor" id="cursor" ref={cursorRef}></div>
 
     <nav id="navbar" ref={navRef}>
@@ -757,20 +888,29 @@ export default function LandingPage() {
 
     <div className="container">
         <header className="hero">
-            <h1 className="hero-title">
-                <span>Know Exactly What</span>
-                <span>Your API Key</span>
-                <span>Unlocks.</span>
+            <h1 className="hero-title hero-stagger">
+                <div className="word-mask"><span className="word" style={{animationDelay: '0ms'}}>Know</span></div>
+                <div className="word-mask"><span className="word" style={{animationDelay: '80ms'}}>Exactly</span></div>
+                <div className="word-mask"><span className="word" style={{animationDelay: '160ms'}}>What</span></div><br/>
+                <div className="word-mask"><span className="word" style={{animationDelay: '240ms'}}>Your</span></div>
+                <div className="word-mask"><span className="word" style={{animationDelay: '320ms'}}>API</span></div>
+                <div className="word-mask"><span className="word" style={{animationDelay: '400ms'}}>Key</span></div><br/>
+                <div className="word-mask"><span className="word" style={{animationDelay: '480ms'}}>Unlocks</span></div>
+                <div className="word-mask"><span className="word" style={{animationDelay: '680ms'}}>.</span></div>
             </h1>
-            <p className="hero-sub">
+            <p className="hero-sub fade-after">
                 Paste your key. Discover models, capabilities, and permissions instantly. Your key never leaves your browser.
             </p>
             <div className="hero-ctas">
-                <Link href="/app" className="btn invert" data-hover="true">Analyze Your Key &rarr;</Link>
-                <a href="https://github.com/jaggureddy11/API-CAPABILITY-DISCOVERY" className="btn" target="_blank" data-hover="true">View on GitHub</a>
+                <Link href="/app" className="btn invert btn-fade-up" style={{animationDelay: '1100ms'}} data-hover="true">Analyze Your Key &rarr;</Link>
+                <a href="https://github.com/jaggureddy11/API-CAPABILITY-DISCOVERY" className="btn btn-fade-up" style={{animationDelay: '1180ms'}} target="_blank" data-hover="true">View on GitHub</a>
             </div>
             
             <div className="hero-terminal" id="terminal-block" data-hover="true">
+                <span className="term-border top"></span>
+                <span className="term-border right"></span>
+                <span className="term-border bottom"></span>
+                <span className="term-border left"></span>
                 <div id="typewriter" ref={typewriterRef}></div><span className="cursor-blink">█</span>
             </div>
         </header>
@@ -778,9 +918,14 @@ export default function LandingPage() {
 
     <div className="trust-bar fade-up">
         <div className="marquee">
-            WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &nbsp; &nbsp; 
-            WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &nbsp; &nbsp;
-            WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ
+            <div className="marquee-content">
+                WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &nbsp; &nbsp; 
+                WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &nbsp; &nbsp;
+            </div>
+            <div className="marquee-content" aria-hidden="true">
+                WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &nbsp; &nbsp; 
+                WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &nbsp; &nbsp;
+            </div>
         </div>
     </div>
 

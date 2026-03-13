@@ -3,3 +3,139 @@
 @theme {
   --font-sans: "Inter", "system-ui", "sans-serif";
 }
+
+:root {
+  --dur-fast: 200ms;
+  --dur-base: 350ms;
+  --dur-slow: 600ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-io: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* DASHBOARD ANIMATIONS */
+.dash-entry-left {
+  animation: slideInLeft 500ms var(--ease-out) 100ms both;
+}
+.dash-entry-right {
+  animation: slideInRight 500ms var(--ease-out) 200ms both;
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Discover Button Sweep */
+.btn-sweep {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+.btn-sweep::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: var(--fg);
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 220ms var(--ease-io);
+  z-index: -1;
+}
+.btn-sweep:hover::before {
+  transform: scaleX(1);
+}
+.btn-sweep:hover {
+  color: var(--bg) !important;
+}
+
+/* Live Parser Stagger */
+.parser-row {
+  opacity: 0;
+  animation: parserFadeIn 200ms var(--ease-out) forwards;
+}
+.parser-row:nth-child(1) { animation-delay: 50ms; }
+.parser-row:nth-child(2) { animation-delay: 100ms; }
+.parser-row:nth-child(3) { animation-delay: 150ms; }
+.parser-row:nth-child(4) { animation-delay: 200ms; }
+
+@keyframes parserFadeIn {
+  from { opacity: 0; transform: translateX(-5px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Results Staggering */
+.res-stagger {
+  opacity: 0;
+  animation: resSlideUp 350ms var(--ease-out) forwards;
+}
+.res-delay-0 { animation-delay: 0ms; }
+.res-delay-1 { animation-delay: 150ms; }
+.res-delay-2 { animation-delay: 500ms; } /* Models after Cap (~150+5*40+something) -> Let's say 400ms */
+.res-delay-3 { animation-delay: 700ms; } /* Rate Limits */
+.res-delay-4 { animation-delay: 800ms; } /* Estimator */
+.res-delay-5 { animation-delay: 880ms; } /* Export */
+
+.res-cap-row { opacity: 0; animation: resSlideUp 350ms var(--ease-out) forwards; }
+.res-cap-row:nth-child(1) { animation-delay: 190ms; }
+.res-cap-row:nth-child(2) { animation-delay: 230ms; }
+.res-cap-row:nth-child(3) { animation-delay: 270ms; }
+.res-cap-row:nth-child(4) { animation-delay: 310ms; }
+.res-cap-row:nth-child(5) { animation-delay: 350ms; }
+
+.res-model-row { opacity: 0; animation: resSlideUp 350ms var(--ease-out) forwards; }
+.res-model-row:nth-child(1) { animation-delay: 435ms; }
+.res-model-row:nth-child(2) { animation-delay: 470ms; }
+.res-model-row:nth-child(3) { animation-delay: 505ms; }
+.res-model-row:nth-child(4) { animation-delay: 540ms; }
+.res-model-row:nth-child(5) { animation-delay: 575ms; }
+.res-model-row:nth-child(6) { animation-delay: 610ms; }
+
+@keyframes resSlideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cap Icons */
+.cap-check { animation: springScale 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; transform: scale(0); display: inline-block; }
+.cap-cross { animation: capShake 150ms forwards; display: inline-block; }
+@keyframes springScale { to { transform: scale(1); } }
+@keyframes capShake { 0% { transform: translateX(0); } 25% { transform: translateX(4px); } 75% { transform: translateX(-4px); } 90% { transform: translateX(2px); } 100% { transform: translateX(0); } }
+
+/* Status Badge */
+.status-pulse { animation: badgePulse 400ms var(--ease-out) forwards; display: inline-flex; }
+.status-invalid { animation: badgeShake 400ms forwards; display: inline-flex; }
+@keyframes badgePulse { 0% { transform: scale(1); } 50% { transform: scale(1.06); } 100% { transform: scale(1); } }
+@keyframes badgeShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+/* Export Button Flip */
+.flip-wrapper { perspective: 1000px; position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.flip-text { position: absolute; transition: transform 120ms linear, opacity 120ms linear; }
+.flip-text.out { transform: rotateX(90deg); opacity: 0; }
+
+/* Loading Scanline */
+.terminal-scanline {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
+  background-size: 100% 4px;
+  animation: scanlineMove 8s linear infinite;
+  z-index: 10;
+}
+@keyframes scanlineMove {
+  from { background-position: 0 0; }
+  to { background-position: 0 100vh; }
+}

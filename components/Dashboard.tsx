@@ -9,8 +9,56 @@ export default function Dashboard() {
   const [result, setResult] = useState<DiscoveryResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const [loadingStep, setLoadingStep] = useState(-1);
   const [copied, setCopied] = useState(false);
+
+  // FEATURE: Real Typewriter Loading Subcomponent
+  const LoadingTerminal = ({ providerName }: { providerName: string }) => {
+      const lines = useMemo(() => [
+          `> Validating key structure...`,
+          `> Provider detected: ${providerName}`,
+          `> Testing /v1/chat/completions...`,
+          `> Testing advanced capability endpoints...`,
+          `> Fetching permissions matrix...`
+      ], [providerName]);
+  
+      const [visibleLines, setVisibleLines] = useState<string[]>([]);
+      const [currentLineStr, setCurrentLineStr] = useState('');
+      const [lineIdx, setLineIdx] = useState(0);
+  
+      useEffect(() => {
+          if (lineIdx >= lines.length) return;
+          const targetStr = lines[lineIdx];
+          let charIdx = 0;
+          let timeoutId: ReturnType<typeof setTimeout>;
+          
+          const typeChar = () => {
+              if (charIdx <= targetStr.length) {
+                  setCurrentLineStr(targetStr.substring(0, charIdx));
+                  charIdx++;
+                  
+                  let delay = Math.random() * 17 + 28;
+                  if (targetStr.startsWith('>')) delay = 20;
+                  
+                  timeoutId = setTimeout(typeChar, delay);
+              } else {
+                  setVisibleLines(prev => [...prev, targetStr]);
+                  setCurrentLineStr('');
+                  setLineIdx(prev => prev + 1);
+              }
+          };
+          timeoutId = setTimeout(typeChar, 100);
+          return () => clearTimeout(timeoutId);
+      }, [lineIdx, lines]);
+  
+      return (
+          <div className="font-mono text-[0.85rem] text-white/80 p-8 flex flex-col gap-3 relative animate-in fade-in duration-300 flex-1">
+              <div className="terminal-scanline"></div>
+              {visibleLines.map((l, i) => <div key={i}>{l}</div>)}
+              {lineIdx < lines.length && <div>{currentLineStr}<span className="cursor-blink">█</span></div>}
+              {lineIdx >= lines.length && <div><span className="cursor-blink">█</span></div>}
+          </div>
+      );
+  };
 
   // FEATURE 2: LIVE PARSER
   const keyFormat = useMemo(() => {
@@ -41,15 +89,6 @@ export default function Dashboard() {
     setLoading(true);
     setResult(null);
     setError(null);
-    setLoadingStep(0);
-
-    // Simulate animated loading steps
-    let stepCount = 0;
-    const interval = setInterval(() => {
-        stepCount++;
-        setLoadingStep(stepCount);
-        if (stepCount >= 4) clearInterval(interval);
-    }, 800);
 
     try {
         const res = await fetch('/api/discover', {
@@ -58,14 +97,11 @@ export default function Dashboard() {
             body: JSON.stringify({ apiKey: apiKey.trim(), provider })
         });
 
-        clearInterval(interval);
-        setLoadingStep(5);
-
         if (!res.ok) {
             const data = await res.json().catch(() => ({}));
             throw new Error(data.error || 'Failed to discover capabilities');
         }
-
+        
         const data: DiscoveryResult = await res.json();
         setResult(data);
 
@@ -90,12 +126,10 @@ export default function Dashboard() {
             window.dispatchEvent(new Event('historyUpdated'));
         }
     } catch (err) {
-        clearInterval(interval);
         const errorMessage = err instanceof Error ? err.message : 'An error occurred';
         setError(errorMessage);
     } finally {
         setLoading(false);
-        setLoadingStep(-1);
     }
   };
 
@@ -103,7 +137,6 @@ export default function Dashboard() {
       setApiKey('');
       setResult(null);
       setError(null);
-      setLoadingStep(-1);
   };
 
   const providerNames: Record<string, string> = {
@@ -192,8 +225,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-8 mb-12">
-        {/* LEFT COLUMN: Input Panel */}
-        <div className="border border-[rgba(255,255,255,0.15)] bg-black p-6 md:p-8 flex flex-col h-fit">
+        <div className="dash-entry-left border border-[rgba(255,255,255,0.15)] bg-black p-6 md:p-8 flex flex-col h-fit">
             <form onSubmit={handleDiscover} className="space-y-6 flex flex-col flex-1">
                 <div>
                     <label className="font-display text-[0.65rem] uppercase tracking-[0.2em] text-white/70 block mb-3">Provider</label>
@@ -231,21 +263,29 @@ export default function Dashboard() {
                         <div className="mb-2 text-white/80 break-all">{apiKey.substring(0, 24)}{apiKey.length > 24 ? '...' : ''}</div>
                         <div className="flex gap-4 text-white/20 mb-2 whitespace-pre">── ── ── ── ── ── ── ── ── ──</div>
                         <div className="grid grid-cols-[60px_1fr_20px] gap-2 items-center">
-                            <span className="font-display uppercase text-white/40 tracking-widest text-[8px]">FORMAT</span>
-                            <span>{keyFormat?.label}</span>
-                            <span className={keyFormat?.valid ? "text-white" : "text-white/30"}>{keyFormat?.valid ? "✓" : "✗"}</span>
+                            <div className="parser-row col-span-3 grid grid-cols-subgrid">
+                                <span className="font-display uppercase text-white/40 tracking-widest text-[8px]">FORMAT</span>
+                                <span>{keyFormat?.label}</span>
+                                <span className={keyFormat?.valid ? "text-white" : "text-white/30"}>{keyFormat?.valid ? "✓" : "✗"}</span>
+                            </div>
 
-                            <span className="font-display uppercase text-white/40 tracking-widest text-[8px]">PROVIDER</span>
-                            <span>{keyFormat?.provider !== 'auto' && keyFormat ? providerNames[keyFormat.provider] : 'Unknown'}</span>
-                            <span className={keyFormat?.valid ? "text-white" : "text-white/30"}>{keyFormat?.valid ? "✓" : "✗"}</span>
+                            <div className="parser-row col-span-3 grid grid-cols-subgrid">
+                                <span className="font-display uppercase text-white/40 tracking-widest text-[8px]">PROVIDER</span>
+                                <span>{keyFormat?.provider !== 'auto' && keyFormat ? providerNames[keyFormat.provider] : 'Unknown'}</span>
+                                <span className={keyFormat?.valid ? "text-white" : "text-white/30"}>{keyFormat?.valid ? "✓" : "✗"}</span>
+                            </div>
 
-                            <span className="font-display uppercase text-white/40 tracking-widest text-[8px]">LENGTH</span>
-                            <span>{apiKey.trim().length >= 10 ? 'Valid' : 'Too Short'}</span>
-                            <span className={apiKey.trim().length >= 10 ? "text-white" : "text-white/30"}>{apiKey.trim().length >= 10 ? "✓" : "✗"}</span>
+                            <div className="parser-row col-span-3 grid grid-cols-subgrid">
+                                <span className="font-display uppercase text-white/40 tracking-widest text-[8px]">LENGTH</span>
+                                <span>{apiKey.trim().length >= 10 ? 'Valid' : 'Too Short'}</span>
+                                <span className={apiKey.trim().length >= 10 ? "text-white" : "text-white/30"}>{apiKey.trim().length >= 10 ? "✓" : "✗"}</span>
+                            </div>
 
-                            <span className="font-display uppercase text-white/40 tracking-widest text-[8px]">PREFIX</span>
-                            <span>{keyFormat?.prefix}</span>
-                            <span className={keyFormat?.valid ? "text-white" : "text-white/30"}>{keyFormat?.valid ? "✓" : "✗"}</span>
+                            <div className="parser-row col-span-3 grid grid-cols-subgrid">
+                                <span className="font-display uppercase text-white/40 tracking-widest text-[8px]">PREFIX</span>
+                                <span>{keyFormat?.prefix}</span>
+                                <span className={keyFormat?.valid ? "text-white" : "text-white/30"}>{keyFormat?.valid ? "✓" : "✗"}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -257,7 +297,7 @@ export default function Dashboard() {
                 <button
                     type="submit"
                     disabled={loading || !apiKey.trim()}
-                    className="w-full bg-white text-black font-display font-bold text-[0.8rem] uppercase tracking-[0.15em] py-4 border border-white hover:bg-black hover:text-white transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-black mt-2"
+                    className="btn-sweep w-full bg-white text-black font-display font-bold text-[0.8rem] uppercase tracking-[0.15em] py-4 border border-white transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed mt-2 outline-none"
                 >
                     {loading ? 'DISCOVERING...' : 'DISCOVER →'}
                 </button>
@@ -275,7 +315,7 @@ export default function Dashboard() {
         </div>
 
         {/* RIGHT COLUMN: Results Panel */}
-        <div className="border border-[rgba(255,255,255,0.15)] bg-black h-full min-h-[500px] flex flex-col relative overflow-hidden">
+        <div className="dash-entry-right border border-[rgba(255,255,255,0.15)] bg-black h-full min-h-[500px] flex flex-col relative overflow-hidden">
             
             {/* 1. Empty State */}
             {!loading && !result && !error && (
@@ -293,18 +333,7 @@ export default function Dashboard() {
             )}
 
             {/* 2. Loading State */}
-            {loading && (
-                <div className="font-mono text-[0.85rem] text-white/80 p-8 flex flex-col gap-3 animate-in fade-in duration-300">
-                    {loadingStep >= 0 && <div>{`> Validating key structure...`}</div>}
-                    {loadingStep >= 1 && <div className="animate-in fade-in slide-in-from-bottom-2">{`> Provider detected: ${providerNames[provider] || provider.toUpperCase()}`}</div>}
-                    {loadingStep >= 2 && <div className="animate-in fade-in slide-in-from-bottom-2">{`> Testing /v1/chat/completions...`}</div>}
-                    {loadingStep >= 3 && <div className="animate-in fade-in slide-in-from-bottom-2">{`> Testing advanced capability endpoints...`}</div>}
-                    {loadingStep >= 4 && <div className="animate-in fade-in slide-in-from-bottom-2">{`> Fetching permissions matrix...`}</div>}
-                    <div className="flex items-center gap-2 mt-2">
-                        <span className="w-2 h-4 bg-white animate-pulse"></span>
-                    </div>
-                </div>
-            )}
+            {loading && <LoadingTerminal providerName={providerNames[provider] || provider.toUpperCase()} />}
 
             {/* 3. Error State */}
             {error && !loading && (
@@ -316,9 +345,9 @@ export default function Dashboard() {
 
             {/* 4. Results State */}
             {result && !loading && (
-                <div className="flex-1 font-mono text-[0.85rem] leading-loose p-6 sm:p-8 overflow-y-auto animate-in fade-in duration-500 custom-scrollbar">
+                <div className="flex-1 font-mono text-[0.85rem] leading-loose p-6 sm:p-8 overflow-y-auto custom-scrollbar">
                     
-                    <div className="flex justify-between items-end border-b border-[rgba(255,255,255,0.15)] pb-6 mb-6">
+                    <div className="res-stagger res-delay-0 flex justify-between items-end border-b border-[rgba(255,255,255,0.15)] pb-6 mb-6">
                         <div className="space-y-2">
                             <div className="flex justify-between w-[240px]">
                                 <span className="text-white/40">PROVIDER</span>
@@ -326,7 +355,7 @@ export default function Dashboard() {
                             </div>
                             <div className="flex justify-between w-[240px]">
                                 <span className="text-white/40">STATUS</span>
-                                <span className="text-white flex items-center gap-2">
+                                <span className={`text-white flex items-center gap-2 ${result.status === 'valid' ? 'status-pulse' : 'status-invalid'}`}>
                                     <span className={`w-2 h-2 rounded-full ${result.status === 'valid' ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'bg-red-500 shadow-[0_0_8px_rgba(255,0,0,0.8)]'}`}></span> 
                                     {result.status === 'valid' ? 'VALID' : 'INVALID'}
                                 </span>
@@ -337,38 +366,36 @@ export default function Dashboard() {
                     {result.status === 'valid' && (
                         <>
                             {/* CAPABILITIES */}
-                            <div className="mb-10">
+                            <div className="res-stagger res-delay-1 mb-10">
                                 <span className="font-display text-[0.7rem] tracking-[0.2em] text-white/50 block mb-4 uppercase">Capabilities</span>
                                 <div className="flex flex-col gap-2">
-                                    <CapabilityRow name="Text Generation" cap={result.capabilities.textGeneration} />
-                                    <CapabilityRow name="Embeddings" cap={result.capabilities.embeddings} />
-                                    <CapabilityRow name="Image Generation" cap={result.capabilities.imageGeneration} />
-                                    <CapabilityRow name="Audio Processing" cap={result.capabilities.audioGeneration} />
-                                    <CapabilityRow name="Video Generation" cap={result.capabilities.videoGeneration} />
+                                    <div className="res-cap-row"><CapabilityRow name="Text Generation" cap={result.capabilities.textGeneration} /></div>
+                                    <div className="res-cap-row"><CapabilityRow name="Embeddings" cap={result.capabilities.embeddings} /></div>
+                                    <div className="res-cap-row"><CapabilityRow name="Image Generation" cap={result.capabilities.imageGeneration} /></div>
+                                    <div className="res-cap-row"><CapabilityRow name="Audio Processing" cap={result.capabilities.audioGeneration} /></div>
+                                    <div className="res-cap-row"><CapabilityRow name="Video Generation" cap={result.capabilities.videoGeneration} /></div>
                                 </div>
                             </div>
 
-                            <div className="border-t border-[rgba(255,255,255,0.1)] mb-8"></div>
+                            <div className="res-stagger res-delay-2 border-t border-[rgba(255,255,255,0.1)] mb-8"></div>
 
                             {/* MODELS */}
-                            <div className="mb-10">
+                            <div className="res-stagger res-delay-2 mb-10">
                                 <span className="font-display text-[0.7rem] tracking-[0.2em] text-white/50 block mb-4 uppercase">Models</span>
                                 <div className="flex flex-col gap-2">
                                     {result.topModels.map(m => (
-                                        <div key={m.id} className="flex justify-between items-center w-full group transition-colors hover:bg-white/5 -mx-2 px-2 py-1 rounded-sm">
+                                        <div key={m.id} className="res-model-row flex justify-between items-center w-full group transition-colors hover:bg-white/5 -mx-2 px-2 py-1 rounded-sm">
                                             <div className="flex items-center gap-4 flex-1">
-                                                {m.permissionDenied ? <span className="text-white/40">✗</span> : <span className="text-white">✓</span>}
+                                                {m.permissionDenied ? <span className="cap-cross text-white/40">✗</span> : <span className="cap-check text-white">✓</span>}
                                                 <span className={m.permissionDenied ? 'text-white/40 line-through' : 'text-white font-semibold'}>{m.id}</span>
                                             </div>
                                             <div className="flex items-center gap-6 text-sm flex-1 justify-end">
                                                 {m.permissionDenied ? (
-                                                    // Denied label
                                                     <span className="font-display text-[0.6rem] tracking-wider bg-[rgba(255,255,255,0.05)] text-white/40 px-2 py-0.5 uppercase">Denied</span>
                                                 ) : (
                                                     <>
                                                         {m.maxInputTokens && <span className="text-white/60 w-[60px] text-right">{Math.round(m.maxInputTokens / 1000)}k</span>}
                                                         {(provider === 'openai' || provider === 'auto') && (m.id.includes('4') || m.id.includes('mini')) && (
-                                                            // Fake cost metric to simulate the design
                                                             <span className="text-white/60 w-[80px] text-right hidden sm:block">${m.id.includes('mini') ? '0.15' : '5'}/1M</span>
                                                         )}
                                                     </>
@@ -387,8 +414,8 @@ export default function Dashboard() {
                             {/* RATE LIMITS */}
                             {(result.rateLimits?.requestsPerMinute || result.rateLimits?.tokensPerMinute) && (
                                 <>
-                                    <div className="border-t border-[rgba(255,255,255,0.1)] mb-8"></div>
-                                    <div>
+                                    <div className="res-stagger res-delay-3 border-t border-[rgba(255,255,255,0.1)] mb-8"></div>
+                                    <div className="res-stagger res-delay-3">
                                         <span className="font-display text-[0.7rem] tracking-[0.2em] text-white/50 block mb-4 uppercase">Rate Limits</span>
                                         <div className="flex flex-col gap-2">
                                             {result.rateLimits.requestsPerMinute && (
@@ -413,20 +440,25 @@ export default function Dashboard() {
                     {/* COST ESTIMATOR */}
                     {result.status === 'valid' && result.allModels.length > 0 && (
                         <>
-                            <div className="border-t border-[rgba(255,255,255,0.1)] mb-4"></div>
-                            <CostEstimator availableModels={result.allModels.map(m => m.id)} />
+                            <div className="res-stagger res-delay-4 border-t border-[rgba(255,255,255,0.1)] mb-4"></div>
+                            <div className="res-stagger res-delay-4">
+                                <CostEstimator availableModels={result.allModels.map(m => m.id)} />
+                            </div>
                             
                             {/* FEATURE 1: ACTION BAR */}
-                            <div className="flex gap-4 w-full mt-4">
+                            <div className="res-stagger res-delay-5 flex gap-4 w-full mt-4">
                                 <button
                                     onClick={handleCopyReport}
-                                    className="flex-1 bg-black text-white font-display uppercase tracking-widest text-[0.65rem] py-3 px-4 border border-[rgba(255,255,255,0.2)] hover:bg-white hover:text-black transition-colors rounded-none outline-none"
+                                    className="flex-1 bg-black text-white font-display uppercase tracking-widest text-[0.65rem] py-3 px-4 border border-[rgba(255,255,255,0.2)] hover:bg-white hover:text-black transition-colors rounded-none outline-none overflow-hidden h-11"
                                 >
-                                    {copied ? '✓ COPIED' : 'COPY REPORT'}
+                                    <div className="flip-wrapper">
+                                        <span className={`flip-text ${copied ? 'out' : ''}`}>COPY REPORT</span>
+                                        <span className={`flip-text ${copied ? '' : 'out'}`} style={copied ? { transform: 'rotateX(0deg)', opacity: 1 } : { transform: 'rotateX(-90deg)', opacity: 0 }}>✓ COPIED</span>
+                                    </div>
                                 </button>
                                 <button
                                     onClick={handleExportJson}
-                                    className="flex-1 bg-black text-white font-display uppercase tracking-widest text-[0.65rem] py-3 px-4 border border-[rgba(255,255,255,0.2)] hover:bg-white hover:text-black transition-colors rounded-none outline-none"
+                                    className="flex-1 bg-black text-white font-display uppercase tracking-widest text-[0.65rem] py-3 px-4 border border-[rgba(255,255,255,0.2)] hover:bg-white hover:text-black transition-colors rounded-none outline-none h-11"
                                 >
                                     EXPORT JSON
                                 </button>
@@ -472,7 +504,7 @@ function CapabilityRow({ name, cap }: { name: string, cap: CapabilityStatus }) {
     if (!cap.supported) {
         return (
             <div className="flex items-center gap-4 py-1">
-                <span className="text-white/40 z-[1]">✗</span>
+                <span className="cap-cross text-white/40 z-[1]">✗</span>
                 <span className="text-white/60 flex-1 relative group cursor-help transition-all duration-300">
                     {name}
                     {cap.error && (
@@ -488,7 +520,7 @@ function CapabilityRow({ name, cap }: { name: string, cap: CapabilityStatus }) {
 
     return (
         <div className="flex items-center gap-4 py-1">
-            <span className="text-white">✓</span>
+            <span className="cap-check text-white">✓</span>
             <span className="text-white font-medium flex-1">{name}</span>
         </div>
     )
