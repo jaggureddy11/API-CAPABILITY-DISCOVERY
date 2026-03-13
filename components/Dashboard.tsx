@@ -271,24 +271,24 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="w-full text-white font-sans max-w-[1000px] mx-auto animate-in fade-in duration-700">
+    <div className="w-full text-white font-sans max-w-[1400px] mx-auto animate-in fade-in duration-700">
       
       {/* PAGE HEADER */}
-      <div className="mb-16 text-center md:text-left flex flex-col items-center md:items-start">
-          <span className="font-display text-[10px] uppercase text-[rgba(255,255,255,0.35)] tracking-[0.25em] mb-[12px] block">Capability Discovery</span>
-          <h1 className="font-serif font-bold tracking-tighter leading-none mb-6 text-[clamp(36px,5vw,56px)]">
+      <div className="mb-[32px] text-center md:text-left flex flex-col items-center md:items-start w-full">
+          <span className="font-display text-[9px] uppercase text-[rgba(255,255,255,0.35)] tracking-[0.25em] mb-[12px] block">Capability Discovery</span>
+          <h1 className="font-serif font-bold tracking-tighter leading-none m-[8px_0_6px_0] text-[clamp(40px,4vw,64px)]">
               Analyze Your Key.
           </h1>
-          <p className="font-sans text-white/60 font-light text-lg max-w-lg">
+          <p className="font-sans text-[rgba(255,255,255,0.5)] font-light text-[15px] mb-[32px]">
               Your key never touches our servers. Results are instant and discarded immediately.
           </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-8 mb-12">
-        <div className="dash-entry-left border border-[rgba(255,255,255,0.15)] bg-black p-6 md:p-8 flex flex-col overflow-y-auto max-h-[calc(100vh-180px)] custom-scrollbar">
-            <form onSubmit={handleDiscover} className="space-y-6 flex flex-col flex-1">
-                <div>
-                    <label className="font-display text-[0.65rem] uppercase tracking-[0.2em] text-white/70 block mb-3">Provider</label>
+      <div className="flex flex-col md:flex-row w-full gap-[2px] mb-[2px]">
+        <div className="w-full md:w-[300px] lg:w-[360px] shrink-0 border border-[rgba(255,255,255,0.12)] border-r md:border-r-[rgba(255,255,255,0.08)] bg-black p-[28px] flex flex-col md:sticky top-[80px] h-fit z-10">
+            <form onSubmit={handleDiscover} className="flex flex-col w-full">
+                <div className="mb-[8px]">
+                    <label className="font-display text-[9px] uppercase tracking-[0.2em] text-[rgba(255,255,255,0.5)] block mb-[8px]">Provider</label>
                     <div className="relative">
                         <select 
                             value={provider} 
@@ -305,8 +305,8 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div>
-                    <label className="font-display text-[0.65rem] uppercase tracking-[0.2em] text-white/70 block mb-3">API Key</label>
+                <div className="mt-[20px] mb-[8px]">
+                    <label className="font-display text-[9px] uppercase tracking-[0.2em] text-[rgba(255,255,255,0.5)] block mb-[8px]">API Key</label>
                     <input
                         type="password"
                         value={apiKey}
@@ -318,8 +318,8 @@ export default function Dashboard() {
                 </div>
 
                 {/* FEATURE 2: LIVE PARSER STRIP */}
-                <div className={`overflow-hidden transition-all duration-300 ${apiKey.trim() ? "max-h-[200px] opacity-100 mt-2 mb-2" : "max-h-0 opacity-0 mb-0"}`}>
-                    <div className="border border-[rgba(255,255,255,0.15)] bg-black p-4 text-white font-mono text-[10px] leading-relaxed relative">
+                <div className={`overflow-hidden transition-all duration-300 ${apiKey.trim() ? "max-h-[200px] opacity-100 mt-[12px] mb-[16px]" : "max-h-0 opacity-0 mb-0"}`}>
+                    <div className="border border-[rgba(255,255,255,0.15)] bg-black p-[20px] text-white font-mono text-[10px] leading-relaxed relative">
                         <div className="mb-2 text-white/80 break-all">{apiKey.substring(0, 24)}{apiKey.length > 24 ? '...' : ''}</div>
                         <div className="flex gap-4 text-white/20 mb-2 whitespace-pre">── ── ── ── ── ── ── ── ── ──</div>
                         <div className="grid grid-cols-[60px_1fr_20px] gap-2 items-center">
@@ -350,44 +350,48 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div className={`text-white/40 text-[0.7rem] font-sans font-light leading-relaxed mb-4 flex-1 ${apiKey.trim() ? "mt-0" : ""}`}>
+                <div className={`text-[rgba(255,255,255,0.5)] text-[11px] font-sans font-light leading-relaxed mb-[20px] ${apiKey.trim() ? "mt-[16px]" : ""}`}>
                     Keys are never stored or logged. Discarded instantly in volatile memory.
                 </div>
 
-                <button
-                    type="submit"
-                    disabled={loading || !apiKey.trim()}
-                    className="btn-sweep w-full bg-white text-black font-display font-bold text-[0.8rem] uppercase tracking-[0.15em] py-4 border border-white transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed mt-2 outline-none"
-                >
-                    {loading ? 'DISCOVERING...' : 'DISCOVER →'}
-                </button>
-
-                {(result || error) && (
+                <div className="flex flex-col gap-[8px]">
                     <button
-                        type="button"
-                        onClick={clearForm}
-                        className="w-full bg-transparent text-white/60 font-display font-bold text-[0.7rem] uppercase tracking-[0.1em] py-3 border border-[rgba(255,255,255,0.15)] hover:border-white/50 hover:text-white transition-colors duration-300 mt-2"
+                        type="submit"
+                        disabled={loading || !apiKey.trim()}
+                        className="w-full bg-white text-black font-display font-bold text-[11px] uppercase tracking-[0.2em] h-[52px] border border-white hover:bg-black hover:text-white transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed outline-none flex items-center justify-center cursor-pointer"
                     >
-                    CLEAR
-                    </button> 
-                )}
+                        {loading ? 'DISCOVERING...' : 'DISCOVER →'}
+                    </button>
+
+                    {(result || error) && (
+                        <button
+                            type="button"
+                            onClick={clearForm}
+                            className="w-full bg-transparent text-[rgba(255,255,255,0.4)] font-display text-[10px] uppercase tracking-[0.1em] h-[44px] border border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.05)] hover:text-white transition-colors duration-300 flex items-center justify-center cursor-pointer"
+                        >
+                        CLEAR
+                        </button> 
+                    )}
+                </div>
             </form>
         </div>
 
         {/* RIGHT COLUMN: Results Panel */}
-        <div className="dash-entry-right border border-[rgba(255,255,255,0.15)] bg-black flex flex-col relative overflow-y-auto max-h-[calc(100vh-180px)] custom-scrollbar">
+        <div className="flex-1 min-w-0 border border-[rgba(255,255,255,0.12)] md:border-l-0 bg-black flex flex-col relative overflow-y-auto md:max-h-[calc(100vh-200px)] custom-scrollbar">
             
             {/* 1. Empty State */}
             {!loading && !result && !error && (
-                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center border-[rgba(255,255,255,0.15)] animate-in fade-in duration-500">
-                    <h3 className="font-display text-[0.7rem] tracking-[0.2em] font-bold text-white/60 mb-6 uppercase">Ready for Discovery</h3>
-                    <p className="font-sans font-light text-[0.95rem] text-white/50 max-w-[280px] leading-relaxed mb-8">
-                        Paste your API key on the left to run live endpoint tests and discover capabilities instantly.
-                    </p>
-                    <div className="font-sans font-light text-[0.85rem] text-white/40 flex flex-col gap-3 text-left w-full max-w-[280px]">
-                        <div className="flex items-center gap-4"><span className="text-white/20">—</span> Active endpoint testing</div>
-                        <div className="flex items-center gap-4"><span className="text-white/20">—</span> Rate limit extraction</div>
-                        <div className="flex items-center gap-4"><span className="text-white/20">—</span> Model permission mapping</div>
+                <div className="flex-1 flex flex-col items-center justify-center p-[32px] text-center border-[rgba(255,255,255,0.15)] animate-in fade-in duration-500 min-h-[400px]">
+                    <div className="flex flex-col items-center text-[rgba(255,255,255,0.25)] w-full max-w-[320px]">
+                        <h3 className="font-display text-[12px] tracking-[0.2em] uppercase mb-[24px]">Ready for Discovery</h3>
+                        <p className="font-sans font-light text-[14px] leading-relaxed mb-[32px]">
+                            Paste your API key on the left to begin analysis.
+                        </p>
+                        <div className="font-sans font-light text-[14px] flex flex-col gap-[12px] items-center text-center">
+                            <div>─ Active endpoint testing</div>
+                            <div>─ Live capability detection</div>
+                            <div>─ AI-powered insights</div>
+                        </div>
                     </div>
                 </div>
             )}
@@ -405,14 +409,22 @@ export default function Dashboard() {
 
             {/* 4. Results State */}
             {result && !loading && (
-                <div className="flex-1 font-mono text-[14px] leading-[1.6] px-[16px] xl:px-[28px] py-[28px]">
+                <div className="flex-1 font-mono text-[14px] leading-[1.6] px-[16px] xl:px-[28px] py-[28px] relative">
                     
+                    {/* TIMESTAMP HEADER */}
+                    <div className="absolute top-[28px] right-[28px] font-mono text-[10px] text-[rgba(255,255,255,0.2)]">
+                        Scanned {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+
                     <div className="res-stagger res-delay-0 flex flex-col gap-2 pb-[28px]">
+                        <span className="font-display text-[9px] tracking-[0.2em] text-[rgba(255,255,255,0.15)] block mb-[16px] uppercase">
+                            01 — Provider
+                        </span>
                         <div className="flex justify-between items-center w-full">
                             <span className="font-display text-[9px] uppercase tracking-[0.2em] text-white/40">PROVIDER</span>
                             <span className="font-sans font-semibold text-[15px] text-white">{providerNames[result.provider] || result.provider}</span>
                         </div>
-                        <div className="flex justify-between items-center w-full">
+                        <div className="flex justify-between items-center w-full mt-[8px]">
                             <span className="font-display text-[9px] uppercase tracking-[0.2em] text-white/40">STATUS</span>
                             <span className={`text-[15px] font-semibold text-white/90 flex items-center gap-2 ${result.status === 'valid' ? 'status-pulse' : 'status-invalid'}`}>
                                 <span className={`w-[8px] h-[8px] rounded-full ${result.status === 'valid' ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'bg-red-500 shadow-[0_0_8px_rgba(255,0,0,0.8)]'}`}></span> 
@@ -423,20 +435,20 @@ export default function Dashboard() {
 
                     {result.status === 'valid' && (
                         <>
-                            <>
-                                <>
-                                    <div className="w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
+                            <div className="w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
                                     <div className="res-stagger res-delay-1 py-[28px] flex flex-col items-start min-h-[100px]">
-                                        <span className="font-display text-[9px] tracking-[0.2em] text-white/40 block mb-[8px] uppercase" style={{ fontFamily: "Syne, sans-serif" }}>AI Summary</span>
+                                        <span className="font-display text-[9px] tracking-[0.2em] text-[rgba(255,255,255,0.15)] block mb-[8px] uppercase">
+                                            02 — AI Summary
+                                        </span>
                                         {aiSummaryLoading ? (
                                             <AILoading />
                                         ) : aiSummary ? (
-                                            <p className="font-sans font-light text-[15px] text-[rgba(255,255,255,0.75)] leading-[1.8] w-full max-w-full mt-[8px] p-0 animate-in fade-in duration-500 m-0">
+                                            <p className="font-sans font-light text-[15px] text-[rgba(255,255,255,0.75)] leading-[1.8] w-full max-w-full m-0 p-0 animate-in fade-in duration-500">
                                                 {aiSummary}
                                             </p>
                                         ) : (
                                             <span 
-                                                className="font-sans font-light text-[12px] text-white/25 italic cursor-pointer hover:text-white/50 transition-colors" 
+                                                className="font-sans font-light text-[12px] text-white/25 italic cursor-pointer hover:text-white/50 transition-colors mt-[8px]" 
                                                 onClick={() => {
                                                     setAiSummaryLoading(true);
                                                     getScanSummary(result).then(setAiSummary).catch(()=>setAiSummary("")).finally(()=>setAiSummaryLoading(false));
@@ -444,13 +456,13 @@ export default function Dashboard() {
                                             >AI analysis timed out. Try again →</span>
                                         )}
                                     </div>
-                                </>
-                            </>
 
                             {/* CAPABILITIES */}
                             <div className="w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
                             <div className="res-stagger res-delay-1 py-[28px]">
-                                <span className="font-display text-[9px] uppercase tracking-[0.2em] text-white/40 block mb-[16px]">Capabilities</span>
+                                <span className="font-display text-[9px] uppercase tracking-[0.2em] text-[rgba(255,255,255,0.15)] block mb-[16px]">
+                                    03 — Capabilities
+                                </span>
                                 <div className="flex flex-col">
                                     <div className="res-cap-row border-b border-[rgba(255,255,255,0.05)] last:border-0"><CapabilityRow name="Text Generation" cap={result.capabilities.textGeneration} /></div>
                                     <div className="res-cap-row border-b border-[rgba(255,255,255,0.05)] last:border-0"><CapabilityRow name="Embeddings" cap={result.capabilities.embeddings} /></div>
@@ -463,7 +475,9 @@ export default function Dashboard() {
                             {/* MODELS */}
                             <div className="res-stagger res-delay-2 w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
                             <div className="res-stagger res-delay-2 py-[28px]">
-                                <span className="font-display text-[9px] uppercase tracking-[0.2em] text-white/40 block mb-[16px]">Models</span>
+                                <span className="font-display text-[9px] uppercase tracking-[0.2em] text-[rgba(255,255,255,0.15)] block mb-[16px]">
+                                    04 — Models
+                                </span>
                                 
                                 {result.topModels.filter(m => !m.permissionDenied).length > 0 && (
                                     <div className="mb-6">
@@ -519,7 +533,9 @@ export default function Dashboard() {
                                 <>
                                     <div className="res-stagger res-delay-3 w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
                                     <div className="res-stagger res-delay-3 py-[28px]">
-                                        <span className="font-display text-[9px] uppercase tracking-[0.2em] text-white/40 block mb-[16px]">Rate Limits</span>
+                                        <span className="font-display text-[9px] uppercase tracking-[0.2em] text-[rgba(255,255,255,0.15)] block mb-[16px]">
+                                            05 — Rate Limits
+                                        </span>
                                         <div className="flex flex-col gap-3">
                                             {result.rateLimits.requestsPerMinute && (
                                                 <div className="flex justify-between items-center w-full max-w-[300px]">
@@ -538,87 +554,6 @@ export default function Dashboard() {
                                 </>
                             )}
 
-                            <>
-                                <>
-                                    <div className="res-stagger res-delay-4 w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
-                                    <div className="res-stagger res-delay-4 py-[28px]">
-                                        <span className="font-display text-[9px] uppercase tracking-[0.2em] text-white/40 block mb-[16px]">AI Advisor</span>
-                                        {advisorLoading ? (
-                                            <AILoading />
-                                        ) : advisorCards.length > 0 ? (
-                                            <div className="flex flex-col md:flex-row gap-[12px] animate-in fade-in w-full duration-500">
-                                                {advisorCards.map((card, idx) => (
-                                                    <div 
-                                                        key={idx} 
-                                                        className="flex-1 w-full flex flex-col border border-[rgba(255,255,255,0.15)] p-[20px] bg-black hover:border-[rgba(255,255,255,0.4)] transition-colors duration-200 min-h-[140px]"
-                                                        style={{ animationDelay: `${idx * 80}ms` }}
-                                                    >
-                                                        <div className="font-display text-[9px] text-[rgba(255,255,255,0.35)] tracking-[0.15em] uppercase">
-                                                            {card.type === 'warning' ? '⚠ WARNING' : card.type === 'tip' ? '→ TIP' : '◆ INSIGHT'}
-                                                        </div>
-                                                        <div className="font-display text-[13px] text-[rgba(255,255,255,0.85)] font-bold mt-[10px] uppercase">{card.title}</div>
-                                                        <div className="font-sans font-light text-[13px] text-[rgba(255,255,255,0.6)] leading-[1.7] mt-[8px]">{card.body}</div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <span 
-                                                className="font-sans font-light text-[12px] text-white/25 italic cursor-pointer hover:text-white/50 transition-colors" 
-                                                onClick={() => {
-                                                    setAdvisorLoading(true);
-                                                    getAdvisorCards(result).then(setAdvisorCards).catch(()=>setAdvisorCards([])).finally(()=>setAdvisorLoading(false));
-                                                }}
-                                            >AI analysis timed out. Try again →</span>
-                                        )}
-                                    </div>
-
-                                    <div className="res-stagger res-delay-4 w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
-                                    <div className="res-stagger res-delay-4 py-[28px]">
-                                        <span className="font-display text-[9px] tracking-[0.2em] text-white/40 block mb-[16px] uppercase">Model Recommender</span>
-                                        <form onSubmit={handleRecommend} className="flex flex-col gap-4">
-                                            <div className="flex w-full">
-                                                <input
-                                                    type="text"
-                                                    value={useCase}
-                                                    onChange={e => setUseCase(e.target.value)}
-                                                    placeholder={recommendPlaceholders[recommendPlaceholderIdx]}
-                                                    disabled={recommendLoading}
-                                                    className="flex-1 bg-black border border-[rgba(255,255,255,0.18)] font-mono text-[14px] text-white px-4 h-[48px] placeholder:text-white/25 outline-none rounded-none focus:border-white transition-colors"
-                                                />
-                                                <button 
-                                                    type="submit" 
-                                                    disabled={recommendLoading || !useCase.trim()}
-                                                    className="w-[48px] h-[48px] bg-black border border-[rgba(255,255,255,0.18)] border-l-0 text-white hover:bg-white hover:text-black transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed outline-none rounded-none flex items-center justify-center font-bold"
-                                                >→</button>
-                                            </div>
-                                            {(recommendLoading || recommendation) && (
-                                                <div className="border border-[rgba(255,255,255,0.12)] p-[24px] mt-[16px] transition-all">
-                                                    {recommendLoading ? (
-                                                        <AILoading />
-                                                    ) : recommendation ? (
-                                                        <div className="animate-in fade-in duration-500">
-                                                            <div className="font-display text-[9px] text-[rgba(255,255,255,0.35)] uppercase">RECOMMENDED</div>
-                                                            <div 
-                                                                className="font-mono text-[20px] text-white mt-1 cursor-pointer hover:underline decoration-white/60 transition-all w-fit"
-                                                                onClick={() => {
-                                                                    window.dispatchEvent(new CustomEvent('set-cost-model', { detail: recommendation.recommended }));
-                                                                }}
-                                                            >{recommendation.recommended}</div>
-                                                            <div className="font-sans font-light text-[14px] text-[rgba(255,255,255,0.65)] leading-[1.7] mt-[8px]">{recommendation.reason}</div>
-                                                            <div className="mt-4 flex flex-col gap-1">
-                                                                <div className="flex gap-2 items-center"><span className="font-display text-[9px] text-[rgba(255,255,255,0.3)] uppercase">TRADEOFF</span> <span className="font-sans font-light text-[13px] text-[rgba(255,255,255,0.45)]">{recommendation.tradeoff}</span></div>
-                                                                <div className="flex gap-2 items-center"><span className="font-display text-[9px] text-[rgba(255,255,255,0.3)] uppercase">EST. COST</span> <span className="font-sans font-light text-[13px] text-[rgba(255,255,255,0.45)]">{recommendation.estimatedCost}</span></div>
-                                                            </div>
-                                                        </div>
-                                                    ) : (
-                                                        <span className="font-sans font-light text-[12px] text-white/25 italic">AI analysis timed out.</span>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </form>
-                                    </div>
-                                </>
-                            </>
                         </>
                     )}
                 </div>
@@ -628,25 +563,111 @@ export default function Dashboard() {
 
       {/* FULL WIDTH COMPONENTS */}
       {result && !loading && result.status === 'valid' && result.allModels.length > 0 && (
-          <div className="w-full flex flex-col mb-12">
-              <div className="res-stagger res-delay-4 mb-4">
+          <div className="w-full flex flex-col items-center">
+              
+              {/* AI ADVISOR */}
+              <div className="w-full border border-[rgba(255,255,255,0.12)] bg-black p-[28px] md:p-[28px_32px] mb-[2px]">
+                  <span className="font-display text-[9px] uppercase tracking-[0.2em] text-[rgba(255,255,255,0.15)] block mb-[16px]">06 — AI Advisor</span>
+                  {advisorLoading ? (
+                      <AILoading />
+                  ) : advisorCards.length > 0 ? (
+                      <div className="flex flex-col md:flex-row gap-[2px] animate-in fade-in w-full duration-500">
+                          {advisorCards.map((card, idx) => (
+                              <div 
+                                  key={idx} 
+                                  className="flex-1 w-full flex flex-col border border-[rgba(255,255,255,0.08)] p-[24px] bg-[#050505] hover:border-[rgba(255,255,255,0.3)] transition-colors duration-200 min-h-[140px]"
+                                  style={{ animationDelay: `${idx * 80}ms` }}
+                              >
+                                  <div className="font-display text-[9px] text-[rgba(255,255,255,0.35)] tracking-[0.15em] uppercase">
+                                      {card.type === 'warning' ? '⚠ WARNING' : card.type === 'tip' ? '→ TIP' : '◆ INSIGHT'}
+                                  </div>
+                                  <div className="font-display text-[13px] text-[rgba(255,255,255,0.85)] font-bold mt-[12px] uppercase">{card.title}</div>
+                                  <div className="font-sans font-light text-[14px] text-[rgba(255,255,255,0.65)] leading-[1.7] mt-[8px]">{card.body}</div>
+                              </div>
+                          ))}
+                      </div>
+                  ) : (
+                      <span 
+                          className="font-sans font-light text-[12px] text-white/25 italic cursor-pointer hover:text-white/50 transition-colors" 
+                          onClick={() => {
+                              setAdvisorLoading(true);
+                              getAdvisorCards(result).then(setAdvisorCards).catch(()=>setAdvisorCards([])).finally(()=>setAdvisorLoading(false));
+                          }}
+                      >AI analysis timed out. Try again →</span>
+                  )}
+              </div>
+
+              {/* MODEL RECOMMENDER */}
+              <div className="w-full border border-[rgba(255,255,255,0.12)] bg-black p-[28px] md:p-[28px_32px] mb-[2px]">
+                  <span className="font-display text-[9px] tracking-[0.2em] text-[rgba(255,255,255,0.15)] block mb-[16px] uppercase">07 — Model Recommender</span>
+                  <form onSubmit={handleRecommend} className="flex flex-col md:flex-row gap-[32px] w-full">
+                      <div className="flex-1 flex flex-col justify-start">
+                          <div className="flex w-full">
+                              <input
+                                  type="text"
+                                  value={useCase}
+                                  onChange={e => setUseCase(e.target.value)}
+                                  placeholder={recommendPlaceholders[recommendPlaceholderIdx]}
+                                  disabled={recommendLoading}
+                                  className="flex-1 bg-black border border-[rgba(255,255,255,0.18)] font-mono text-[14px] text-white px-4 h-[48px] placeholder:text-white/25 outline-none rounded-none focus:border-white transition-colors min-w-0"
+                              />
+                              <button 
+                                  type="submit" 
+                                  disabled={recommendLoading || !useCase.trim()}
+                                  className="w-[48px] h-[48px] bg-black border border-[rgba(255,255,255,0.18)] border-l-0 text-white hover:bg-white hover:text-black transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed outline-none rounded-none flex items-center justify-center font-bold"
+                              >→</button>
+                          </div>
+                      </div>
+                      
+                      <div className="flex-1 flex flex-col md:border-l border-[rgba(255,255,255,0.12)] md:pl-[32px] min-h-[100px]">
+                          {(recommendLoading || recommendation) ? (
+                              recommendLoading ? (
+                                  <AILoading />
+                              ) : recommendation ? (
+                                  <div className="animate-in fade-in duration-500">
+                                      <div className="font-display text-[9px] text-[rgba(255,255,255,0.35)] uppercase">RECOMMENDED</div>
+                                      <div 
+                                          className="font-mono text-[20px] text-white mt-1 cursor-pointer hover:underline decoration-white/60 transition-all w-fit"
+                                          onClick={() => {
+                                              window.dispatchEvent(new CustomEvent('set-cost-model', { detail: recommendation.recommended }));
+                                          }}
+                                      >{recommendation.recommended}</div>
+                                      <div className="font-sans font-light text-[14px] text-[rgba(255,255,255,0.65)] leading-[1.7] mt-[8px]">{recommendation.reason}</div>
+                                      <div className="mt-4 flex flex-col gap-1">
+                                          <div className="flex gap-2 items-center"><span className="font-display text-[9px] text-[rgba(255,255,255,0.3)] uppercase">TRADEOFF</span> <span className="font-sans font-light text-[13px] text-[rgba(255,255,255,0.45)]">{recommendation.tradeoff}</span></div>
+                                          <div className="flex gap-2 items-center"><span className="font-display text-[9px] text-[rgba(255,255,255,0.3)] uppercase">EST. COST</span> <span className="font-sans font-light text-[13px] text-[rgba(255,255,255,0.45)]">{recommendation.estimatedCost}</span></div>
+                                      </div>
+                                  </div>
+                              ) : null
+                          ) : (
+                              <div className="text-[rgba(255,255,255,0.3)] font-sans italic text-[14px] flex items-center">
+                                  Describe your use case to generate a model recommendation...
+                              </div>
+                          )}
+                      </div>
+                  </form>
+              </div>
+
+              {/* COST ESTIMATOR */}
+              <div className="w-full border border-[rgba(255,255,255,0.12)] bg-black p-[28px] md:p-[28px_32px] mb-[2px]">
+                  <span className="font-display text-[9px] tracking-[0.2em] text-[rgba(255,255,255,0.15)] block mb-[16px] uppercase">08 — Cost Estimator</span>
                   <CostEstimator availableModels={result.allModels.map(m => m.id)} />
               </div>
               
-              {/* FEATURE 1: ACTION BAR */}
-              <div className="res-stagger res-delay-5 flex gap-4 w-full pt-4">
+              {/* ACTION BAR */}
+              <div className="flex flex-col md:flex-row gap-[2px] w-full mt-[24px]">
                   <button
                       onClick={handleCopyReport}
-                      className="flex-1 bg-white text-black font-display uppercase tracking-[0.15em] text-[0.65rem] border border-[rgba(255,255,255,0.2)] hover:bg-black hover:text-white transition-colors rounded-none outline-none overflow-hidden min-h-[48px]"
+                      className="flex-1 bg-white text-black font-display font-bold uppercase tracking-[0.15em] text-[11px] border border-white hover:bg-black hover:text-white transition-colors rounded-none outline-none overflow-hidden h-[56px] flex items-center justify-center p-0"
                   >
-                      <div className="flip-wrapper">
-                          <span className={`flip-text py-3 px-4 ${copied ? 'out' : ''}`}>COPY REPORT</span>
-                          <span className={`flip-text py-3 px-4 ${copied ? '' : 'out'}`} style={copied ? { transform: 'rotateX(0deg)', opacity: 1 } : { transform: 'rotateX(-90deg)', opacity: 0 }}>✓ COPIED</span>
+                      <div className="flip-wrapper h-full flex flex-col items-center justify-center relative w-full">
+                          <span className={`flip-text absolute ${copied ? 'out' : ''}`}>COPY REPORT</span>
+                          <span className={`flip-text absolute ${copied ? '' : 'out'}`} style={copied ? { transform: 'rotateX(0deg)', opacity: 1 } : { transform: 'rotateX(-90deg)', opacity: 0 }}>✓ COPIED</span>
                       </div>
                   </button>
                   <button
                       onClick={handleExportJson}
-                      className="flex-1 bg-transparent text-white font-display uppercase tracking-[0.15em] text-[0.65rem] py-3 px-4 border border-white hover:bg-white hover:text-black transition-colors rounded-none outline-none min-h-[48px]"
+                      className="flex-1 bg-black text-white font-display font-bold uppercase tracking-[0.15em] text-[11px] border border-[rgba(255,255,255,0.12)] hover:bg-[rgba(255,255,255,0.1)] transition-colors rounded-none outline-none h-[56px] flex items-center justify-center"
                   >
                       EXPORT JSON
                   </button>

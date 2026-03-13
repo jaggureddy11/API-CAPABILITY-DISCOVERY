@@ -106,7 +106,7 @@ export default function App() {
           </div>
       </nav>
 
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-8 md:px-16 py-12 md:py-20 flex flex-col items-center">
+      <main className="w-full max-w-[1400px] mx-auto px-[16px] md:px-[24px] lg:px-[48px] pt-[32px] md:pt-[48px] pb-12 md:pb-20 flex flex-col">
         <Dashboard />
       </main>
 
