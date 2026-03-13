@@ -175,40 +175,40 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
         .ce-hdr{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid rgba(255,255,255,0.08);cursor:pointer;user-select:none}
         .ce-hdr:hover{background:rgba(255,255,255,0.03)}
         .ce-ttl{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.2em;color:rgba(255,255,255,0.45)}
-        .ce-tgl{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.3)}
+        .ce-tgl{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.40)}
         .ce-hdr:hover .ce-tgl{color:rgba(255,255,255,0.65)}
         .ce-body{overflow:hidden;max-height:0;transition:max-height .4s cubic-bezier(.4,0,.2,1)}
         .ce-body.open{max-height:900px}
         .ce-inner{padding:24px}
         .ce-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-        .ce-badge{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.14em;color:rgba(255,255,255,0.35);border:1px solid rgba(255,255,255,0.1);padding:3px 8px}
-        .ce-badge.hi{color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.35)}
+        .ce-badge{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.14em;color:rgba(255,255,255,0.65);border:1px solid rgba(255,255,255,0.1);padding:3px 8px}
+        .ce-badge.hi{color:rgba(255,255,255,0.85);border-color:rgba(255,255,255,0.35)}
         .ce-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
         .ce-fld{display:flex;flex-direction:column;gap:4px}
         .ce-fld-full{grid-column:1/-1}
-        .ce-lbl{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.16em;color:rgba(255,255,255,0.35)}
+        .ce-lbl{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.16em;color:rgba(255,255,255,0.55)}
         .ce-sel,.ce-inp{background:#000;border:1px solid rgba(255,255,255,0.18);color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:8px 10px;outline:none;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;border-radius:0;transition:border-color .15s}
         .ce-sel:focus,.ce-inp:focus{border-color:rgba(255,255,255,0.55)}
         .ce-sel option,.ce-sel optgroup{background:#111;font-family:'JetBrains Mono',monospace}
         .ce-sel-wrap{position:relative}
-        .ce-sel-wrap::after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:9px;color:rgba(255,255,255,0.35);pointer-events:none}
-        .ce-notes{font-family:'Inter',sans-serif;font-size:10px;font-weight:300;color:rgba(255,255,255,0.28);margin-top:4px;font-style:italic}
+        .ce-sel-wrap::after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none}
+        .ce-notes{font-family:'Inter',sans-serif;font-size:10px;font-weight:300;color:rgba(255,255,255,0.45);margin-top:4px;font-style:italic}
         .ce-bar-wrap{margin:8px 0 14px 0}
         .ce-bar{height:1px;background:rgba(255,255,255,0.08);margin-bottom:5px}
         .ce-bar-fill{height:100%;background:#fff;transition:width .35s ease}
         .ce-bar-labels{display:flex;justify-content:space-between}
-        .ce-bar-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,0.28)}
+        .ce-bar-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,0.45)}
         .ce-div{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:14px 0}
         .ce-row{display:flex;justify-content:space-between;align-items:center;min-height:48px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
         .ce-row:last-child{border-bottom:none}
-        .ce-row-lbl{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.16em;color:rgba(255,255,255,0.32)}
+        .ce-row-lbl{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.16em;color:rgba(255,255,255,0.45)}
         .ce-row-val{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#fff;transition:opacity .12s}
         .ce-row-val.dim{opacity:0.25}
         .ce-row.hl{padding:16px 0}
-        .ce-row.hl .ce-row-lbl{color:rgba(255,255,255,0.55)}
+        .ce-row.hl .ce-row-lbl{color:rgba(255,255,255,0.65)}
         .ce-row.hl .ce-row-val{font-size:26px}
-        .ce-tip{margin-top:12px;padding:9px 12px;border:1px solid rgba(255,255,255,0.08);font-family:'Inter',sans-serif;font-size:10px;font-weight:300;color:rgba(255,255,255,0.4);line-height:1.6}
-        .ce-src{margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(255,255,255,0.18);letter-spacing:0.05em}
+        .ce-tip{margin-top:12px;padding:9px 12px;border:1px solid rgba(255,255,255,0.08);font-family:'Inter',sans-serif;font-size:10px;font-weight:300;color:rgba(255,255,255,0.65);line-height:1.6}
+        .ce-src{margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(255,255,255,0.40);letter-spacing:0.05em}
         @media(max-width:480px){.ce-grid{grid-template-columns:1fr}.ce-fld-full{grid-column:1}}
       `}</style>
 
@@ -223,7 +223,7 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
 
             <>
               <div className="mb-6">
-                <span className="font-display text-[9px] tracking-[0.2em] text-white/40 block mb-3 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>ASK AI</span>
+                <span className="font-display text-[9px] tracking-[0.2em] text-[rgba(255,255,255,0.45)] block mb-3 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>ASK AI</span>
                 <form onSubmit={handleAskAI} className="flex flex-col gap-2">
                   <div className="flex w-full">
                     <input
@@ -242,7 +242,7 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
                   </div>
                   {aiCostQueryLoading && <div className="mt-1"><AILoading /></div>}
                   {aiCostQueryExplanation && aiCostQueryExplanation !== "one sentence" && !aiCostQueryLoading && (
-                      <div className="font-sans font-light text-[10px] text-white/35 italic animate-in fade-in duration-500 mt-1">
+                      <div className="font-sans font-light text-[11px] text-[rgba(255,255,255,0.65)] italic animate-in fade-in duration-500 mt-1">
                           {aiCostQueryExplanation}
                       </div>
                   )}
