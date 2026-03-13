@@ -1,160 +1,13 @@
-import React, { useEffect, useRef } from 'react';
-import Head from 'next/head';
-import Link from 'next/link';
-
-export default function LandingPage() {
-    const cursorRef = useRef<HTMLDivElement>(null);
-    const navRef = useRef<HTMLElement>(null);
-    const typewriterRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        // Custom Cursor
-        const cursor = cursorRef.current;
-        if (!cursor) return;
-
-        const hoverElements = document.querySelectorAll('[data-hover], a, button');
-        
-        const moveCursor = (e: MouseEvent) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        };
-
-        document.addEventListener('mousemove', moveCursor);
-
-        const handleMouseEnter = () => cursor.classList.add('hovering');
-        const handleMouseLeave = () => cursor.classList.remove('hovering');
-
-        hoverElements.forEach(el => {
-            el.addEventListener('mouseenter', handleMouseEnter);
-            el.addEventListener('mouseleave', handleMouseLeave);
-        });
-
-        // Intersection Observer
-        const fadeElements = document.querySelectorAll('.fade-up');
-        const observer = new IntersectionObserver((entries, observerInstance) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observerInstance.unobserve(entry.target);
-                }
-            });
-        }, { rootMargin: '50px 0px', threshold: 0 });
-        fadeElements.forEach(el => observer.observe(el));
-
-        // Navbar Scroll
-        let lastScroll = 0;
-        const handleScroll = () => {
-            const currentScroll = window.pageYOffset;
-            const navbar = navRef.current;
-            if (navbar) {
-                if (currentScroll > lastScroll && currentScroll > 100) {
-                    navbar.classList.add('hidden');
-                } else {
-                    navbar.classList.remove('hidden');
-                }
-            }
-            lastScroll = currentScroll;
-        };
-        window.addEventListener('scroll', handleScroll);
-
-        // Typewriter Animation
-        const lines = [
-            "> Validating key... ✓",
-            "> Provider detected: OpenAI",
-            "> Fetching models... ✓",
-            "> gpt-4o ✓  gpt-4-turbo ✓  gpt-3.5-turbo ✓",
-            "> Capabilities: Text ✓  Embeddings ✓  Images ✓",
-            "> Rate limit: 10,000 req/day"
-        ];
-        
-        let lineIdx = 0;
-        let charIdx = 0;
-        let timeoutId: ReturnType<typeof setTimeout>;
-        
-        const typeWriter = () => {
-            const el = typewriterRef.current;
-            if (!el) return;
-            
-            if (lineIdx < lines.length) {
-                if (charIdx === 0 && lineIdx > 0) {
-                    el.innerHTML += '<br />';
-                }
-                
-                if (charIdx < lines[lineIdx].length) {
-                    el.innerHTML += lines[lineIdx].charAt(charIdx);
-                    charIdx++;
-                    timeoutId = setTimeout(typeWriter, 40);
-                } else {
-                    lineIdx++;
-                    charIdx = 0;
-                    timeoutId = setTimeout(typeWriter, 500);
-                }
-            }
-        };
-        
-        timeoutId = setTimeout(typeWriter, 1000);
-
-        return () => {
-            document.removeEventListener('mousemove', moveCursor);
-            window.removeEventListener('scroll', handleScroll);
-            hoverElements.forEach(el => {
-                el.removeEventListener('mouseenter', handleMouseEnter);
-                el.removeEventListener('mouseleave', handleMouseLeave);
-            });
-            clearTimeout(timeoutId);
-            observer.disconnect();
-        };
-    }, []);
-
-    // FAQ logic
-    useEffect(() => {
-        const faqItems = document.querySelectorAll('.faq-item');
-        const clickHandlers = new Map();
-
-        faqItems.forEach(item => {
-            const btn = item.querySelector('.faq-q') as HTMLButtonElement;
-            const answer = item.querySelector('.faq-a') as HTMLElement;
-            
-            if(!btn || !answer) return;
-
-            const handler = () => {
-                const isActive = item.classList.contains('active');
-                
-                // close all
-                faqItems.forEach(faq => {
-                    faq.classList.remove('active');
-                    const a = faq.querySelector('.faq-a') as HTMLElement;
-                    if(a) a.style.height = '0px';
-                });
-
-                // open if wasn't active
-                if (!isActive) {
-                    item.classList.add('active');
-                    answer.style.height = answer.scrollHeight + 'px';
-                }
-            };
-
-            btn.addEventListener('click', handler);
-            clickHandlers.set(btn, handler);
-        });
-
-        return () => {
-            faqItems.forEach(item => {
-                const btn = item.querySelector('.faq-q') as HTMLButtonElement;
-                if(btn && clickHandlers.has(btn)) {
-                    btn.removeEventListener('click', clickHandlers.get(btn));
-                }
-            });
-        };
-    }, []);
-
-    return (
-        <div className="landing-theme">
-            <Head>
-                <title>APILens | Capability Discovery Engine</title>
-                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=JetBrains+Mono&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet" />
-            </Head>
-            <style dangerouslySetInnerHTML={{ __html: `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APILens | Capability Discovery Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=JetBrains+Mono&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
         :root {
             --bg: #000000;
             --fg: #ffffff;
@@ -182,7 +35,7 @@ export default function LandingPage() {
             cursor: none; /* Custom cursor everywhere */
         }
 
-        .landing-theme {
+        body {
             background-color: var(--bg);
             color: var(--fg);
             font-family: var(--font-sans);
@@ -734,112 +587,113 @@ export default function LandingPage() {
         }
 
         /* SELECTION */
-        .landing-theme ::selection { background: var(--fg); color: var(--bg); }
-        .landing-theme ::-moz-selection { background: var(--fg); color: var(--bg); }
+        ::selection { background: var(--fg); color: var(--bg); }
+        ::-moz-selection { background: var(--fg); color: var(--bg); }
 
-    ` }} />
+    </style>
+</head>
+<body>
 
+    <div class="noise"></div>
+    <div class="cursor" id="cursor"></div>
 
-    <div className="noise"></div>
-    <div className="cursor" id="cursor" ref={cursorRef}></div>
-
-    <nav id="navbar" ref={navRef}>
-        <div className="container nav-inner">
-            <a href="#" className="nav-logo" data-hover="true">APILens</a>
-            <div className="nav-links">
-                <a href="#process" className="nav-link hide-mobile" data-hover="true">Process</a>
-                <a href="#features" className="nav-link hide-mobile" data-hover="true">Capabilities</a>
-                <a href="#pricing" className="nav-link hide-mobile" data-hover="true">Pricing</a>
-                <Link href="/app" className="btn" style={{padding: "0.6rem 1.2rem", fontSize: "0.65rem"}} data-hover="true">Analyze Key</Link>
+    <nav id="navbar">
+        <div class="container nav-inner">
+            <a href="#" class="nav-logo" data-hover>APILens</a>
+            <div class="nav-links">
+                <a href="#process" class="nav-link hide-mobile" data-hover>Process</a>
+                <a href="#features" class="nav-link hide-mobile" data-hover>Capabilities</a>
+                <a href="#pricing" class="nav-link hide-mobile" data-hover>Pricing</a>
+                <a href="#cta" class="btn" style="padding: 0.6rem 1.2rem; font-size: 0.65rem;" data-hover>Analyze Key</a>
             </div>
         </div>
     </nav>
 
-    <div className="container">
-        <header className="hero">
-            <h1 className="hero-title">
+    <div class="container">
+        <header class="hero">
+            <h1 class="hero-title fade-up">
                 <span>Know Exactly What</span>
                 <span>Your API Key</span>
                 <span>Unlocks.</span>
             </h1>
-            <p className="hero-sub">
+            <p class="hero-sub fade-up">
                 Paste your key. Discover models, capabilities, and permissions instantly. Your key never leaves your browser.
             </p>
-            <div className="hero-ctas">
-                <Link href="/app" className="btn invert" data-hover="true">Analyze Your Key &rarr;</Link>
-                <a href="https://github.com/jaggureddy11/API-CAPABILITY-DISCOVERY" className="btn" target="_blank" data-hover="true">View on GitHub</a>
+            <div class="hero-ctas fade-up">
+                <a href="#analyze" class="btn invert" data-hover>Analyze Your Key &rarr;</a>
+                <a href="https://github.com" class="btn" target="_blank" data-hover>View on GitHub</a>
             </div>
             
-            <div className="hero-terminal" id="terminal-block" data-hover="true">
-                <div id="typewriter" ref={typewriterRef}></div><span className="cursor-blink">█</span>
+            <div class="hero-terminal fade-up" id="terminal-block" data-hover>
+                <div id="typewriter"></div><span class="cursor-blink">█</span>
             </div>
         </header>
     </div>
 
-    <div className="trust-bar fade-up">
-        <div className="marquee">
+    <div class="trust-bar fade-up">
+        <div class="marquee">
             WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &nbsp; &nbsp; 
             WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &nbsp; &nbsp;
             WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ
         </div>
     </div>
 
-    <div className="container">
-        <section id="process" className="process fade-up">
-            <span className="section-label">Process</span>
-            <h2 className="process-title">Three steps to full clarity.</h2>
+    <div class="container">
+        <section id="process" class="process fade-up">
+            <span class="section-label">Process</span>
+            <h2 class="process-title">Three steps to full clarity.</h2>
             
-            <div className="process-grid">
-                <div className="process-step" data-hover="true">
-                    <div className="process-num">01</div>
-                    <h3 className="display">Paste Key</h3>
+            <div class="process-grid">
+                <div class="process-step" data-hover>
+                    <div class="process-num">01</div>
+                    <h3 class="display">Paste Key</h3>
                     <p>Provide your token securely. Memory processing ensures nothing is logged or kept.</p>
                 </div>
-                <div className="process-step" data-hover="true">
-                    <div className="process-num">02</div>
-                    <h3 className="display">Run Discovery</h3>
+                <div class="process-step" data-hover>
+                    <div class="process-num">02</div>
+                    <h3 class="display">Run Discovery</h3>
                     <p>Our engine actively tests standard endpoints to definitively prove capabilities.</p>
                 </div>
-                <div className="process-step" data-hover="true">
-                    <div className="process-num">03</div>
-                    <h3 className="display">See Everything</h3>
+                <div class="process-step" data-hover>
+                    <div class="process-num">03</div>
+                    <h3 class="display">See Everything</h3>
                     <p>Review allowed models, rate limits, and actual permission denials transparently.</p>
                 </div>
             </div>
         </section>
 
-        <section id="features" className="features fade-up">
-            <span className="section-label">Capabilities</span>
-            <div className="feature-grid">
-                <div className="feature-cell" data-hover="true">
-                    <div className="feature-label">Key Validation</div>
+        <section id="features" class="features fade-up">
+            <span class="section-label">Capabilities</span>
+            <div class="feature-grid">
+                <div class="feature-cell" data-hover>
+                    <div class="feature-label">Key Validation</div>
                     <p>Instantly confirm your key is active and practically usable for generation tasks.</p>
                 </div>
-                <div className="feature-cell" data-hover="true">
-                    <div className="feature-label">Model Discovery</div>
+                <div class="feature-cell" data-hover>
+                    <div class="feature-label">Model Discovery</div>
                     <p>See every precise model variation your specific API tier genuinely unlocks.</p>
                 </div>
-                <div className="feature-cell" data-hover="true">
-                    <div className="feature-label">Capability Detection</div>
+                <div class="feature-cell" data-hover>
+                    <div class="feature-label">Capability Detection</div>
                     <p>Text, embeddings, image, audio &mdash; all verified with micro live endpoint tests.</p>
                 </div>
-                <div className="feature-cell" data-hover="true">
-                    <div className="feature-label">Permission Testing</div>
+                <div class="feature-cell" data-hover>
+                    <div class="feature-label">Permission Testing</div>
                     <p>We trigger real HTTP hits, not heuristic guesswork, for 100% accuracy.</p>
                 </div>
-                <div className="feature-cell" data-hover="true">
-                    <div className="feature-label">Rate Limit Analysis</div>
+                <div class="feature-cell" data-hover>
+                    <div class="feature-label">Rate Limit Analysis</div>
                     <p>Pull and decode hidden API token tracking straight from live response headers.</p>
                 </div>
-                <div className="feature-cell" data-hover="true">
-                    <div className="feature-label">Cost Estimation</div>
+                <div class="feature-cell" data-hover>
+                    <div class="feature-label">Cost Estimation</div>
                     <p>Calculate realistic spend metrics depending on your tested model allowances.</p>
                 </div>
             </div>
         </section>
 
-        <section className="demo fade-up">
-            <div className="demo-box" data-hover="true">
+        <section class="demo fade-up">
+            <div class="demo-box" data-hover>
 ┌─────────────────────────────────────┐
 │  APILens &mdash; Capability Report        │
 │  Provider   : OpenAI                │
@@ -848,167 +702,271 @@ export default function LandingPage() {
 │  MODELS                             │
 │  ✓ gpt-4o          [128k] [$5/1M]   │
 │  ✓ gpt-4-turbo     [128k] [$10/1M]  │
-│  <span className="muted">✗ gpt-4o-realtime [—]   [Denied]</span>   │
+│  <span class="muted">✗ gpt-4o-realtime [—]   [Denied]</span>   │
 ├─────────────────────────────────────┤
 │  CAPABILITIES                       │
 │  ✓ Text Generation                  │
 │  ✓ Embeddings                       │
 │  ✓ Image Generation                 │
-│  <span className="muted">✗ Audio Transcription  [Denied]</span>    │
+│  <span class="muted">✗ Audio Transcription  [Denied]</span>    │
 └─────────────────────────────────────┘
             </div>
-            <div className="demo-caption">Actual output format from a live API key scan</div>
+            <div class="demo-caption">Actual output format from a live API key scan</div>
         </section>
 
-        <section className="providers fade-up">
-            <span className="section-label">Providers</span>
-            <div className="provider-row">
-                <div className="provider-cell" data-hover="true">
-                    <div className="provider-name">OpenAI</div>
-                    <div className="provider-desc">GPT, DALL-E, Embeddings, Whisper</div>
+        <section class="providers fade-up">
+            <span class="section-label">Providers</span>
+            <div class="provider-row">
+                <div class="provider-cell" data-hover>
+                    <div class="provider-name">OpenAI</div>
+                    <div class="provider-desc">GPT, DALL-E, Embeddings, Whisper</div>
                 </div>
-                <div className="provider-cell" data-hover="true">
-                    <div className="provider-name">Google Gemini</div>
-                    <div className="provider-desc">1.5 Pro, Flash, Imagen, Embeddings</div>
+                <div class="provider-cell" data-hover>
+                    <div class="provider-name">Google Gemini</div>
+                    <div class="provider-desc">1.5 Pro, Flash, Imagen, Embeddings</div>
                 </div>
-                <div className="provider-cell" data-hover="true">
-                    <div className="provider-name">Anthropic</div>
-                    <div className="provider-desc">Claude 3.5 Sonnet, Opus, Haiku</div>
+                <div class="provider-cell" data-hover>
+                    <div class="provider-name">Anthropic</div>
+                    <div class="provider-desc">Claude 3.5 Sonnet, Opus, Haiku</div>
                 </div>
-                <div className="provider-cell" data-hover="true">
-                    <div className="provider-name">Groq</div>
-                    <div className="provider-desc">Llama 3, Mixtral, Gemma, Whisper</div>
+                <div class="provider-cell" data-hover>
+                    <div class="provider-name">Groq</div>
+                    <div class="provider-desc">Llama 3, Mixtral, Gemma, Whisper</div>
                 </div>
             </div>
         </section>
 
-        <section id="pricing" className="pricing fade-up">
-            <span className="section-label">Pricing</span>
-            <h2 className="pricing-title">Simple. Transparent. Fair.</h2>
+        <section id="pricing" class="pricing fade-up">
+            <span class="section-label">Pricing</span>
+            <h2 class="pricing-title">Simple. Transparent. Fair.</h2>
             
-            <div className="pricing-grid">
-                <div className="pricing-card" data-hover="true">
-                    <div className="plan-name">FREE</div>
-                    <div className="plan-price">$0</div>
-                    <ul className="plan-features">
+            <div class="pricing-grid">
+                <div class="pricing-card" data-hover>
+                    <div class="plan-name">FREE</div>
+                    <div class="plan-price">$0</div>
+                    <ul class="plan-features">
                         <li>Single key checks</li>
                         <li>No account required</li>
                         <li>Basic model discovery</li>
                         <li>Browser-safe mode</li>
                     </ul>
-                    <Link href="/app" className="btn">Test Now</Link>
+                    <a href="#test" class="btn">Test Now</a>
                 </div>
                 
-                <div className="pricing-card popular" data-hover="true">
-                    <div className="popular-badge">Most Popular</div>
-                    <div className="plan-name">DEV</div>
-                    <div className="plan-price">$5<span style={{fontSize: "1rem", fontFamily: "var(--font-sans)"}}>/mo</span></div>
-                    <ul className="plan-features">
+                <div class="pricing-card popular" data-hover>
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="plan-name">DEV</div>
+                    <div class="plan-price">$5<span style="font-size: 1rem; font-family: var(--font-sans)">/mo</span></div>
+                    <ul class="plan-features">
                         <li>Save and monitor keys</li>
                         <li>Expiration alerts &amp; history</li>
                         <li>Full rate limit extraction</li>
                         <li>API access for CLI tracking</li>
                     </ul>
-                    <Link href="/app" className="btn invert">Subscribe</Link>
+                    <a href="#subscribe" class="btn invert">Subscribe</a>
                 </div>
                 
-                <div className="pricing-card" data-hover="true">
-                    <div className="plan-name">TEAM</div>
-                    <div className="plan-price">$15<span style={{fontSize: "1rem", fontFamily: "var(--font-sans)"}}>/mo</span></div>
-                    <ul className="plan-features">
+                <div class="pricing-card" data-hover>
+                    <div class="plan-name">TEAM</div>
+                    <div class="plan-price">$15<span style="font-size: 1rem; font-family: var(--font-sans)">/mo</span></div>
+                    <ul class="plan-features">
                         <li>Unlimited key tracking</li>
                         <li>Team sharing &amp; roles</li>
                         <li>Advanced cost calculators</li>
                         <li>Priority email support</li>
                     </ul>
-                    <a href="#contact" className="btn">Contact Us</a>
+                    <a href="#contact" class="btn">Contact Us</a>
                 </div>
             </div>
         </section>
 
-        <section className="faq fade-up">
-            <span className="section-label">FAQ</span>
-            <h2 className="faq-title">Questions, answered.</h2>
+        <section class="faq fade-up">
+            <span class="section-label">FAQ</span>
+            <h2 class="faq-title">Questions, answered.</h2>
             
-            <div className="faq-list">
-                <div className="faq-item">
-                    <button className="faq-q" data-hover="true">
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-q" data-hover>
                         Is my API key safe?
-                        <span className="faq-icon">+</span>
+                        <span class="faq-icon">+</span>
                     </button>
-                    <div className="faq-a">
+                    <div class="faq-a">
                         <p>Yes. Keys are strictly processed in volatile runtime memory and immediately discarded after testing. We write absolutely nothing to persistent databases or server logs.</p>
                     </div>
                 </div>
-                <div className="faq-item">
-                    <button className="faq-q" data-hover="true">
+                <div class="faq-item">
+                    <button class="faq-q" data-hover>
                         How does browser-safe mode work?
-                        <span className="faq-icon">+</span>
+                        <span class="faq-icon">+</span>
                     </button>
-                    <div className="faq-a">
-                                <p>For providers that support open CORS (like Gemini), we bypass our backend entirely. The network fetch happens straight from your client window directly to the provider&apos;s endpoint.</p>
+                    <div class="faq-a">
+                        <p>For providers that support open CORS (like Gemini), we bypass our backend entirely. The network fetch happens straight from your client window directly to the provider's endpoint.</p>
                     </div>
                 </div>
-                <div className="faq-item">
-                    <button className="faq-q" data-hover="true">
+                <div class="faq-item">
+                    <button class="faq-q" data-hover>
                         Which providers are supported?
-                        <span className="faq-icon">+</span>
+                        <span class="faq-icon">+</span>
                     </button>
-                    <div className="faq-a">
+                    <div class="faq-a">
                         <p>We currently natively decode universally recognized keys from OpenAI, Google Gemini, Anthropic, and Groq by examining their distinct prefix signatures.</p>
                     </div>
                 </div>
-                <div className="faq-item">
-                    <button className="faq-q" data-hover="true">
+                <div class="faq-item">
+                    <button class="faq-q" data-hover>
                         Is the source code open?
-                        <span className="faq-icon">+</span>
+                        <span class="faq-icon">+</span>
                     </button>
-                    <div className="faq-a">
+                    <div class="faq-a">
                         <p>The core capability discovery engine is fully open source. You can view, audit, or host the underlying tests yourself by visiting our GitHub repository.</p>
                     </div>
                 </div>
-                <div className="faq-item">
-                    <button className="faq-q" data-hover="true">
+                <div class="faq-item">
+                    <button class="faq-q" data-hover>
                         Do you log or store anything?
-                        <span className="faq-icon">+</span>
+                        <span class="faq-icon">+</span>
                     </button>
-                    <div className="faq-a">
+                    <div class="faq-a">
                         <p>Zero logging. As developers ourselves, we structured the architecture to inherently prevent caching, analytics tracking, or environment variable leaks.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="cta" className="final-cta fade-up">
-            <h2 className="final-title">
+        <section id="cta" class="final-cta fade-up">
+            <h2 class="final-title">
                 <span>Your key.</span>
                 <span>Your capabilities.</span>
                 <span>Fully visible.</span>
             </h2>
-            <p className="final-sub">No more guessing which endpoints are enabled on your tier.</p>
-            <Link href="/app" className="btn invert" style={{marginTop: "var(--spacing-sm)"}} data-hover="true">Analyze Your Key Free &rarr;</Link>
+            <p class="final-sub">No more guessing which endpoints are enabled on your tier.</p>
+            <a href="#" class="btn invert" style="margin-top: var(--spacing-sm)" data-hover>Analyze Your Key Free &rarr;</a>
         </section>
 
         <footer>
-            <div className="footer-inner">
+            <div class="footer-inner">
                 <div>
-                    <div className="footer-logo">APILens</div>
-                    <div className="footer-tagline">By developers. For engineers.</div>
+                    <div class="footer-logo">APILens</div>
+                    <div class="footer-tagline">By developers. For engineers.</div>
                 </div>
-                <div className="footer-links">
-                    <a href="https://github.com/jaggureddy11/API-CAPABILITY-DISCOVERY" data-hover="true" target="_blank">GitHub</a>
-                    <a href="#" data-hover="true">Docs</a>
-                    <a href="#" data-hover="true">Privacy</a>
-                    <a href="#" data-hover="true">Terms</a>
+                <div class="footer-links">
+                    <a href="#" data-hover>GitHub</a>
+                    <a href="#" data-hover>Docs</a>
+                    <a href="#" data-hover>Privacy</a>
+                    <a href="#" data-hover>Terms</a>
                 </div>
             </div>
-            <div className="footer-bottom">
+            <div class="footer-bottom">
                 Built for developers. Trusted by engineers. &copy; 2026 APILens.
             </div>
         </footer>
     </div>
 
-    
-        </div>
-    );
-}
+    <script>
+        // Custom Cursor
+        const cursor = document.getElementById('cursor');
+        const hoverElements = document.querySelectorAll('[data-hover], a, button');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        hoverElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+        });
+
+        // Hide cursor when leaving window
+        document.addEventListener('mouseout', (e) => {
+            if (e.relatedTarget === null) cursor.style.display = 'none';
+        });
+        document.addEventListener('mouseover', () => {
+            cursor.style.display = 'block';
+        });
+
+        // Scroll Fade Up using IntersectionObserver
+        const fadeElements = document.querySelectorAll('.fade-up');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        fadeElements.forEach(el => observer.observe(el));
+
+        // Navbar Hide/Show on scroll
+        let lastScroll = 0;
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > lastScroll && currentScroll > 100) {
+                navbar.classList.add('hidden');
+            } else {
+                navbar.classList.remove('hidden');
+            }
+            lastScroll = currentScroll;
+        });
+
+        // FAQ Accordion
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const btn = item.querySelector('.faq-q');
+            const answer = item.querySelector('.faq-a');
+            
+            btn.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                
+                // close all
+                faqItems.forEach(faq => {
+                    faq.classList.remove('active');
+                    faq.querySelector('.faq-a').style.height = '0px';
+                });
+
+                // open if wasn't active
+                if (!isActive) {
+                    item.classList.add('active');
+                    answer.style.height = answer.scrollHeight + 'px';
+                }
+            });
+        });
+
+        // Terminal Typewriter Animation
+        const lines = [
+            "> Validating key... ✓",
+            "> Provider detected: OpenAI",
+            "> Fetching models... ✓",
+            "> gpt-4o ✓  gpt-4-turbo ✓  gpt-3.5-turbo ✓",
+            "> Capabilities: Text ✓  Embeddings ✓  Images ✓",
+            "> Rate limit: 10,000 req/day"
+        ];
+        
+        let lineIdx = 0;
+        let charIdx = 0;
+        const typewriterEl = document.getElementById('typewriter');
+        
+        function typeWriter() {
+            if (lineIdx < lines.length) {
+                if (charIdx === 0 && lineIdx > 0) {
+                    typewriterEl.innerHTML += '<br>';
+                }
+                
+                if (charIdx < lines[lineIdx].length) {
+                    typewriterEl.innerHTML += lines[lineIdx].charAt(charIdx);
+                    charIdx++;
+                    setTimeout(typeWriter, 40); // typing speed
+                } else {
+                    lineIdx++;
+                    charIdx = 0;
+                    setTimeout(typeWriter, 500); // delay between lines
+                }
+            }
+        }
+        
+        // start shortly after load
+        setTimeout(typeWriter, 1000);
+    </script>
+</body>
+</html>

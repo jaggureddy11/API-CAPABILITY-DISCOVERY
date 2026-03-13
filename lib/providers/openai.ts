@@ -31,7 +31,7 @@ export async function discoverOpenAI(apiKey: string): Promise<DiscoveryResult> {
     const data = await modelsResponse.json();
     const allModelsRaw = (data.data || []).map((m: any) => m.id as string).sort();
 
-    const topModelNames = ['gpt-4o', 'gpt-4o-mini', 'o1-mini', 'o3-mini', 'dall-e-3', 'text-embedding-3-large', 'gpt-5-pro'];
+    const topModelNames = ['o1', 'o3-mini', 'gpt-4o', 'gpt-4o-mini', 'o1-preview', 'o1-mini', 'dall-e-3', 'text-embedding-3-large'];
     
     // Active test: Text Generation
     const textRes = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -77,6 +77,8 @@ export async function discoverOpenAI(apiKey: string): Promise<DiscoveryResult> {
     const tokenLimits: Record<string, {maxIn: number, maxOut: number}> = {
         'gpt-4o': { maxIn: 128000, maxOut: 16384 },
         'gpt-4o-mini': { maxIn: 128000, maxOut: 16384 },
+        'o1': { maxIn: 200000, maxOut: 100000 },
+        'o1-preview': { maxIn: 128000, maxOut: 32768 },
         'o1-mini': { maxIn: 128000, maxOut: 65536 },
         'o3-mini': { maxIn: 200000, maxOut: 100000 }
     }

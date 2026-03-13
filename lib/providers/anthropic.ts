@@ -44,7 +44,14 @@ export async function discoverAnthropic(apiKey: string): Promise<DiscoveryResult
     const topModelNames = ['claude-3-7-sonnet-20250219', 'claude-3-5-sonnet-20241022', 'claude-3-opus-20240229', 'claude-3-5-haiku-20241022'];
 
     modelsRaw.forEach((m: any) => {
-        const detail: ModelDetail = { id: m.id, verified: true, permissionDenied: false, maxInputTokens: 200000, maxOutputTokens: 8192 };
+        let outTokens = 4096;
+        if (m.id.includes('3-7-sonnet')) outTokens = 128000;
+        else if (m.id.includes('3-5')) outTokens = 8192;
+
+        const detail: ModelDetail = { 
+            id: m.id, verified: true, permissionDenied: false, 
+            maxInputTokens: 200000, maxOutputTokens: outTokens 
+        };
         allModels.push(detail);
         if (topModelNames.includes(m.id)) topModels.push(detail);
     });

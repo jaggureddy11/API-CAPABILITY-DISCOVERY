@@ -24,7 +24,7 @@ export async function discoverGroq(apiKey: string): Promise<DiscoveryResult> {
     // Active test: Text Generation
     const textRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST', headers,
-        body: JSON.stringify({ model: 'llama3-8b-8192', max_tokens: 1, messages: [{role: 'user', content: 'test'}] })
+        body: JSON.stringify({ model: 'llama-3.1-8b-instant', max_tokens: 1, messages: [{role: 'user', content: 'test'}] })
     });
     capabilities.textGeneration.tested = true;
     if (textRes.ok) capabilities.textGeneration.supported = true;
@@ -46,10 +46,21 @@ export async function discoverGroq(apiKey: string): Promise<DiscoveryResult> {
 
     const allModels: ModelDetail[] = [];
     const topModels: ModelDetail[] = [];
-    const topModelNames = ['llama3-8b-8192', 'llama3-70b-8192', 'mixtral-8x7b-32768', 'gemma-7b-it'];
+    const topModelNames = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768', 'gemma2-9b-it', 'whisper-large-v3'];
+
+    const groqLimits: Record<string, {maxIn: number, maxOut: number}> = {
+        'llama-3.3-70b-versatile': { maxIn: 128000, maxOut: 32768 },
+        'llama-3.1-8b-instant': { maxIn: 128000, maxOut: 8192 },
+        'mixtral-8x7b-32768': { maxIn: 32768, maxOut: 32768 },
+        'gemma2-9b-it': { maxIn: 8192, maxOut: 8192 },
+    };
 
     modelsRaw.forEach((m: any) => {
-        const detail: ModelDetail = { id: m.id, verified: true, permissionDenied: false };
+        const detail: ModelDetail = { 
+            id: m.id, verified: true, permissionDenied: false,
+            maxInputTokens: groqLimits[m.id]?.maxIn,
+            maxOutputTokens: groqLimits[m.id]?.maxOut
+        };
         allModels.push(detail);
         if (topModelNames.includes(m.id)) topModels.push(detail);
     });

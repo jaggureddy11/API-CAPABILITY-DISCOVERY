@@ -20,10 +20,10 @@ export async function discoverGemini(apiKey: string): Promise<DiscoveryResult> {
     const data = await response.json();
     const modelsRaw = data.models || [];
 
-    const topModelNames = ['gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash', 'text-embedding-004', 'imagen-3.0-generate-001', 'veo-2.0-generate-001'];
+    const topModelNames = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-1.5-flash', 'text-embedding-004', 'imagen-3.0-generate-001', 'veo-2.0-generate-001'];
     
     // Active test: Text Generation
-    const textTest = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+    const textTest = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST', headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ contents: [{role: 'user', parts: [{text: 'capability test'}]}]})
     });
