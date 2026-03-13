@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-const GROQ_KEY = process.env.GROQ_KEY;
+const GROQ_KEY = process.env.GROQ_KEY || process.env.GROQ_API_KEY;
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL    = "llama3-8b-8192";
 
@@ -46,7 +46,7 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  if (!GROQ_KEY) {
+  if (!GROQ_KEY || GROQ_KEY.includes("your_token") || GROQ_KEY.includes("yourkey")) {
     return res.status(500).json({ error: "GROQ_KEY not configured" });
   }
 
