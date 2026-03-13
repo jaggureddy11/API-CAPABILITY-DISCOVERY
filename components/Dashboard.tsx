@@ -225,7 +225,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-8 mb-12">
-        <div className="dash-entry-left border border-[rgba(255,255,255,0.15)] bg-black p-6 md:p-8 flex flex-col h-fit">
+        <div className="dash-entry-left border border-[rgba(255,255,255,0.15)] bg-black p-6 md:p-8 flex flex-col overflow-y-auto max-h-[calc(100vh-180px)] custom-scrollbar">
             <form onSubmit={handleDiscover} className="space-y-6 flex flex-col flex-1">
                 <div>
                     <label className="font-display text-[0.65rem] uppercase tracking-[0.2em] text-white/70 block mb-3">Provider</label>
@@ -315,7 +315,7 @@ export default function Dashboard() {
         </div>
 
         {/* RIGHT COLUMN: Results Panel */}
-        <div className="dash-entry-right border border-[rgba(255,255,255,0.15)] bg-black h-full min-h-[500px] flex flex-col relative overflow-hidden">
+        <div className="dash-entry-right border border-[rgba(255,255,255,0.15)] bg-black flex flex-col relative overflow-y-auto max-h-[calc(100vh-180px)] custom-scrollbar">
             
             {/* 1. Empty State */}
             {!loading && !result && !error && (
@@ -345,7 +345,7 @@ export default function Dashboard() {
 
             {/* 4. Results State */}
             {result && !loading && (
-                <div className="flex-1 font-mono text-[0.85rem] leading-loose p-8 overflow-y-auto custom-scrollbar">
+                <div className="flex-1 font-mono text-[0.85rem] leading-loose p-8">
                     
                     <div className="res-stagger res-delay-0 flex flex-col gap-2 pb-8">
                         <div className="flex justify-between items-center w-full">
@@ -455,39 +455,38 @@ export default function Dashboard() {
                             )}
                         </>
                     )}
-                    
-                    {/* COST ESTIMATOR */}
-                    {result.status === 'valid' && result.allModels.length > 0 && (
-                        <>
-                            <div className="res-stagger res-delay-4 w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
-                            <div className="res-stagger res-delay-4 py-8">
-                                <CostEstimator availableModels={result.allModels.map(m => m.id)} />
-                            </div>
-                            
-                            {/* FEATURE 1: ACTION BAR */}
-                            <div className="res-stagger res-delay-5 flex gap-4 w-full border-t border-[rgba(255,255,255,0.08)] pt-8 pb-4">
-                                <button
-                                    onClick={handleCopyReport}
-                                    className="flex-1 bg-white text-black font-display uppercase tracking-[0.15em] text-[0.65rem] border border-[rgba(255,255,255,0.2)] hover:bg-black hover:text-white transition-colors rounded-none outline-none overflow-hidden min-h-[48px]"
-                                >
-                                    <div className="flip-wrapper">
-                                        <span className={`flip-text py-3 px-4 ${copied ? 'out' : ''}`}>COPY REPORT</span>
-                                        <span className={`flip-text py-3 px-4 ${copied ? '' : 'out'}`} style={copied ? { transform: 'rotateX(0deg)', opacity: 1 } : { transform: 'rotateX(-90deg)', opacity: 0 }}>✓ COPIED</span>
-                                    </div>
-                                </button>
-                                <button
-                                    onClick={handleExportJson}
-                                    className="flex-1 bg-transparent text-white font-display uppercase tracking-[0.15em] text-[0.65rem] py-3 px-4 border border-white hover:bg-white hover:text-black transition-colors rounded-none outline-none min-h-[48px]"
-                                >
-                                    EXPORT JSON
-                                </button>
-                            </div>
-                        </>
-                    )}
                 </div>
             )}
         </div>
       </div>
+
+      {/* FULL WIDTH COMPONENTS */}
+      {result && !loading && result.status === 'valid' && result.allModels.length > 0 && (
+          <div className="w-full flex flex-col mb-12">
+              <div className="res-stagger res-delay-4 mb-4">
+                  <CostEstimator availableModels={result.allModels.map(m => m.id)} />
+              </div>
+              
+              {/* FEATURE 1: ACTION BAR */}
+              <div className="res-stagger res-delay-5 flex gap-4 w-full pt-4">
+                  <button
+                      onClick={handleCopyReport}
+                      className="flex-1 bg-white text-black font-display uppercase tracking-[0.15em] text-[0.65rem] border border-[rgba(255,255,255,0.2)] hover:bg-black hover:text-white transition-colors rounded-none outline-none overflow-hidden min-h-[48px]"
+                  >
+                      <div className="flip-wrapper">
+                          <span className={`flip-text py-3 px-4 ${copied ? 'out' : ''}`}>COPY REPORT</span>
+                          <span className={`flip-text py-3 px-4 ${copied ? '' : 'out'}`} style={copied ? { transform: 'rotateX(0deg)', opacity: 1 } : { transform: 'rotateX(-90deg)', opacity: 0 }}>✓ COPIED</span>
+                      </div>
+                  </button>
+                  <button
+                      onClick={handleExportJson}
+                      className="flex-1 bg-transparent text-white font-display uppercase tracking-[0.15em] text-[0.65rem] py-3 px-4 border border-white hover:bg-white hover:text-black transition-colors rounded-none outline-none min-h-[48px]"
+                  >
+                      EXPORT JSON
+                  </button>
+              </div>
+          </div>
+      )}
 
       {/* FOOTER BADGE */}
       <div className="flex justify-center w-full mt-8">
@@ -496,14 +495,16 @@ export default function Dashboard() {
               <span className="font-sans font-light text-[0.8rem] text-white/50">Your key was never sent to our servers. Processed in-browser and discarded.</span>
           </div>
       </div>
-{/* 
         <style dangerouslySetInnerHTML={{ __html: `
-            .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+            .custom-scrollbar {
+                scrollbar-width: thin;
+                scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar { width: 4px; }
             .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-            .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 6px; }
-            .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
-        ` }} /> 
-*/}
+            .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+        ` }} />
 
     </div>
   );
