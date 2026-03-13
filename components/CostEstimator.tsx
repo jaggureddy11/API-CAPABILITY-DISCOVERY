@@ -107,7 +107,7 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
 
   const handleAskAI = async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!aiCostQuery.trim() || !process.env.NEXT_PUBLIC_GROQ_KEY) return;
+      if (!aiCostQuery.trim()) return;
       setAiCostQueryLoading(true);
       setAiCostQueryExplanation("");
       try {
@@ -221,7 +221,7 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
         <div className={`ce-body${expanded ? " open" : ""}`}>
           <div className="ce-inner">
 
-            {process.env.NEXT_PUBLIC_GROQ_KEY && (
+            <>
               <div className="mb-6">
                 <span className="font-display text-[9px] tracking-[0.2em] text-white/40 block mb-3 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>ASK AI</span>
                 <form onSubmit={handleAskAI} className="flex flex-col gap-2">
@@ -248,7 +248,7 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
                   )}
                 </form>
               </div>
-            )}
+            </>
 
             {pricing && (
               <div className="ce-badges">
