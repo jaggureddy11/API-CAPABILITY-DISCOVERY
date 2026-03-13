@@ -323,9 +323,8 @@ export default function LandingPage() {
             color: var(--bg);
         }
         .btn.invert:hover {
-            background: transparent;
-            color: var(--fg);
-            border-color: var(--fg);
+            background: rgba(255, 255, 255, 0.85);
+            color: var(--bg);
         }
 
         /* ANIMATIONS */
