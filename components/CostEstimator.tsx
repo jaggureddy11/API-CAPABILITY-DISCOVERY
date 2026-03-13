@@ -241,7 +241,7 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
                     >→</button>
                   </div>
                   {aiCostQueryLoading && <div className="mt-1"><AILoading /></div>}
-                  {aiCostQueryExplanation && !aiCostQueryLoading && (
+                  {aiCostQueryExplanation && aiCostQueryExplanation !== "one sentence" && !aiCostQueryLoading && (
                       <div className="font-sans font-light text-[10px] text-white/35 italic animate-in fade-in duration-500 mt-1">
                           {aiCostQueryExplanation}
                       </div>
@@ -255,8 +255,8 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
                 <span className="ce-badge hi">{PROVIDER_LABELS[pricing.provider]}</span>
                 <span className="ce-badge hi">{pricing.tier.toUpperCase()}</span>
                 <span className="ce-badge">CTX {pricing.context}</span>
-                <span className="ce-badge">IN \${pricing.input}/1M</span>
-                <span className="ce-badge">OUT \${pricing.output}/1M</span>
+                <span className="ce-badge">IN ${pricing.input}/1M</span>
+                <span className="ce-badge">OUT ${pricing.output}/1M</span>
               </div>
             )}
 
