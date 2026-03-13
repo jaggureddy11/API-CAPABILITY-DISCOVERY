@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 const GROQ_KEY = process.env.GROQ_KEY || process.env.GROQ_API_KEY;
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const MODEL    = "llama3-8b-8192";
+const MODEL    = "llama-3.1-8b-instant";
 
 async function callGroq(prompt: string): Promise<string> {
   const res = await fetch(GROQ_URL, {
