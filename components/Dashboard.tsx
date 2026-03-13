@@ -277,7 +277,7 @@ export default function Dashboard() {
       <div className="mb-[32px] text-center md:text-left flex flex-col items-center md:items-start w-full">
           <span className="font-display text-[9px] uppercase text-[rgba(255,255,255,0.40)] tracking-[0.25em] mb-[12px] block">Capability Discovery</span>
           <h1 className="font-serif font-bold tracking-tighter leading-none m-[8px_0_6px_0] text-[clamp(40px,4vw,64px)]">
-              Analyze Your Key.
+              ANALYZE YOUR KEY.
           </h1>
           <p className="font-sans text-[rgba(255,255,255,0.65)] font-light text-[15px] mb-[32px]">
               Your key never touches our servers. Results are instant and discarded immediately.
