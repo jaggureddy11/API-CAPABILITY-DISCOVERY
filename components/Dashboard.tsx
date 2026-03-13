@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ProviderType, DiscoveryResult, CapabilityStatus } from '../types';
+import CostEstimator from './CostEstimator';
 
 export default function Dashboard() {
   const [apiKey, setApiKey] = useState('');
@@ -278,6 +279,14 @@ export default function Dashboard() {
                                     </div>
                                 </>
                             )}
+                        </>
+                    )}
+                    
+                    {/* COST ESTIMATOR */}
+                    {result.status === 'valid' && result.allModels.length > 0 && (
+                        <>
+                            <div className="border-t border-[rgba(255,255,255,0.1)] mb-4"></div>
+                            <CostEstimator availableModels={result.allModels.map(m => m.id)} />
                         </>
                     )}
                 </div>
