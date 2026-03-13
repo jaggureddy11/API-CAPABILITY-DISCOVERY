@@ -22,11 +22,16 @@ async function callHF(prompt: string, modelUrl = PRIMARY_MODEL): Promise<string>
         max_new_tokens: 350,
         temperature: 0.4,
         return_full_text: false
+      },
+      options: {
+        wait_for_model: true
       }
     })
   });
 
   if (!res.ok) {
+    const errorText = await res.text().catch(() => "Unknown error");
+    console.warn(`APILens HF API Error (${modelUrl}): ${res.status} ${errorText}`);
     // Try backup model
     if (modelUrl === PRIMARY_MODEL) {
       return callHF(prompt, BACKUP_MODEL);
