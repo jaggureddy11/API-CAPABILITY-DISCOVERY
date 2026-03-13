@@ -345,79 +345,98 @@ export default function Dashboard() {
 
             {/* 4. Results State */}
             {result && !loading && (
-                <div className="flex-1 font-mono text-[0.85rem] leading-loose p-6 sm:p-8 overflow-y-auto custom-scrollbar">
+                <div className="flex-1 font-mono text-[0.85rem] leading-loose p-8 overflow-y-auto custom-scrollbar">
                     
-                    <div className="res-stagger res-delay-0 flex justify-between items-end border-b border-[rgba(255,255,255,0.15)] pb-6 mb-6">
-                        <div className="space-y-2">
-                            <div className="flex justify-between w-[240px]">
-                                <span className="text-white/40">PROVIDER</span>
-                                <span className="text-white font-bold">{providerNames[result.provider] || result.provider}</span>
-                            </div>
-                            <div className="flex justify-between w-[240px]">
-                                <span className="text-white/40">STATUS</span>
-                                <span className={`text-white flex items-center gap-2 ${result.status === 'valid' ? 'status-pulse' : 'status-invalid'}`}>
-                                    <span className={`w-2 h-2 rounded-full ${result.status === 'valid' ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'bg-red-500 shadow-[0_0_8px_rgba(255,0,0,0.8)]'}`}></span> 
-                                    {result.status === 'valid' ? 'VALID' : 'INVALID'}
-                                </span>
-                            </div>
+                    <div className="res-stagger res-delay-0 flex flex-col gap-2 pb-8">
+                        <div className="flex justify-between items-center w-full">
+                            <span className="text-white/40">PROVIDER</span>
+                            <span className="text-white font-bold">{providerNames[result.provider] || result.provider}</span>
+                        </div>
+                        <div className="flex justify-between items-center w-full">
+                            <span className="text-white/40">STATUS</span>
+                            <span className={`text-white/90 text-[0.9rem] flex items-center gap-2 ${result.status === 'valid' ? 'status-pulse' : 'status-invalid'}`}>
+                                <span className={`w-2 h-2 rounded-full ${result.status === 'valid' ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'bg-red-500 shadow-[0_0_8px_rgba(255,0,0,0.8)]'}`}></span> 
+                                {result.status === 'valid' ? 'VALID' : 'INVALID'}
+                            </span>
                         </div>
                     </div>
 
                     {result.status === 'valid' && (
                         <>
                             {/* CAPABILITIES */}
-                            <div className="res-stagger res-delay-1 mb-10">
-                                <span className="font-display text-[0.7rem] tracking-[0.2em] text-white/50 block mb-4 uppercase">Capabilities</span>
-                                <div className="flex flex-col gap-2">
-                                    <div className="res-cap-row"><CapabilityRow name="Text Generation" cap={result.capabilities.textGeneration} /></div>
-                                    <div className="res-cap-row"><CapabilityRow name="Embeddings" cap={result.capabilities.embeddings} /></div>
-                                    <div className="res-cap-row"><CapabilityRow name="Image Generation" cap={result.capabilities.imageGeneration} /></div>
-                                    <div className="res-cap-row"><CapabilityRow name="Audio Processing" cap={result.capabilities.audioGeneration} /></div>
-                                    <div className="res-cap-row"><CapabilityRow name="Video Generation" cap={result.capabilities.videoGeneration} /></div>
+                            <div className="w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
+                            <div className="res-stagger res-delay-1 py-8">
+                                <span className="font-display text-[0.7rem] tracking-[0.2em] text-white/50 block mb-5 uppercase">Capabilities</span>
+                                <div className="flex flex-col">
+                                    <div className="res-cap-row border-b border-[rgba(255,255,255,0.05)] last:border-0"><CapabilityRow name="Text Generation" cap={result.capabilities.textGeneration} /></div>
+                                    <div className="res-cap-row border-b border-[rgba(255,255,255,0.05)] last:border-0"><CapabilityRow name="Embeddings" cap={result.capabilities.embeddings} /></div>
+                                    <div className="res-cap-row border-b border-[rgba(255,255,255,0.05)] last:border-0"><CapabilityRow name="Image Generation" cap={result.capabilities.imageGeneration} /></div>
+                                    <div className="res-cap-row border-b border-[rgba(255,255,255,0.05)] last:border-0"><CapabilityRow name="Audio Processing" cap={result.capabilities.audioGeneration} /></div>
+                                    <div className="res-cap-row border-b border-[rgba(255,255,255,0.05)] last:border-0"><CapabilityRow name="Video Generation" cap={result.capabilities.videoGeneration} /></div>
                                 </div>
                             </div>
 
-                            <div className="res-stagger res-delay-2 border-t border-[rgba(255,255,255,0.1)] mb-8"></div>
-
                             {/* MODELS */}
-                            <div className="res-stagger res-delay-2 mb-10">
-                                <span className="font-display text-[0.7rem] tracking-[0.2em] text-white/50 block mb-4 uppercase">Models</span>
-                                <div className="flex flex-col gap-2">
-                                    {result.topModels.map(m => (
-                                        <div key={m.id} className="res-model-row flex justify-between items-center w-full group transition-colors hover:bg-white/5 -mx-2 px-2 py-1 rounded-sm">
-                                            <div className="flex items-center gap-4 flex-1">
-                                                {m.permissionDenied ? <span className="cap-cross text-white/40">✗</span> : <span className="cap-check text-white">✓</span>}
-                                                <span className={m.permissionDenied ? 'text-white/40 line-through' : 'text-white font-semibold'}>{m.id}</span>
-                                            </div>
-                                            <div className="flex items-center gap-6 text-sm flex-1 justify-end">
-                                                {m.permissionDenied ? (
-                                                    <span className="font-display text-[0.6rem] tracking-wider bg-[rgba(255,255,255,0.05)] text-white/40 px-2 py-0.5 uppercase">Denied</span>
-                                                ) : (
-                                                    <>
-                                                        {m.maxInputTokens && <span className="text-white/60 w-[60px] text-right">{Math.round(m.maxInputTokens / 1000)}k</span>}
+                            <div className="res-stagger res-delay-2 w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
+                            <div className="res-stagger res-delay-2 py-8">
+                                <span className="font-display text-[0.7rem] tracking-[0.2em] text-white/50 block mb-5 uppercase">Models</span>
+                                
+                                {result.topModels.filter(m => !m.permissionDenied).length > 0 && (
+                                    <div className="mb-6">
+                                        <div className="font-display text-[8px] text-white/30 uppercase tracking-widest mb-2">AUTHORIZED</div>
+                                        <div className="flex flex-col">
+                                            {result.topModels.filter(m => !m.permissionDenied).map(m => (
+                                                <div key={m.id} className="res-model-row flex justify-between items-center w-full py-3 border-b border-[rgba(255,255,255,0.05)] last:border-0">
+                                                    <div className="flex items-center flex-1">
+                                                        <span className="cap-check text-white text-lg mr-3">✓</span>
+                                                        <span className="text-white font-mono text-left">{m.id}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-6 text-sm flex-1 justify-end text-white/40">
+                                                        {m.maxInputTokens && <span className="w-[60px] text-right">{Math.round(m.maxInputTokens / 1000)}k</span>}
                                                         {(provider === 'openai' || provider === 'auto') && (m.id.includes('4') || m.id.includes('mini')) && (
-                                                            <span className="text-white/60 w-[80px] text-right hidden sm:block">${m.id.includes('mini') ? '0.15' : '5'}/1M</span>
+                                                            <span className="w-[80px] text-right hidden sm:block">${m.id.includes('mini') ? '0.15' : '5'}/1M</span>
                                                         )}
-                                                    </>
-                                                )}
-                                            </div>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))}
-                                    {result.allModels.length > result.topModels.length && (
-                                        <div className="text-white/30 text-xs mt-2 italic px-2">
-                                            + {result.allModels.length - result.topModels.length} older/deperecated models unlocked.
+                                    </div>
+                                )}
+
+                                {result.topModels.filter(m => m.permissionDenied).length > 0 && (
+                                    <div>
+                                        <div className="w-full h-[1px] bg-[rgba(255,255,255,0.08)] my-4"></div>
+                                        <div className="font-display text-[8px] text-white/20 uppercase tracking-widest mb-2">RESTRICTED</div>
+                                        <div className="flex flex-col opacity-25">
+                                            {result.topModels.filter(m => m.permissionDenied).map(m => (
+                                                <div key={m.id} className="res-model-row flex justify-between items-center w-full py-3 border-b border-[rgba(255,255,255,0.05)] last:border-0">
+                                                    <div className="flex items-center flex-1">
+                                                        <span className="cap-cross text-white/40 text-lg mr-3">✗</span>
+                                                        <span className="text-white/40 font-mono text-left line-through">{m.id}</span>
+                                                    </div>
+                                                    <div className="flex flex-1 justify-end items-center">
+                                                        <span className="font-display text-[0.6rem] tracking-wider border border-white/20 text-white/40 px-1 py-0.5 uppercase">Denied</span>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
+
+                                {result.allModels.length > result.topModels.length && (
+                                    <div className="text-white/20 mt-4 italic font-sans font-light">
+                                        + {result.allModels.length - result.topModels.length} older models
+                                    </div>
+                                )}
                             </div>
 
                             {/* RATE LIMITS */}
                             {(result.rateLimits?.requestsPerMinute || result.rateLimits?.tokensPerMinute) && (
                                 <>
-                                    <div className="res-stagger res-delay-3 border-t border-[rgba(255,255,255,0.1)] mb-8"></div>
-                                    <div className="res-stagger res-delay-3">
-                                        <span className="font-display text-[0.7rem] tracking-[0.2em] text-white/50 block mb-4 uppercase">Rate Limits</span>
-                                        <div className="flex flex-col gap-2">
+                                    <div className="res-stagger res-delay-3 w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
+                                    <div className="res-stagger res-delay-3 py-8">
+                                        <span className="font-display text-[0.7rem] tracking-[0.2em] text-white/50 block mb-5 uppercase">Rate Limits</span>
+                                        <div className="flex flex-col gap-3">
                                             {result.rateLimits.requestsPerMinute && (
                                                 <div className="flex justify-between w-full max-w-[300px]">
                                                     <span className="text-white/60">Requests / min</span>
@@ -440,25 +459,25 @@ export default function Dashboard() {
                     {/* COST ESTIMATOR */}
                     {result.status === 'valid' && result.allModels.length > 0 && (
                         <>
-                            <div className="res-stagger res-delay-4 border-t border-[rgba(255,255,255,0.1)] mb-4"></div>
-                            <div className="res-stagger res-delay-4">
+                            <div className="res-stagger res-delay-4 w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
+                            <div className="res-stagger res-delay-4 py-8">
                                 <CostEstimator availableModels={result.allModels.map(m => m.id)} />
                             </div>
                             
                             {/* FEATURE 1: ACTION BAR */}
-                            <div className="res-stagger res-delay-5 flex gap-4 w-full mt-4">
+                            <div className="res-stagger res-delay-5 flex gap-4 w-full border-t border-[rgba(255,255,255,0.08)] pt-8 pb-4">
                                 <button
                                     onClick={handleCopyReport}
-                                    className="flex-1 bg-black text-white font-display uppercase tracking-widest text-[0.65rem] py-3 px-4 border border-[rgba(255,255,255,0.2)] hover:bg-white hover:text-black transition-colors rounded-none outline-none overflow-hidden h-11"
+                                    className="flex-1 bg-white text-black font-display uppercase tracking-[0.15em] text-[0.65rem] border border-[rgba(255,255,255,0.2)] hover:bg-black hover:text-white transition-colors rounded-none outline-none overflow-hidden min-h-[48px]"
                                 >
                                     <div className="flip-wrapper">
-                                        <span className={`flip-text ${copied ? 'out' : ''}`}>COPY REPORT</span>
-                                        <span className={`flip-text ${copied ? '' : 'out'}`} style={copied ? { transform: 'rotateX(0deg)', opacity: 1 } : { transform: 'rotateX(-90deg)', opacity: 0 }}>✓ COPIED</span>
+                                        <span className={`flip-text py-3 px-4 ${copied ? 'out' : ''}`}>COPY REPORT</span>
+                                        <span className={`flip-text py-3 px-4 ${copied ? '' : 'out'}`} style={copied ? { transform: 'rotateX(0deg)', opacity: 1 } : { transform: 'rotateX(-90deg)', opacity: 0 }}>✓ COPIED</span>
                                     </div>
                                 </button>
                                 <button
                                     onClick={handleExportJson}
-                                    className="flex-1 bg-black text-white font-display uppercase tracking-widest text-[0.65rem] py-3 px-4 border border-[rgba(255,255,255,0.2)] hover:bg-white hover:text-black transition-colors rounded-none outline-none h-11"
+                                    className="flex-1 bg-transparent text-white font-display uppercase tracking-[0.15em] text-[0.65rem] py-3 px-4 border border-white hover:bg-white hover:text-black transition-colors rounded-none outline-none min-h-[48px]"
                                 >
                                     EXPORT JSON
                                 </button>
@@ -471,10 +490,10 @@ export default function Dashboard() {
       </div>
 
       {/* FOOTER BADGE */}
-      <div className="flex justify-center w-full">
-          <div className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-full border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)]">
-              <span className="text-[1rem]">🔒</span>
-              <span className="font-sans font-light text-[0.8rem] text-white/70">Your key was never sent to our servers. Processed in-browser and discarded.</span>
+      <div className="flex justify-center w-full mt-8">
+          <div className="inline-flex items-center justify-center px-4 py-3 rounded-full border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)]">
+              <span className="mr-2 text-[14px]">🔒</span>
+              <span className="font-sans font-light text-[0.8rem] text-white/50">Your key was never sent to our servers. Processed in-browser and discarded.</span>
           </div>
       </div>
 {/* 
@@ -493,9 +512,11 @@ export default function Dashboard() {
 function CapabilityRow({ name, cap }: { name: string, cap: CapabilityStatus }) {
     if (!cap.tested) {
         return (
-            <div className="flex items-center gap-4 py-1">
-                <span className="text-white/20">−</span>
-                <span className="text-white/40 flex-1">{name}</span>
+            <div className="flex justify-between items-center w-full py-[14px]">
+                <div className="flex items-center flex-1">
+                    <span className="text-white/20 text-lg mr-3">−</span>
+                    <span className="text-white/40">{name}</span>
+                </div>
                 <span className="font-display text-[0.6rem] tracking-wider text-white/20 uppercase">Untested</span>
             </div>
         )
@@ -503,25 +524,29 @@ function CapabilityRow({ name, cap }: { name: string, cap: CapabilityStatus }) {
 
     if (!cap.supported) {
         return (
-            <div className="flex items-center gap-4 py-1">
-                <span className="cap-cross text-white/40 z-[1]">✗</span>
-                <span className="text-white/60 flex-1 relative group cursor-help transition-all duration-300">
-                    {name}
-                    {cap.error && (
-                        <div className="absolute left-0 bottom-full mb-2 bg-white text-black text-xs p-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 border border-white">
-                            HTTP {cap.error}
-                        </div>
-                    )}
-                </span>
-                <span className="font-display text-[0.6rem] tracking-wider bg-[rgba(255,255,255,0.05)] text-white/40 px-2 py-0.5 uppercase z-[1]">Denied</span>
+            <div className="flex justify-between items-center w-full py-[14px] relative group cursor-help transition-all duration-300">
+                <div className="flex items-center flex-1">
+                    <span className="cap-cross text-white/40 text-lg mr-3 z-[1]">✗</span>
+                    <span className="text-white/60">
+                        {name}
+                        {cap.error && (
+                            <div className="absolute left-0 bottom-full mb-2 bg-white text-black text-xs p-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 border border-white">
+                                HTTP {cap.error}
+                            </div>
+                        )}
+                    </span>
+                </div>
+                <span className="font-display text-[0.6rem] tracking-wider border border-white/20 text-white/40 px-1 py-0.5 uppercase z-[1]">Denied</span>
             </div>
         )
     }
 
     return (
-        <div className="flex items-center gap-4 py-1">
-            <span className="cap-check text-white">✓</span>
-            <span className="text-white font-medium flex-1">{name}</span>
+        <div className="flex justify-between items-center w-full py-[14px]">
+            <div className="flex items-center flex-1">
+                <span className="cap-check text-white text-lg mr-3">✓</span>
+                <span className="text-white font-medium">{name}</span>
+            </div>
         </div>
     )
 }
