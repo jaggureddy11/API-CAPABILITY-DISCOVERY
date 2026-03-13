@@ -58,9 +58,9 @@ export default async function handler(
 
     if (feature === "summary") {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const granted = data.capabilities?.filter((c:any) => c.supported).map((c:any) => c.name).join(", ") ?? "";
+      const granted = data.capabilities ? Object.values(data.capabilities).filter((c:any) => c.supported).map((c:any) => c.name).join(", ") : "";
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const denied = data.capabilities?.filter((c:any) => !c.supported).map((c:any) => c.name).join(", ") ?? "";
+      const denied = data.capabilities ? Object.values(data.capabilities).filter((c:any) => !c.supported).map((c:any) => c.name).join(", ") : "";
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const models = data.models?.slice(0,5).map((m:any) => m.id).join(", ") ?? "";
 
@@ -80,9 +80,9 @@ Rate limits: ${JSON.stringify(data.rateLimits ?? {})}`;
 
     else if (feature === "advisor") {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const granted = data.capabilities?.filter((c:any) => c.supported).map((c:any) => c.name).join(", ") ?? "";
+      const granted = data.capabilities ? Object.values(data.capabilities).filter((c:any) => c.supported).map((c:any) => c.name).join(", ") : "";
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const denied = data.capabilities?.filter((c:any) => !c.supported).map((c:any) => c.name).join(", ") ?? "";
+      const denied = data.capabilities ? Object.values(data.capabilities).filter((c:any) => !c.supported).map((c:any) => c.name).join(", ") : "";
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const models = data.models?.slice(0,5).map((m:any) => m.id).join(", ") ?? "";
 
