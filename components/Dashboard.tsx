@@ -275,8 +275,8 @@ export default function Dashboard() {
       
       {/* PAGE HEADER */}
       <div className="mb-16 text-center md:text-left flex flex-col items-center md:items-start">
-          <span className="font-display text-[0.65rem] uppercase tracking-[0.2em] text-white/50 mb-6 block">Capability Discovery</span>
-          <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tighter leading-none mb-6">
+          <span className="font-display text-[10px] uppercase text-[rgba(255,255,255,0.35)] tracking-[0.25em] mb-[12px] block">Capability Discovery</span>
+          <h1 className="font-serif font-bold tracking-tighter leading-none mb-6 text-[clamp(36px,5vw,56px)]">
               Analyze Your Key.
           </h1>
           <p className="font-sans text-white/60 font-light text-lg max-w-lg">
@@ -405,17 +405,17 @@ export default function Dashboard() {
 
             {/* 4. Results State */}
             {result && !loading && (
-                <div className="flex-1 font-mono text-[0.85rem] leading-loose p-8">
+                <div className="flex-1 font-mono text-[14px] leading-[1.6] px-[16px] xl:px-[28px] py-[28px]">
                     
-                    <div className="res-stagger res-delay-0 flex flex-col gap-2 pb-8">
+                    <div className="res-stagger res-delay-0 flex flex-col gap-2 pb-[28px]">
                         <div className="flex justify-between items-center w-full">
-                            <span className="text-white/40">PROVIDER</span>
-                            <span className="text-white font-bold">{providerNames[result.provider] || result.provider}</span>
+                            <span className="font-display text-[9px] uppercase tracking-[0.2em] text-white/40">PROVIDER</span>
+                            <span className="font-sans font-semibold text-[15px] text-white">{providerNames[result.provider] || result.provider}</span>
                         </div>
                         <div className="flex justify-between items-center w-full">
-                            <span className="text-white/40">STATUS</span>
-                            <span className={`text-white/90 text-[0.9rem] flex items-center gap-2 ${result.status === 'valid' ? 'status-pulse' : 'status-invalid'}`}>
-                                <span className={`w-2 h-2 rounded-full ${result.status === 'valid' ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'bg-red-500 shadow-[0_0_8px_rgba(255,0,0,0.8)]'}`}></span> 
+                            <span className="font-display text-[9px] uppercase tracking-[0.2em] text-white/40">STATUS</span>
+                            <span className={`text-[15px] font-semibold text-white/90 flex items-center gap-2 ${result.status === 'valid' ? 'status-pulse' : 'status-invalid'}`}>
+                                <span className={`w-[8px] h-[8px] rounded-full ${result.status === 'valid' ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'bg-red-500 shadow-[0_0_8px_rgba(255,0,0,0.8)]'}`}></span> 
                                 {result.status === 'valid' ? 'VALID' : 'INVALID'}
                             </span>
                         </div>
@@ -425,13 +425,13 @@ export default function Dashboard() {
                         <>
                             <>
                                 <>
-                                    <div className="w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
-                                    <div className="res-stagger res-delay-1 py-8 flex flex-col items-start min-h-[100px]">
-                                        <span className="font-display text-[9px] tracking-[0.2em] text-white/40 block mb-5 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>AI Summary</span>
+                                    <div className="w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
+                                    <div className="res-stagger res-delay-1 py-[28px] flex flex-col items-start min-h-[100px]">
+                                        <span className="font-display text-[9px] tracking-[0.2em] text-white/40 block mb-[8px] uppercase" style={{ fontFamily: "Syne, sans-serif" }}>AI Summary</span>
                                         {aiSummaryLoading ? (
                                             <AILoading />
                                         ) : aiSummary ? (
-                                            <p className="font-sans font-light text-[14px] text-white/70 leading-[1.7] animate-in fade-in duration-500 m-0">
+                                            <p className="font-sans font-light text-[15px] text-[rgba(255,255,255,0.75)] leading-[1.8] w-full max-w-full mt-[8px] p-0 animate-in fade-in duration-500 m-0">
                                                 {aiSummary}
                                             </p>
                                         ) : (
@@ -448,9 +448,9 @@ export default function Dashboard() {
                             </>
 
                             {/* CAPABILITIES */}
-                            <div className="w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
-                            <div className="res-stagger res-delay-1 py-8">
-                                <span className="font-display text-[0.7rem] tracking-[0.2em] text-white/50 block mb-5 uppercase">Capabilities</span>
+                            <div className="w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
+                            <div className="res-stagger res-delay-1 py-[28px]">
+                                <span className="font-display text-[9px] uppercase tracking-[0.2em] text-white/40 block mb-[16px]">Capabilities</span>
                                 <div className="flex flex-col">
                                     <div className="res-cap-row border-b border-[rgba(255,255,255,0.05)] last:border-0"><CapabilityRow name="Text Generation" cap={result.capabilities.textGeneration} /></div>
                                     <div className="res-cap-row border-b border-[rgba(255,255,255,0.05)] last:border-0"><CapabilityRow name="Embeddings" cap={result.capabilities.embeddings} /></div>
@@ -461,21 +461,21 @@ export default function Dashboard() {
                             </div>
 
                             {/* MODELS */}
-                            <div className="res-stagger res-delay-2 w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
-                            <div className="res-stagger res-delay-2 py-8">
-                                <span className="font-display text-[0.7rem] tracking-[0.2em] text-white/50 block mb-5 uppercase">Models</span>
+                            <div className="res-stagger res-delay-2 w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
+                            <div className="res-stagger res-delay-2 py-[28px]">
+                                <span className="font-display text-[9px] uppercase tracking-[0.2em] text-white/40 block mb-[16px]">Models</span>
                                 
                                 {result.topModels.filter(m => !m.permissionDenied).length > 0 && (
                                     <div className="mb-6">
                                         <div className="font-display text-[8px] text-white/30 uppercase tracking-widest mb-2">AUTHORIZED</div>
                                         <div className="flex flex-col">
                                             {result.topModels.filter(m => !m.permissionDenied).map(m => (
-                                                <div key={m.id} className="res-model-row flex justify-between items-center w-full py-3 border-b border-[rgba(255,255,255,0.05)] last:border-0">
+                                                <div key={m.id} className="res-model-row flex justify-between items-center w-full py-[12px] border-b border-[rgba(255,255,255,0.05)] last:border-0">
                                                     <div className="flex items-center flex-1">
-                                                        <span className="cap-check text-white text-lg mr-3">✓</span>
-                                                        <span className="text-white font-mono text-left">{m.id}</span>
+                                                        <span className="cap-check text-[rgba(255,255,255,0.8)] text-lg mr-3">✓</span>
+                                                        <span className="text-[rgba(255,255,255,0.8)] font-mono text-[13px] text-left">{m.id}</span>
                                                     </div>
-                                                    <div className="flex items-center gap-6 text-sm flex-1 justify-end text-white/40">
+                                                    <div className="flex items-center gap-6 flex-1 justify-end font-mono text-[12px] text-white/40">
                                                         {m.maxInputTokens && <span className="w-[60px] text-right">{Math.round(m.maxInputTokens / 1000)}k</span>}
                                                         {(provider === 'openai' || provider === 'auto') && (m.id.includes('4') || m.id.includes('mini')) && (
                                                             <span className="w-[80px] text-right hidden sm:block">${m.id.includes('mini') ? '0.15' : '5'}/1M</span>
@@ -489,14 +489,14 @@ export default function Dashboard() {
 
                                 {result.topModels.filter(m => m.permissionDenied).length > 0 && (
                                     <div>
-                                        <div className="w-full h-[1px] bg-[rgba(255,255,255,0.08)] my-4"></div>
+                                        <div className="w-full h-[1px] bg-[rgba(255,255,255,0.07)] my-4"></div>
                                         <div className="font-display text-[8px] text-white/20 uppercase tracking-widest mb-2">RESTRICTED</div>
                                         <div className="flex flex-col opacity-25">
                                             {result.topModels.filter(m => m.permissionDenied).map(m => (
-                                                <div key={m.id} className="res-model-row flex justify-between items-center w-full py-3 border-b border-[rgba(255,255,255,0.05)] last:border-0">
+                                                <div key={m.id} className="res-model-row flex justify-between items-center w-full py-[12px] border-b border-[rgba(255,255,255,0.05)] last:border-0">
                                                     <div className="flex items-center flex-1">
                                                         <span className="cap-cross text-white/40 text-lg mr-3">✗</span>
-                                                        <span className="text-white/40 font-mono text-left line-through">{m.id}</span>
+                                                        <span className="text-white/40 font-mono text-[13px] text-left line-through">{m.id}</span>
                                                     </div>
                                                     <div className="flex flex-1 justify-end items-center">
                                                         <span className="font-display text-[0.6rem] tracking-wider border border-white/20 text-white/40 px-1 py-0.5 uppercase">Denied</span>
@@ -517,20 +517,20 @@ export default function Dashboard() {
                             {/* RATE LIMITS */}
                             {(result.rateLimits?.requestsPerMinute || result.rateLimits?.tokensPerMinute) && (
                                 <>
-                                    <div className="res-stagger res-delay-3 w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
-                                    <div className="res-stagger res-delay-3 py-8">
-                                        <span className="font-display text-[0.7rem] tracking-[0.2em] text-white/50 block mb-5 uppercase">Rate Limits</span>
+                                    <div className="res-stagger res-delay-3 w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
+                                    <div className="res-stagger res-delay-3 py-[28px]">
+                                        <span className="font-display text-[9px] uppercase tracking-[0.2em] text-white/40 block mb-[16px]">Rate Limits</span>
                                         <div className="flex flex-col gap-3">
                                             {result.rateLimits.requestsPerMinute && (
-                                                <div className="flex justify-between w-full max-w-[300px]">
-                                                    <span className="text-white/60">Requests / min</span>
-                                                    <span className="text-white">{result.rateLimits.requestsPerMinute.toLocaleString()}</span>
+                                                <div className="flex justify-between items-center w-full max-w-[300px]">
+                                                    <span className="text-[14px] text-white/60">Requests / min</span>
+                                                    <span className="text-[14px] text-white">{result.rateLimits.requestsPerMinute.toLocaleString()}</span>
                                                 </div>
                                             )}
                                             {result.rateLimits.tokensPerMinute && (
-                                                <div className="flex justify-between w-full max-w-[300px]">
-                                                    <span className="text-white/60">Tokens / min</span>
-                                                    <span className="text-white">{result.rateLimits.tokensPerMinute.toLocaleString()}</span>
+                                                <div className="flex justify-between items-center w-full max-w-[300px]">
+                                                    <span className="text-[14px] text-white/60">Tokens / min</span>
+                                                    <span className="text-[14px] text-white">{result.rateLimits.tokensPerMinute.toLocaleString()}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -540,24 +540,24 @@ export default function Dashboard() {
 
                             <>
                                 <>
-                                    <div className="res-stagger res-delay-4 w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
-                                    <div className="res-stagger res-delay-4 py-8">
-                                        <span className="font-display text-[9px] tracking-[0.2em] text-white/40 block mb-5 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>AI Advisor</span>
+                                    <div className="res-stagger res-delay-4 w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
+                                    <div className="res-stagger res-delay-4 py-[28px]">
+                                        <span className="font-display text-[9px] uppercase tracking-[0.2em] text-white/40 block mb-[16px]">AI Advisor</span>
                                         {advisorLoading ? (
                                             <AILoading />
                                         ) : advisorCards.length > 0 ? (
-                                            <div className="flex flex-col md:flex-row gap-4 animate-in fade-in duration-500">
+                                            <div className="flex flex-col md:flex-row gap-[12px] animate-in fade-in w-full duration-500">
                                                 {advisorCards.map((card, idx) => (
                                                     <div 
                                                         key={idx} 
-                                                        className="flex-1 border border-[rgba(255,255,255,0.15)] p-4 bg-black hover:border-[rgba(255,255,255,0.4)] transition-colors duration-200"
+                                                        className="flex-1 w-full flex flex-col border border-[rgba(255,255,255,0.15)] p-[20px] bg-black hover:border-[rgba(255,255,255,0.4)] transition-colors duration-200 min-h-[140px]"
                                                         style={{ animationDelay: `${idx * 80}ms` }}
                                                     >
-                                                        <div className="font-display text-[8px] text-white/35 tracking-[0.15em] uppercase" style={{ fontFamily: "Syne, sans-serif" }}>
+                                                        <div className="font-display text-[9px] text-[rgba(255,255,255,0.35)] tracking-[0.15em] uppercase">
                                                             {card.type === 'warning' ? '⚠ WARNING' : card.type === 'tip' ? '→ TIP' : '◆ INSIGHT'}
                                                         </div>
-                                                        <div className="font-display text-[11px] text-white/80 font-bold mt-2 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>{card.title}</div>
-                                                        <div className="font-sans font-light text-[11px] text-white/50 leading-[1.6] mt-1.5">{card.body}</div>
+                                                        <div className="font-display text-[13px] text-[rgba(255,255,255,0.85)] font-bold mt-[10px] uppercase">{card.title}</div>
+                                                        <div className="font-sans font-light text-[13px] text-[rgba(255,255,255,0.6)] leading-[1.7] mt-[8px]">{card.body}</div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -572,9 +572,9 @@ export default function Dashboard() {
                                         )}
                                     </div>
 
-                                    <div className="res-stagger res-delay-4 w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
-                                    <div className="res-stagger res-delay-4 py-8">
-                                        <span className="font-display text-[9px] tracking-[0.2em] text-white/40 block mb-5 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>Model Recommender</span>
+                                    <div className="res-stagger res-delay-4 w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
+                                    <div className="res-stagger res-delay-4 py-[28px]">
+                                        <span className="font-display text-[9px] tracking-[0.2em] text-white/40 block mb-[16px] uppercase">Model Recommender</span>
                                         <form onSubmit={handleRecommend} className="flex flex-col gap-4">
                                             <div className="flex w-full">
                                                 <input
@@ -583,31 +583,31 @@ export default function Dashboard() {
                                                     onChange={e => setUseCase(e.target.value)}
                                                     placeholder={recommendPlaceholders[recommendPlaceholderIdx]}
                                                     disabled={recommendLoading}
-                                                    className="flex-1 bg-black border border-[rgba(255,255,255,0.18)] font-mono text-[12px] text-white p-3 placeholder:text-white/25 outline-none rounded-none focus:border-white transition-colors"
+                                                    className="flex-1 bg-black border border-[rgba(255,255,255,0.18)] font-mono text-[14px] text-white px-4 h-[48px] placeholder:text-white/25 outline-none rounded-none focus:border-white transition-colors"
                                                 />
                                                 <button 
                                                     type="submit" 
                                                     disabled={recommendLoading || !useCase.trim()}
-                                                    className="w-[48px] bg-black border border-[rgba(255,255,255,0.18)] border-l-0 text-white hover:bg-white hover:text-black transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed outline-none rounded-none flex items-center justify-center font-bold"
+                                                    className="w-[48px] h-[48px] bg-black border border-[rgba(255,255,255,0.18)] border-l-0 text-white hover:bg-white hover:text-black transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed outline-none rounded-none flex items-center justify-center font-bold"
                                                 >→</button>
                                             </div>
                                             {(recommendLoading || recommendation) && (
-                                                <div className="border border-[rgba(255,255,255,0.12)] p-5 mt-2 transition-all">
+                                                <div className="border border-[rgba(255,255,255,0.12)] p-[24px] mt-[16px] transition-all">
                                                     {recommendLoading ? (
                                                         <AILoading />
                                                     ) : recommendation ? (
                                                         <div className="animate-in fade-in duration-500">
-                                                            <div className="font-display text-[8px] text-white/35 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>RECOMMENDED</div>
+                                                            <div className="font-display text-[9px] text-[rgba(255,255,255,0.35)] uppercase">RECOMMENDED</div>
                                                             <div 
-                                                                className="font-mono text-[18px] text-white mt-1 cursor-pointer hover:underline decoration-white/60 transition-all w-fit"
+                                                                className="font-mono text-[20px] text-white mt-1 cursor-pointer hover:underline decoration-white/60 transition-all w-fit"
                                                                 onClick={() => {
                                                                     window.dispatchEvent(new CustomEvent('set-cost-model', { detail: recommendation.recommended }));
                                                                 }}
                                                             >{recommendation.recommended}</div>
-                                                            <div className="font-sans font-light text-[12px] text-white/60 mt-2">{recommendation.reason}</div>
+                                                            <div className="font-sans font-light text-[14px] text-[rgba(255,255,255,0.65)] leading-[1.7] mt-[8px]">{recommendation.reason}</div>
                                                             <div className="mt-4 flex flex-col gap-1">
-                                                                <div className="flex gap-2 items-center"><span className="font-display text-[8px] text-white/30 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>TRADEOFF</span> <span className="font-sans font-light text-[12px] text-white/45">{recommendation.tradeoff}</span></div>
-                                                                <div className="flex gap-2 items-center"><span className="font-display text-[8px] text-white/30 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>EST. COST</span> <span className="font-sans font-light text-[12px] text-white/45">{recommendation.estimatedCost}</span></div>
+                                                                <div className="flex gap-2 items-center"><span className="font-display text-[9px] text-[rgba(255,255,255,0.3)] uppercase">TRADEOFF</span> <span className="font-sans font-light text-[13px] text-[rgba(255,255,255,0.45)]">{recommendation.tradeoff}</span></div>
+                                                                <div className="flex gap-2 items-center"><span className="font-display text-[9px] text-[rgba(255,255,255,0.3)] uppercase">EST. COST</span> <span className="font-sans font-light text-[13px] text-[rgba(255,255,255,0.45)]">{recommendation.estimatedCost}</span></div>
                                                             </div>
                                                         </div>
                                                     ) : (
@@ -681,8 +681,8 @@ function CapabilityRow({ name, cap }: { name: string, cap: CapabilityStatus }) {
         return (
             <div className="flex justify-between items-center w-full py-[14px]">
                 <div className="flex items-center flex-1">
-                    <span className="text-white/20 text-lg mr-3">−</span>
-                    <span className="text-white/40">{name}</span>
+                    <span className="text-[rgba(255,255,255,0.8)] text-[14px] mr-3">−</span>
+                    <span className="text-[rgba(255,255,255,0.8)] text-[14px]">{name}</span>
                 </div>
                 <span className="font-display text-[0.6rem] tracking-wider text-white/20 uppercase">Untested</span>
             </div>
@@ -693,8 +693,8 @@ function CapabilityRow({ name, cap }: { name: string, cap: CapabilityStatus }) {
         return (
             <div className="flex justify-between items-center w-full py-[14px] relative group cursor-help transition-all duration-300">
                 <div className="flex items-center flex-1">
-                    <span className="cap-cross text-white/40 text-lg mr-3 z-[1]">✗</span>
-                    <span className="text-white/60">
+                    <span className="cap-cross text-[rgba(255,255,255,0.8)] text-[14px] mr-3 z-[1]">✗</span>
+                    <span className="text-[rgba(255,255,255,0.8)] text-[14px] flex items-center">
                         {name}
                         {cap.error && (
                             <div className="absolute left-0 bottom-full mb-2 bg-white text-black text-xs p-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 border border-white">
@@ -711,8 +711,8 @@ function CapabilityRow({ name, cap }: { name: string, cap: CapabilityStatus }) {
     return (
         <div className="flex justify-between items-center w-full py-[14px]">
             <div className="flex items-center flex-1">
-                <span className="cap-check text-white text-lg mr-3">✓</span>
-                <span className="text-white font-medium">{name}</span>
+                <span className="cap-check text-[rgba(255,255,255,0.8)] text-[14px] mr-3">✓</span>
+                <span className="text-[rgba(255,255,255,0.8)] text-[14px] font-medium">{name}</span>
             </div>
         </div>
     )
