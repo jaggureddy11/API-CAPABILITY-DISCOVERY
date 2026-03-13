@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# API Capability Discovery
+
+A secure, stateless Next.js developer tool designed to securely inspect an AI API key and discover the underlying capabilities (Models available, text generation, image generation, etc.) without logging or storing the keys.
+
+## Features
+
+- **Secure & Stateless:** Keys are processed exclusively in-memory and discarded instantly.
+- **Provider Support:** Current primary support for Google Gemini API, extensible to OpenAI and Anthropic.
+- **Browser-Safe Mode:** Discover capabilities purely client-side without reaching the `/api` backend.
+- **Instant Capability Mapping:** Decodes limits, available generation methods (text, embeddings, images).
+- **Responsive Dashboard:** Made with Tailwind CSS for an elegant UI.
+
+## Tech Stack
+
+- **Frontend:** React, Next.js (pages router for legacy support), Tailwind CSS 4.0
+- **Backend:** Next.js `/api` endpoints
+- **Styling Icons:** Lucide-React
 
 ## Getting Started
 
-First, run the development server:
+1. **Install Dependencies:** Check that you have node installed.
+   ```bash
+   npm install
+   ```
+
+2. **Run the Development Server:**
+   ```bash
+   npm run dev
+   ```
+
+3. **Open the browser:** Open [http://localhost:3000](http://localhost:3000).
+
+## Project Structure
+
+- `/components`: Contains `Dashboard.tsx`
+- `/pages`: Contains Next.js views and `api/discover.ts`
+- `/lib/capabilityEngine`: The discovery Facade mapping providers.
+- `/lib/providers`: The specific mapping logic for `gemini`, `openai`, etc.
+- `/types`: Contains standard TypeScript Interfaces `.ts`
+
+## Deployment
+
+Deploy this project on Vercel seamlessly by connecting your GitHub repository. Since the API keys are provided via the UI by the end user, no back-end environment variables are required!
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+vercel --prod
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
