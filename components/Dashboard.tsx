@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useMemo, useEffect } from 'react';
 import { ProviderType, DiscoveryResult, CapabilityStatus } from '../types';
 import CostEstimator from './CostEstimator';
+import AILoading from './AILoading';
+import { getScanSummary, getAdvisorCards, getModelRecommendation } from '../lib/aiFeatures';
 
 export default function Dashboard() {
   const [apiKey, setApiKey] = useState('');
@@ -10,6 +13,65 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
 
   const [copied, setCopied] = useState(false);
+
+  // AI Features State
+  const [aiSummary, setAiSummary] = useState("");
+  const [aiSummaryLoading, setAiSummaryLoading] = useState(false);
+  const [advisorCards, setAdvisorCards] = useState<any[]>([]);
+  const [advisorLoading, setAdvisorLoading] = useState(false);
+  
+  const [useCase, setUseCase] = useState("");
+  const [recommendation, setRecommendation] = useState<any>(null);
+  const [recommendLoading, setRecommendLoading] = useState(false);
+  const [recommendPlaceholderIdx, setRecommendPlaceholderIdx] = useState(0);
+
+  const recommendPlaceholders = [
+      "Fast chatbot with low latency...",
+      "Document summarization at scale...",
+      "Code generation for my IDE...",
+      "Cheap embeddings for search..."
+  ];
+
+  useEffect(() => {
+      const t = setInterval(() => setRecommendPlaceholderIdx(i => (i + 1) % recommendPlaceholders.length), 3000);
+      return () => clearInterval(t);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!result || result.status !== "valid") return;
+    if (!process.env.NEXT_PUBLIC_HF_TOKEN) return;
+    
+    // Auto-run summary
+    setAiSummaryLoading(true);
+    getScanSummary(result)
+      .then(setAiSummary)
+      .catch(() => setAiSummary(""))
+      .finally(() => setAiSummaryLoading(false));
+    
+    // Auto-run advisor
+    setAdvisorLoading(true);
+    getAdvisorCards(result)
+      .then(setAdvisorCards)
+      .catch(() => setAdvisorCards([]))
+      .finally(() => setAdvisorLoading(false));
+  }, [result]);
+
+  const handleRecommend = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!useCase.trim() || !result) return;
+      if (!process.env.NEXT_PUBLIC_HF_TOKEN) return;
+      setRecommendLoading(true);
+      setRecommendation(null);
+      try {
+          const rec = await getModelRecommendation(useCase, result.allModels.map(m => m.id));
+          setRecommendation(rec);
+      } catch {
+          // Ignore failures
+      } finally {
+          setRecommendLoading(false);
+      }
+  };
 
   // FEATURE: Real Typewriter Loading Subcomponent
   const LoadingTerminal = ({ providerName }: { providerName: string }) => {
@@ -363,6 +425,30 @@ export default function Dashboard() {
 
                     {result.status === 'valid' && (
                         <>
+                            {process.env.NEXT_PUBLIC_HF_TOKEN && (
+                                <>
+                                    <div className="w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
+                                    <div className="res-stagger res-delay-1 py-8 flex flex-col items-start min-h-[100px]">
+                                        <span className="font-display text-[9px] tracking-[0.2em] text-white/40 block mb-5 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>AI Summary</span>
+                                        {aiSummaryLoading ? (
+                                            <AILoading />
+                                        ) : aiSummary ? (
+                                            <p className="font-sans font-light text-[14px] text-white/70 leading-[1.7] animate-in fade-in duration-500 m-0">
+                                                {aiSummary}
+                                            </p>
+                                        ) : (
+                                            <span 
+                                                className="font-sans font-light text-[12px] text-white/25 italic cursor-pointer hover:text-white/50 transition-colors" 
+                                                onClick={() => {
+                                                    setAiSummaryLoading(true);
+                                                    getScanSummary(result).then(setAiSummary).catch(()=>setAiSummary("")).finally(()=>setAiSummaryLoading(false));
+                                                }}
+                                            >AI analysis timed out. Try again →</span>
+                                        )}
+                                    </div>
+                                </>
+                            )}
+
                             {/* CAPABILITIES */}
                             <div className="w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
                             <div className="res-stagger res-delay-1 py-8">
@@ -450,6 +536,88 @@ export default function Dashboard() {
                                                 </div>
                                             )}
                                         </div>
+                                    </div>
+                                </>
+                            )}
+
+                            {process.env.NEXT_PUBLIC_HF_TOKEN && (
+                                <>
+                                    <div className="res-stagger res-delay-4 w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
+                                    <div className="res-stagger res-delay-4 py-8">
+                                        <span className="font-display text-[9px] tracking-[0.2em] text-white/40 block mb-5 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>AI Advisor</span>
+                                        {advisorLoading ? (
+                                            <AILoading />
+                                        ) : advisorCards.length > 0 ? (
+                                            <div className="flex flex-col md:flex-row gap-4 animate-in fade-in duration-500">
+                                                {advisorCards.map((card, idx) => (
+                                                    <div 
+                                                        key={idx} 
+                                                        className="flex-1 border border-[rgba(255,255,255,0.15)] p-4 bg-black hover:border-[rgba(255,255,255,0.4)] transition-colors duration-200"
+                                                        style={{ animationDelay: `${idx * 80}ms` }}
+                                                    >
+                                                        <div className="font-display text-[8px] text-white/35 tracking-[0.15em] uppercase" style={{ fontFamily: "Syne, sans-serif" }}>
+                                                            {card.type === 'warning' ? '⚠ WARNING' : card.type === 'tip' ? '→ TIP' : '◆ INSIGHT'}
+                                                        </div>
+                                                        <div className="font-display text-[11px] text-white/80 font-bold mt-2 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>{card.title}</div>
+                                                        <div className="font-sans font-light text-[11px] text-white/50 leading-[1.6] mt-1.5">{card.body}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <span 
+                                                className="font-sans font-light text-[12px] text-white/25 italic cursor-pointer hover:text-white/50 transition-colors" 
+                                                onClick={() => {
+                                                    setAdvisorLoading(true);
+                                                    getAdvisorCards(result).then(setAdvisorCards).catch(()=>setAdvisorCards([])).finally(()=>setAdvisorLoading(false));
+                                                }}
+                                            >AI analysis timed out. Try again →</span>
+                                        )}
+                                    </div>
+
+                                    <div className="res-stagger res-delay-4 w-full h-[1px] bg-[rgba(255,255,255,0.08)]"></div>
+                                    <div className="res-stagger res-delay-4 py-8">
+                                        <span className="font-display text-[9px] tracking-[0.2em] text-white/40 block mb-5 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>Model Recommender</span>
+                                        <form onSubmit={handleRecommend} className="flex flex-col gap-4">
+                                            <div className="flex w-full">
+                                                <input
+                                                    type="text"
+                                                    value={useCase}
+                                                    onChange={e => setUseCase(e.target.value)}
+                                                    placeholder={recommendPlaceholders[recommendPlaceholderIdx]}
+                                                    disabled={recommendLoading}
+                                                    className="flex-1 bg-black border border-[rgba(255,255,255,0.18)] font-mono text-[12px] text-white p-3 placeholder:text-white/25 outline-none rounded-none focus:border-white transition-colors"
+                                                />
+                                                <button 
+                                                    type="submit" 
+                                                    disabled={recommendLoading || !useCase.trim()}
+                                                    className="w-[48px] bg-black border border-[rgba(255,255,255,0.18)] border-l-0 text-white hover:bg-white hover:text-black transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed outline-none rounded-none flex items-center justify-center font-bold"
+                                                >→</button>
+                                            </div>
+                                            {(recommendLoading || recommendation) && (
+                                                <div className="border border-[rgba(255,255,255,0.12)] p-5 mt-2 transition-all">
+                                                    {recommendLoading ? (
+                                                        <AILoading />
+                                                    ) : recommendation ? (
+                                                        <div className="animate-in fade-in duration-500">
+                                                            <div className="font-display text-[8px] text-white/35 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>RECOMMENDED</div>
+                                                            <div 
+                                                                className="font-mono text-[18px] text-white mt-1 cursor-pointer hover:underline decoration-white/60 transition-all w-fit"
+                                                                onClick={() => {
+                                                                    window.dispatchEvent(new CustomEvent('set-cost-model', { detail: recommendation.recommended }));
+                                                                }}
+                                                            >{recommendation.recommended}</div>
+                                                            <div className="font-sans font-light text-[12px] text-white/60 mt-2">{recommendation.reason}</div>
+                                                            <div className="mt-4 flex flex-col gap-1">
+                                                                <div className="flex gap-2 items-center"><span className="font-display text-[8px] text-white/30 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>TRADEOFF</span> <span className="font-sans font-light text-[12px] text-white/45">{recommendation.tradeoff}</span></div>
+                                                                <div className="flex gap-2 items-center"><span className="font-display text-[8px] text-white/30 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>EST. COST</span> <span className="font-sans font-light text-[12px] text-white/45">{recommendation.estimatedCost}</span></div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="font-sans font-light text-[12px] text-white/25 italic">AI analysis timed out.</span>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </form>
                                     </div>
                                 </>
                             )}

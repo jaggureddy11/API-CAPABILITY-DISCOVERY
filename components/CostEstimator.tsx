@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
+import AILoading from "./AILoading";
+import { parseCostQuery } from "../lib/aiFeatures";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PRICING DATA — Updated March 2026 from official provider docs
@@ -87,8 +89,44 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
   const [expanded,      setExpanded]      = useState(false);
   const [flash,         setFlash]         = useState(true);
 
+  const [aiCostQuery, setAiCostQuery] = useState("");
+  const [aiCostQueryLoading, setAiCostQueryLoading] = useState(false);
+  const [aiCostQueryExplanation, setAiCostQueryExplanation] = useState("");
+
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    const handleSetCostModel = (e: Event) => {
+        const ce = e as CustomEvent;
+        if (modelList.includes(ce.detail)) {
+            setSelectedModel(ce.detail);
+            setExpanded(true);
+        }
+    };
+    window.addEventListener('set-cost-model', handleSetCostModel);
+    return () => window.removeEventListener('set-cost-model', handleSetCostModel);
+  }, [modelList]);
+
+  const handleAskAI = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!aiCostQuery.trim() || !process.env.NEXT_PUBLIC_HF_TOKEN) return;
+      setAiCostQueryLoading(true);
+      setAiCostQueryExplanation("");
+      try {
+          const res = await parseCostQuery(aiCostQuery, modelList);
+          if (res) {
+              if (res.model && modelList.includes(res.model)) setSelectedModel(res.model);
+              if (res.callsPerDay) setCallsPerDay(res.callsPerDay);
+              if (res.inputTokens) setInputTokens(res.inputTokens);
+              if (res.outputTokens) setOutputTokens(res.outputTokens);
+              if (res.explanation) setAiCostQueryExplanation(res.explanation);
+          }
+      } catch {
+          // ignore error
+      } finally {
+          setAiCostQueryLoading(false);
+      }
+  };
+
+  useEffect(() => {
     setFlash(false);
     const t = setTimeout(() => setFlash(true), 60);
     return () => clearTimeout(t);
@@ -182,6 +220,35 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
 
         <div className={`ce-body${expanded ? " open" : ""}`}>
           <div className="ce-inner">
+
+            {process.env.NEXT_PUBLIC_HF_TOKEN && (
+              <div className="mb-6">
+                <span className="font-display text-[9px] tracking-[0.2em] text-white/40 block mb-3 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>ASK AI</span>
+                <form onSubmit={handleAskAI} className="flex flex-col gap-2">
+                  <div className="flex w-full">
+                    <input
+                      type="text"
+                      className="ce-inp flex-1"
+                      placeholder='e.g. "50k calls/day at 500 tokens"'
+                      value={aiCostQuery}
+                      onChange={e => setAiCostQuery(e.target.value)}
+                      disabled={aiCostQueryLoading}
+                    />
+                    <button
+                      type="submit"
+                      disabled={aiCostQueryLoading || !aiCostQuery.trim()}
+                      className="w-[48px] bg-black border border-[rgba(255,255,255,0.18)] border-l-0 text-white hover:bg-white hover:text-black transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed outline-none rounded-none flex items-center justify-center font-bold"
+                    >→</button>
+                  </div>
+                  {aiCostQueryLoading && <div className="mt-1"><AILoading /></div>}
+                  {aiCostQueryExplanation && !aiCostQueryLoading && (
+                      <div className="font-sans font-light text-[10px] text-white/35 italic animate-in fade-in duration-500 mt-1">
+                          {aiCostQueryExplanation}
+                      </div>
+                  )}
+                </form>
+              </div>
+            )}
 
             {pricing && (
               <div className="ce-badges">
