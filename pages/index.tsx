@@ -21,10 +21,8 @@ export default function LandingPage() {
         
         const t1 = document.getElementById('t1');
         const t2 = document.getElementById('t2');
-        const t3 = document.getElementById('t3');
         const trail1 = { x: mouseX, y: mouseY };
         const trail2 = { x: mouseX, y: mouseY };
-        const trail3 = { x: mouseX, y: mouseY };
 
         const moveCursor = (e: MouseEvent) => {
             mouseX = e.clientX;
@@ -40,21 +38,18 @@ export default function LandingPage() {
             trail1.y += (cursorY - trail1.y) * 0.2;
             trail2.x += (trail1.x - trail2.x) * 0.2;
             trail2.y += (trail1.y - trail2.y) * 0.2;
-            trail3.x += (trail2.x - trail3.x) * 0.2;
-            trail3.y += (trail2.y - trail3.y) * 0.2;
 
             cursor.style.transform = `translate(calc(-50% + ${cursorX}px), calc(-50% + ${cursorY}px))`;
             if (t1) t1.style.transform = `translate(calc(-50% + ${trail1.x}px), calc(-50% + ${trail1.y}px))`;
             if (t2) t2.style.transform = `translate(calc(-50% + ${trail2.x}px), calc(-50% + ${trail2.y}px))`;
-            if (t3) t3.style.transform = `translate(calc(-50% + ${trail3.x}px), calc(-50% + ${trail3.y}px))`;
             rafId = requestAnimationFrame(renderCursor);
         };
         rafId = requestAnimationFrame(renderCursor);
 
         document.addEventListener('mousemove', moveCursor);
 
-        const handleMouseEnter = () => { cursor.classList.add('hovering'); [t1, t2, t3].forEach(t => t?.classList.add('hidden')); };
-        const handleMouseLeave = () => { cursor.classList.remove('hovering'); [t1, t2, t3].forEach(t => t?.classList.remove('hidden')); };
+        const handleMouseEnter = () => { cursor.classList.add('hovering'); [t1, t2].forEach(t => t?.classList.add('hidden')); };
+        const handleMouseLeave = () => { cursor.classList.remove('hovering'); [t1, t2].forEach(t => t?.classList.remove('hidden')); };
         const handleMouseDown = () => cursor.classList.add('clicking');
         const handleMouseUp = () => cursor.classList.remove('clicking');
 
@@ -254,8 +249,9 @@ export default function LandingPage() {
             position: fixed; pointer-events: none; z-index: 9998;
             top: 0; left: 0;
             transition: opacity 0.2s;
+            will-change: transform;
         }
-        .cursor-trail.t1 { opacity: 0.3; } .cursor-trail.t2 { opacity: 0.15; } .cursor-trail.t3 { opacity: 0.08; }
+        .cursor-trail.t1 { opacity: 0.3; } .cursor-trail.t2 { opacity: 0.15; }
         .cursor-trail.hidden { opacity: 0; }
 
         .cursor {
@@ -869,7 +865,6 @@ export default function LandingPage() {
 
 
     <div className="noise"></div>
-    <div className="cursor-trail t3" id="t3"></div>
     <div className="cursor-trail t2" id="t2"></div>
     <div className="cursor-trail t1" id="t1"></div>
     <div className="cursor" id="cursor" ref={cursorRef}></div>
