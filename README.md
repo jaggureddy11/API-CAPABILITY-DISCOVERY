@@ -1,4 +1,4 @@
-# API Capability Discovery
+# CapMap — API Capability Discovery
 
 A secure, stateless Next.js developer tool designed to securely inspect an AI API key and discover the underlying capabilities (Models available, text generation, image generation, etc.) without logging or storing the keys.
 

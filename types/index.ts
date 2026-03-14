@@ -1,4 +1,4 @@
-export type ProviderType = 'gemini' | 'openai' | 'anthropic' | 'groq' | 'auto';
+export type ProviderType = 'gemini' | 'openai' | 'anthropic' | 'groq' | 'perplexity' | 'auto';
 
 export interface CapabilityStatus {
   supported: boolean;

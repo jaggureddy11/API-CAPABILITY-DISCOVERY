@@ -1,5 +1,5 @@
 {
-  "name": "capability-discovery",
+  "name": "capmap",
   "version": "0.1.0",
   "private": true,
   "scripts": {

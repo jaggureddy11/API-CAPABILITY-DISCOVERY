@@ -23,7 +23,7 @@
   --bg-2: #ffffff;
   --fg: #000000;
   --fg-muted: rgba(0, 0, 0, 0.45);
-  --border: rgba(0, 0, 0, 0.06);
+  --border: rgba(0, 0, 0, 0.08);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -96,10 +96,12 @@
 }
 .res-delay-0 { animation-delay: 0ms; }
 .res-delay-1 { animation-delay: 150ms; }
-.res-delay-2 { animation-delay: 500ms; } /* Models after Cap (~150+5*40+something) -> Let's say 400ms */
-.res-delay-3 { animation-delay: 700ms; } /* Rate Limits */
-.res-delay-4 { animation-delay: 800ms; } /* Estimator */
-.res-delay-5 { animation-delay: 880ms; } /* Export */
+.res-delay-2 { animation-delay: 300ms; }
+.res-delay-3 { animation-delay: 450ms; }
+.res-delay-4 { animation-delay: 600ms; }
+.res-delay-5 { animation-delay: 750ms; }
+.res-delay-6 { animation-delay: 900ms; }
+.res-delay-7 { animation-delay: 1050ms; }
 
 .res-cap-row { opacity: 0; animation: resSlideUp 350ms var(--ease-out) forwards; }
 .res-cap-row:nth-child(1) { animation-delay: 190ms; }
@@ -156,4 +158,27 @@
 /* Less noise in light mode for whiter aesthetic */
 :root[data-theme='light'] .noise {
   opacity: 0.015;
+}
+
+/* Security Ticker */
+.security-ticker-container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  white-space: nowrap;
+  mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+}
+
+.security-ticker-text {
+  display: inline-block;
+  padding-left: 100%;
+  animation: securityRoll 30s linear infinite;
+}
+
+@keyframes securityRoll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-200%); }
 }

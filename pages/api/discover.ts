@@ -16,7 +16,7 @@ export default async function handler(
     return res.status(400).json({ error: 'API key is required' });
   }
 
-  if (!provider || !['gemini', 'openai', 'anthropic', 'groq', 'auto'].includes(provider)) {
+  if (!provider || !['gemini', 'openai', 'anthropic', 'groq', 'perplexity', 'auto'].includes(provider)) {
     return res.status(400).json({ error: 'Valid provider is required' });
   }
 

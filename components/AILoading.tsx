@@ -15,7 +15,7 @@ export default function AILoading({ label = "analyzing" }: { label?: string }) {
 
   if (showColdStart) {
       return (
-          <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "14px", color: "rgba(255,255,255,0.3)", fontStyle: "italic" }}>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "14px", color: "color-mix(in srgb, var(--fg) 65%, transparent)", fontStyle: "italic" }}>
               Loading AI model, first run may take 30 seconds...
           </span>
       );
@@ -25,7 +25,7 @@ export default function AILoading({ label = "analyzing" }: { label?: string }) {
     <span style={{
       fontFamily: "'JetBrains Mono', monospace",
       fontSize: "11px",
-      color: "rgba(255,255,255,0.3)"
+      color: "color-mix(in srgb, var(--fg) 65%, transparent)"
     }}>
       {label}{"·".repeat(dots)}
     </span>

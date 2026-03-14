@@ -46,7 +46,7 @@ export default function ThemeToggle() {
       } else {
         document.documentElement.removeAttribute('data-theme');
       }
-      localStorage.setItem('apilens-theme', newTheme);
+      localStorage.setItem('capmap-theme', newTheme);
       setTheme(newTheme);
     }, 300);
 

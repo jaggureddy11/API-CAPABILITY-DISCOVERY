@@ -6,6 +6,9 @@ import ThemeToggle from '../components/ThemeToggle';
 export default function LandingPage() {
     const navRef = useRef<HTMLElement>(null);
     const typewriterRef = useRef<HTMLDivElement>(null);
+    const [notifiedDev, setNotifiedDev] = React.useState(false);
+    const [notifiedTeam, setNotifiedTeam] = React.useState(false);
+    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
     useEffect(() => {
         // Intersection Observer
@@ -28,7 +31,7 @@ export default function LandingPage() {
             if (navbar) {
                 if (currentScroll > 10) navbar.classList.add('scrolled');
                 else navbar.classList.remove('scrolled');
-                
+
                 if (currentScroll > lastScroll && currentScroll > 100) navbar.classList.add('hidden');
                 else navbar.classList.remove('hidden');
             }
@@ -37,40 +40,46 @@ export default function LandingPage() {
         window.addEventListener('scroll', handleScroll);
 
         // Typewriter Animation
-        const lines = [
+        const terminalLines = [
             "> Validating key... ✓",
             "> Provider detected: OpenAI",
+            "> Provider detected: Anthropic",
+            "> Provider detected: Perplexity",
             "> Fetching models... ✓",
             "> gpt-4o ✓  gpt-4-turbo ✓  gpt-3.5-turbo ✓",
             "> Capabilities: Text ✓  Embeddings ✓  Images ✓",
             "> Rate limit: 10,000 req/day"
         ];
-        
+
         let lineIdx = 0;
         let charIdx = 0;
         let charsTyped = 0;
         let timeoutId: ReturnType<typeof setTimeout>;
-        
+        let isAlive = true;
+
+        const terminalEl = typewriterRef.current;
+        if (terminalEl) terminalEl.innerHTML = '';
+
         const typeWriter = () => {
             const el = typewriterRef.current;
-            if (!el) return;
-            
-            if (lineIdx < lines.length) {
+            if (!el || !isAlive) return;
+
+            if (lineIdx < terminalLines.length) {
                 if (charIdx === 0 && lineIdx > 0) {
                     el.innerHTML += '<br />';
                 }
-                
-                if (charIdx < lines[lineIdx].length) {
-                    el.innerHTML += lines[lineIdx].charAt(charIdx);
+
+                if (charIdx < terminalLines[lineIdx].length) {
+                    el.innerHTML += terminalLines[lineIdx].charAt(charIdx);
                     charIdx++;
                     charsTyped++;
-                    
+
                     let delay = Math.random() * 17 + 28;
-                    if (lines[lineIdx].includes('✓') && !lines[lineIdx].startsWith('> ✓')) delay = 45;
-                    else if (lines[lineIdx].startsWith('>')) delay = 20;
-                    
+                    if (terminalLines[lineIdx].includes('✓') && !terminalLines[lineIdx].startsWith('> ✓')) delay = 45;
+                    else if (terminalLines[lineIdx].startsWith('>')) delay = 20;
+
                     if (charsTyped % (Math.floor(Math.random() * 3) + 3) === 0) delay += Math.random() * 100 + 50;
-                    
+
                     timeoutId = setTimeout(typeWriter, delay);
                 } else {
                     lineIdx++;
@@ -79,10 +88,11 @@ export default function LandingPage() {
                 }
             }
         };
-        
+
         timeoutId = setTimeout(typeWriter, 2400);
 
         return () => {
+            isAlive = false;
             window.removeEventListener('scroll', handleScroll);
             clearTimeout(timeoutId);
             observer.disconnect();
@@ -97,17 +107,17 @@ export default function LandingPage() {
         faqItems.forEach(item => {
             const btn = item.querySelector('.faq-q') as HTMLButtonElement;
             const answer = item.querySelector('.faq-a') as HTMLElement;
-            
-            if(!btn || !answer) return;
+
+            if (!btn || !answer) return;
 
             const handler = () => {
                 const isActive = item.classList.contains('active');
-                
+
                 // close all
                 faqItems.forEach(faq => {
                     faq.classList.remove('active');
                     const a = faq.querySelector('.faq-a') as HTMLElement;
-                    if(a && faq !== item) {
+                    if (a && faq !== item) {
                         a.style.transitionTimingFunction = "var(--ease-in)";
                         a.style.height = '0px';
                     }
@@ -131,7 +141,7 @@ export default function LandingPage() {
         return () => {
             faqItems.forEach(item => {
                 const btn = item.querySelector('.faq-q') as HTMLButtonElement;
-                if(btn && clickHandlers.has(btn)) {
+                if (btn && clickHandlers.has(btn)) {
                     btn.removeEventListener('click', clickHandlers.get(btn));
                 }
             });
@@ -141,10 +151,11 @@ export default function LandingPage() {
     return (
         <div className="landing-theme">
             <Head>
-                <title>APILens | Capability Discovery Engine</title>
+                <title>CapMap — Map Every Capability Your API Key Unlocks</title>
                 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=JetBrains+Mono&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet" />
             </Head>
-            <style dangerouslySetInnerHTML={{ __html: `
+            <style dangerouslySetInnerHTML={{
+                __html: `
         :root {
             
             
@@ -318,6 +329,7 @@ export default function LandingPage() {
             color: var(--fg);
             text-decoration: none;
         }
+        .nav-logo span.bold { font-weight: 700; }
         .nav-links {
             display: flex;
             align-items: center;
@@ -336,7 +348,77 @@ export default function LandingPage() {
         }
         @media (max-width: 768px) {
             .nav-link.hide-mobile { display: none; }
-            .nav-inner { height: 60px; }
+            .nav-inner { 
+                height: 60px; 
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .nav-inner > a { /* The Logo Link */
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 10;
+                margin: 0 !important;
+            }
+            .mobile-toggle-wrapper {
+                position: relative;
+                z-index: 11;
+                display: flex;
+            }
+        }
+        @media (min-width: 769px) {
+            .mobile-toggle-wrapper { display: none; }
+        }
+
+        /* MOBILE MENU */
+        .mobile-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            color: var(--fg);
+            cursor: pointer;
+            padding: 8px;
+            z-index: 101;
+        }
+        @media (max-width: 768px) {
+            .mobile-toggle { 
+                display: block;
+                margin-left: -8px; /* Offset padding for alignment */
+            }
+        }
+        
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--bg);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: var(--spacing-md);
+            transform: translateX(100%);
+            transition: transform 400ms var(--ease-io);
+        }
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        .mobile-menu .nav-link {
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+        }
+        .theme-toggle-desktop {
+            display: flex;
+            align-items: center;
+        }
+        @media (max-width: 768px) {
+            .theme-toggle-desktop { display: none; }
         }
 
         /* HERO SECTION */
@@ -588,15 +670,16 @@ export default function LandingPage() {
         .providers { padding: var(--spacing-xl) 0; }
         .provider-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 0;
             border-top: 1px solid var(--border);
             border-left: 1px solid var(--border);
+            border-right: 1px solid var(--border);
         }
         .provider-card {
             border-right: 1px solid var(--border);
             border-bottom: 1px solid var(--border);
-            padding: var(--spacing-xl) var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-sm);
             position: relative;
             overflow: hidden;
             display: flex;
@@ -606,6 +689,7 @@ export default function LandingPage() {
             background: var(--bg);
             cursor: pointer;
             z-index: 1;
+            min-height: 160px;
         }
         .provider-card::before {
             content: '';
@@ -621,8 +705,8 @@ export default function LandingPage() {
             transform: scaleY(1);
         }
         .provider-icon-wrapper {
-            margin-bottom: var(--spacing-md);
-            height: 48px;
+            margin-bottom: var(--spacing-sm);
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -632,8 +716,8 @@ export default function LandingPage() {
             transform: translateY(-8px) scale(1.1);
         }
         .provider-logo {
-            width: 48px;
-            height: 48px;
+            width: 32px;
+            height: 32px;
             object-fit: contain;
             transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1), filter 400ms ease;
         }
@@ -656,9 +740,9 @@ export default function LandingPage() {
 
         .provider-name {
             font-family: var(--font-serif);
-            font-size: 1.5rem;
+            font-size: 1.1rem;
             font-weight: 700;
-            margin-bottom: var(--spacing-xs);
+            margin-bottom: 4px;
             color: var(--fg);
             transition: color 400ms ease;
         }
@@ -666,8 +750,10 @@ export default function LandingPage() {
             color: var(--bg);
         }
         .provider-desc {
-            font-size: 0.85rem;
+            font-size: 0.7rem;
+            line-height: 1.4;
             color: var(--fg-muted);
+            padding: 0 10px;
             transition: color 400ms ease, opacity 400ms ease;
         }
         .provider-card:hover .provider-desc {
@@ -676,10 +762,10 @@ export default function LandingPage() {
         }
         
         @media (max-width: 900px) {
-            .provider-grid { grid-template-columns: repeat(2, 1fr); }
+            .provider-grid { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 600px) {
-            .provider-grid { grid-template-columns: 1fr; }
+            .provider-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
         /* PRICING */
@@ -721,6 +807,34 @@ export default function LandingPage() {
             letter-spacing: 0.1em;
             border: 1px solid var(--fg);
             padding: 0.2rem 0.5rem;
+        }
+        .coming-soon-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-family: 'Syne', sans-serif;
+            font-size: 7px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--bg);
+            background: var(--fg);
+            padding: 3px 8px;
+            white-space: nowrap;
+            z-index: 10;
+            text-transform: uppercase;
+        }
+        .notify-message {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            font-size: 10px;
+            color: color-mix(in srgb, var(--fg) 40%, transparent);
+            margin-top: 12px;
+            animation: notify-fade 200ms ease-out forwards;
+            text-align: center;
+        }
+        @keyframes notify-fade {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .plan-name {
             font-family: var(--font-display);
@@ -865,6 +979,7 @@ export default function LandingPage() {
             font-size: 1.5rem;
             margin-bottom: var(--spacing-xs);
         }
+        .footer-logo span.bold { font-weight: 700; }
         .footer-tagline {
             font-size: 0.8rem;
             color: var(--fg-faint);
@@ -894,331 +1009,677 @@ export default function LandingPage() {
         .landing-theme ::selection { background: var(--fg); color: var(--bg); }
         .landing-theme ::-moz-selection { background: var(--fg); color: var(--bg); }
 
+        /* CONTACT SECTION */
+        .contact {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 48px;
+            border-top: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+            border-bottom: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+        }
+        .contact-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .contact-left {
+            flex: 0 0 60%;
+        }
+        .contact-label {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: color-mix(in srgb, var(--fg) 35%, transparent);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        .contact-headline {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 32px;
+            color: var(--fg);
+            margin-bottom: 8px;
+        }
+        .contact-subtext {
+            font-family: var(--font-sans);
+            font-weight: 300;
+            font-size: 14px;
+            color: color-mix(in srgb, var(--fg) 45%, transparent);
+            line-height: 1.7;
+        }
+        .contact-right {
+            flex: 0 0 40%;
+        }
+        .contact-divider {
+            height: 1px;
+            background: color-mix(in srgb, var(--fg) 8%, transparent);
+            margin: 40px 0;
+        }
+        .contact-items-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 24px;
+            border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+            text-decoration: none;
+            transition: all 200ms var(--ease-io);
+        }
+        .contact-item:hover {
+            border-color: color-mix(in srgb, var(--fg) 35%, transparent);
+            background: color-mix(in srgb, var(--fg) 2%, transparent);
+        }
+        .contact-text-block {
+            display: flex;
+            flex-direction: column;
+        }
+        .contact-item-label {
+            font-family: var(--font-display);
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: color-mix(in srgb, var(--fg) 30%, transparent);
+            display: block;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
+        .contact-value {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: color-mix(in srgb, var(--fg) 70%, transparent);
+            display: block;
+            transition: color 200ms var(--ease-io);
+        }
+        .contact-item:hover .contact-value {
+            color: var(--fg);
+        }
+        .contact-note {
+            font-family: var(--font-sans);
+            font-weight: 300;
+            font-size: 11px;
+            color: color-mix(in srgb, var(--fg) 25%, transparent);
+            margin-top: 16px;
+            text-align: left;
+        }
+        @media (max-width: 768px) {
+            .contact {
+                padding: 48px 24px;
+            }
+            .contact-headline {
+                font-size: 24px;
+            }
+            .contact-items-container {
+                grid-template-columns: 1fr;
+            }
+            .contact-left {
+                flex: 0 0 100%;
+            }
+        }
+
+        /* BG LOGO WATERMARK */
+        .bg-logo-watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw;
+            height: 80vh;
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+        .bg-logo-watermark svg {
+            width: 100%;
+            height: 100%;
+            max-width: 900px;
+            max-height: 900px;
+        }
+        [data-theme='light'] .bg-logo-watermark {
+            opacity: 0.04;
+        }
+        @media (max-width: 768px) {
+            .bg-logo-watermark svg {
+                max-width: 350px;
+                max-height: 350px;
+            }
+            .bg-logo-watermark {
+                opacity: 0.03; /* Slightly softer on mobile to maintain readability */
+            }
+            [data-theme='light'] .bg-logo-watermark {
+                opacity: 0.02;
+            }
+        }
+
     ` }} />
 
 
-    <div className="noise"></div>
-    <nav id="navbar" ref={navRef}>
-        <div className="container nav-inner">
-            <a href="#" className="nav-logo" data-hover="true">APILens</a>
-            <div className="nav-links">
-                <a href="#process" className="nav-link hide-mobile" data-hover="true">Process</a>
-                <a href="#features" className="nav-link hide-mobile" data-hover="true">Capabilities</a>
-                <a href="#pricing" className="nav-link hide-mobile" data-hover="true">Pricing</a>
-                <ThemeToggle />
-                <Link href="/app" className="btn" style={{padding: "0.6rem 1.2rem", fontSize: "0.65rem"}} data-hover="true">Analyze Key</Link>
-            </div>
-        </div>
-    </nav>
-
-    <div className="container">
-        <header className="hero">
-            <h1 className="hero-title hero-stagger">
-                <div className="word-mask"><span className="word" style={{animationDelay: '0ms'}}>Know</span></div>
-                <div className="word-mask"><span className="word" style={{animationDelay: '80ms'}}>Exactly</span></div>
-                <div className="word-mask"><span className="word" style={{animationDelay: '160ms'}}>What</span></div><br/>
-                <div className="word-mask"><span className="word" style={{animationDelay: '240ms'}}>Your</span></div>
-                <div className="word-mask"><span className="word" style={{animationDelay: '320ms'}}>API</span></div>
-                <div className="word-mask"><span className="word" style={{animationDelay: '400ms'}}>Key</span></div><br/>
-                <div className="word-mask"><span className="word" style={{animationDelay: '480ms'}}>Unlocks</span></div>
-                <div className="word-mask"><span className="word" style={{animationDelay: '680ms'}}>.</span></div>
-            </h1>
-            <p className="hero-sub fade-after">
-                Paste your key. Discover models, capabilities, and permissions instantly. Your key never leaves your browser.
-            </p>
-            <div className="hero-ctas">
-                <Link href="/app" className="btn invert btn-fade-up" style={{animationDelay: '1100ms'}} data-hover="true">Analyze Your Key &rarr;</Link>
-                <a href="https://github.com/jaggureddy11/API-CAPABILITY-DISCOVERY" className="btn btn-fade-up" style={{animationDelay: '1180ms'}} target="_blank" data-hover="true">View on GitHub</a>
-            </div>
+            <div className="noise"></div>
             
-            <div className="hero-terminal" id="terminal-block" data-hover="true">
-                <span className="term-border top"></span>
-                <span className="term-border right"></span>
-                <span className="term-border bottom"></span>
-                <span className="term-border left"></span>
-                <div id="typewriter" ref={typewriterRef}></div><span className="cursor-blink">█</span>
+            <div className="bg-logo-watermark">
+                <svg
+                    viewBox="3.5 0 28 40"
+                    fill="none"
+                >
+                    <path
+                        d="M 24 4 A 15 15 0 1 0 24 36"
+                        stroke="var(--fg)"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                    />
+                    <circle
+                        cx="24.5" cy="20" r="3"
+                        fill="var(--fg)"
+                    />
+                </svg>
             </div>
-        </header>
-    </div>
-
-    <div className="trust-bar fade-up">
-        <div className="marquee">
-            <div className="marquee-content">
-                WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &nbsp; &nbsp; 
-                WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &nbsp; &nbsp;
-            </div>
-            <div className="marquee-content" aria-hidden="true">
-                WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &nbsp; &nbsp; 
-                WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &nbsp; &nbsp;
-            </div>
-        </div>
-    </div>
-
-    <div className="container">
-        <section id="process" className="process fade-up">
-            <span className="section-label">Process</span>
-            <h2 className="process-title">Three steps to full clarity.</h2>
-            
-            <div className="process-grid">
-                <div className="process-step" data-hover="true">
-                    <div className="process-num">01</div>
-                    <h3 className="display">Paste Key</h3>
-                    <p>Provide your token securely. Memory processing ensures nothing is logged or kept.</p>
-                </div>
-                <div className="process-step" data-hover="true">
-                    <div className="process-num">02</div>
-                    <h3 className="display">Run Discovery</h3>
-                    <p>Our engine actively tests standard endpoints to definitively prove capabilities.</p>
-                </div>
-                <div className="process-step" data-hover="true">
-                    <div className="process-num">03</div>
-                    <h3 className="display">See Everything</h3>
-                    <p>Review allowed models, rate limits, and actual permission denials transparently.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="features" className="features fade-up">
-            <span className="section-label">Capabilities</span>
-            <div className="feature-grid">
-                <div className="feature-cell" data-hover="true">
-                    <div className="feature-label">Key Validation</div>
-                    <p>Instantly confirm your key is active and practically usable for generation tasks.</p>
-                </div>
-                <div className="feature-cell" data-hover="true">
-                    <div className="feature-label">Model Discovery</div>
-                    <p>See every precise model variation your specific API tier genuinely unlocks.</p>
-                </div>
-                <div className="feature-cell" data-hover="true">
-                    <div className="feature-label">Capability Detection</div>
-                    <p>Text, embeddings, image, audio &mdash; all verified with micro live endpoint tests.</p>
-                </div>
-                <div className="feature-cell" data-hover="true">
-                    <div className="feature-label">Permission Testing</div>
-                    <p>We trigger real HTTP hits, not heuristic guesswork, for 100% accuracy.</p>
-                </div>
-                <div className="feature-cell" data-hover="true">
-                    <div className="feature-label">Rate Limit Analysis</div>
-                    <p>Pull and decode hidden API token tracking straight from live response headers.</p>
-                </div>
-                <div className="feature-cell" data-hover="true">
-                    <div className="feature-label">Cost Estimation</div>
-                    <p>Calculate realistic spend metrics depending on your tested model allowances.</p>
-                </div>
-            </div>
-        </section>
-
-        <section className="demo fade-up">
-            <div className="demo-box" data-hover="true">
-                <div className="demo-box-header">
-                    <div className="demo-box-title">APILens &mdash; Capability Report</div>
-                </div>
-                
-                <div className="demo-row">
-                    <span className="muted">Provider</span>
-                    <span>OpenAI</span>
-                </div>
-                <div className="demo-row no-border">
-                    <span className="muted">Key Status</span>
-                    <span className="text-green">● Valid</span>
-                </div>
-
-                <div className="demo-section">Models</div>
-                <div className="demo-row">
-                    <span>✓ gpt-4o</span>
-                    <span className="muted">[128k] [$5/1M]</span>
-                </div>
-                <div className="demo-row">
-                    <span>✓ gpt-4-turbo</span>
-                    <span className="muted">[128k] [$10/1M]</span>
-                </div>
-                <div className="demo-row no-border">
-                    <span className="muted">✗ gpt-4o-realtime</span>
-                    <span className="muted">[—] <span className="text-red">[Denied]</span></span>
-                </div>
-
-                <div className="demo-section">Capabilities</div>
-                <div className="demo-row">
-                    <span>✓ Text Generation</span>
-                    <span className="muted"></span>
-                </div>
-                <div className="demo-row">
-                    <span>✓ Embeddings</span>
-                    <span className="muted"></span>
-                </div>
-                <div className="demo-row">
-                    <span>✓ Image Generation</span>
-                    <span className="muted"></span>
-                </div>
-                <div className="demo-row no-border">
-                    <span className="muted">✗ Audio Transcription</span>
-                    <span className="text-red">[Denied]</span>
-                </div>
-            </div>
-            <div className="demo-caption">Actual output format from a live API key scan</div>
-        </section>
-
-        <section className="providers fade-up">
-            <span className="section-label">Providers</span>
-            <div className="provider-grid">
-                <div className="provider-card" data-hover="true">
-                    <div className="provider-icon-wrapper">
-                        <img src="https://svgl.app/library/openai.svg" alt="OpenAI logo" className="provider-logo logo-invert" />
+            <nav id="navbar" ref={navRef}>
+                <div className="container nav-inner">
+                    <div className="mobile-toggle-wrapper">
+                        <button 
+                            className="mobile-toggle" 
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            aria-label="Toggle Menu"
+                        >
+                            {isMenuOpen ? (
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                            ) : (
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                            )}
+                        </button>
                     </div>
-                    <div className="provider-name">OpenAI</div>
-                    <div className="provider-desc">GPT, DALL-E, Embeddings, Whisper</div>
-                </div>
-                <div className="provider-card" data-hover="true">
-                    <div className="provider-icon-wrapper">
-                        <img src="https://svgl.app/library/gemini.svg" alt="Google Gemini logo" className="provider-logo" />
-                    </div>
-                    <div className="provider-name">Google Gemini</div>
-                    <div className="provider-desc">1.5 Pro, Flash, Imagen, Embeddings</div>
-                </div>
-                <div className="provider-card" data-hover="true">
-                    <div className="provider-icon-wrapper">
-                        <img src="https://cdn.simpleicons.org/anthropic/ccb4a1" alt="Anthropic logo" className="provider-logo" />
-                    </div>
-                    <div className="provider-name">Anthropic</div>
-                    <div className="provider-desc">Claude 3.5 Sonnet, Opus, Haiku</div>
-                </div>
-                <div className="provider-card" data-hover="true">
-                    <div className="provider-icon-wrapper">
-                        <img src="https://svgl.app/library/groq.svg" alt="Groq logo" className="provider-logo" />
-                    </div>
-                    <div className="provider-name">Groq</div>
-                    <div className="provider-desc">Llama 3, Mixtral, Gemma, Whisper</div>
-                </div>
-            </div>
-        </section>
 
-        <section id="pricing" className="pricing fade-up">
-            <span className="section-label">Pricing</span>
-            <h2 className="pricing-title">Simple. Transparent. Fair.</h2>
-            
-            <div className="pricing-grid">
-                <div className="pricing-card" data-hover="true">
-                    <div className="plan-name">FREE</div>
-                    <div className="plan-price">$0</div>
-                    <ul className="plan-features">
-                        <li>Single key checks</li>
-                        <li>No account required</li>
-                        <li>Basic model discovery</li>
-                        <li>Browser-safe mode</li>
-                    </ul>
-                    <Link href="/app" className="btn">Test Now</Link>
-                </div>
-                
-                <div className="pricing-card popular" data-hover="true">
-                    <div className="popular-badge">Most Popular</div>
-                    <div className="plan-name">DEV</div>
-                    <div className="plan-price">$5<span style={{fontSize: "1rem", fontFamily: "var(--font-sans)"}}>/mo</span></div>
-                    <ul className="plan-features">
-                        <li>Save and monitor keys</li>
-                        <li>Expiration alerts &amp; history</li>
-                        <li>Full rate limit extraction</li>
-                        <li>API access for CLI tracking</li>
-                    </ul>
-                    <Link href="/app" className="btn invert">Subscribe</Link>
-                </div>
-                
-                <div className="pricing-card" data-hover="true">
-                    <div className="plan-name">TEAM</div>
-                    <div className="plan-price">$15<span style={{fontSize: "1rem", fontFamily: "var(--font-sans)"}}>/mo</span></div>
-                    <ul className="plan-features">
-                        <li>Unlimited key tracking</li>
-                        <li>Team sharing &amp; roles</li>
-                        <li>Advanced cost calculators</li>
-                        <li>Priority email support</li>
-                    </ul>
-                    <a href="#contact" className="btn">Contact Us</a>
-                </div>
-            </div>
-        </section>
+                    <Link href="/" style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '16px',
+                        textDecoration: 'none'
+                    }} data-hover="true">
+                        {/* Arc icon — clean and proportional */}
+                        <svg
+                            width="34"
+                            height="44"
+                            viewBox="0 0 28 40"
+                            fill="none"
+                        >
+                            <path
+                                d="M 24 4 A 15 15 0 1 0 24 36"
+                                stroke="var(--fg)"
+                                strokeWidth="1.8"
+                                strokeLinecap="round"
+                            />
+                            <circle
+                                cx="24.5" cy="20" r="3"
+                                fill="var(--fg)"
+                            />
+                        </svg>
 
-        <section className="faq fade-up">
-            <span className="section-label">FAQ</span>
-            <h2 className="faq-title">Questions, answered.</h2>
-            
-            <div className="faq-list">
-                <div className="faq-item">
-                    <button className="faq-q" data-hover="true">
-                        Is my API key safe?
-                        <span className="faq-icon">+</span>
-                    </button>
-                    <div className="faq-a">
-                        <p>Yes. Keys are strictly processed in volatile runtime memory and immediately discarded after testing. We write absolutely nothing to persistent databases or server logs.</p>
+                        {/* Wordmark */}
+                        <span style={{
+                            fontFamily: "'Libre Baskerville', Georgia, serif",
+                            fontStyle: 'italic',
+                            fontWeight: 700,
+                            fontSize: '32px',
+                            color: 'var(--fg)',
+                            letterSpacing: '0.5px',
+                            lineHeight: 1,
+                            transition: 'all 300ms ease'
+                        }}>CapMap</span>
+                    </Link>
+
+                    <div className="nav-links">
+                        <a href="#process" className="nav-link hide-mobile" data-hover="true">Process</a>
+                        <a href="#features" className="nav-link hide-mobile" data-hover="true">Capabilities</a>
+                        <a href="#providers" className="nav-link hide-mobile" data-hover="true">Providers</a>
+                        <a href="#pricing" className="nav-link hide-mobile" data-hover="true">Pricing</a>
+                        <a href="#faq" className="nav-link hide-mobile" data-hover="true">FAQ</a>
+                        <a href="#contact" className="nav-link hide-mobile" data-hover="true">Contact</a>
+                        <div className="theme-toggle-desktop">
+                            <ThemeToggle />
+                        </div>
+                        <Link href="/app" className="btn hide-mobile" style={{ padding: "0.45rem 1rem", fontSize: "0.6rem" }} data-hover="true">Analyze Key</Link>
                     </div>
                 </div>
-                <div className="faq-item">
-                    <button className="faq-q" data-hover="true">
-                        How does browser-safe mode work?
-                        <span className="faq-icon">+</span>
-                    </button>
-                    <div className="faq-a">
+
+                <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
+                    <a href="#process" className="nav-link" onClick={() => setIsMenuOpen(false)}>Process</a>
+                    <a href="#features" className="nav-link" onClick={() => setIsMenuOpen(false)}>Capabilities</a>
+                    <a href="#providers" className="nav-link" onClick={() => setIsMenuOpen(false)}>Providers</a>
+                    <a href="#pricing" className="nav-link" onClick={() => setIsMenuOpen(false)}>Pricing</a>
+                    <a href="#faq" className="nav-link" onClick={() => setIsMenuOpen(false)}>FAQ</a>
+                    <a href="#contact" className="nav-link" onClick={() => setIsMenuOpen(false)}>Contact</a>
+                    <div style={{ marginTop: '20px' }}>
+                        <ThemeToggle />
+                    </div>
+                    <Link href="/app" className="btn invert" onClick={() => setIsMenuOpen(false)} style={{ marginTop: '20px' }}>Analyze Key</Link>
+                </div>
+            </nav>
+
+            <div className="container">
+                <header className="hero">
+                    <h1 className="hero-title hero-stagger">
+                        <div className="word-mask"><span className="word" style={{ animationDelay: '0ms' }}>Know</span></div>
+                        <div className="word-mask"><span className="word" style={{ animationDelay: '80ms' }}>Exactly</span></div>
+                        <div className="word-mask"><span className="word" style={{ animationDelay: '160ms' }}>What</span></div><br />
+                        <div className="word-mask"><span className="word" style={{ animationDelay: '240ms' }}>Your</span></div>
+                        <div className="word-mask"><span className="word" style={{ animationDelay: '320ms' }}>API</span></div>
+                        <div className="word-mask"><span className="word" style={{ animationDelay: '400ms' }}>Key</span></div><br />
+                        <div className="word-mask"><span className="word" style={{ animationDelay: '480ms' }}>Unlocks</span></div>
+                        <div className="word-mask"><span className="word" style={{ animationDelay: '680ms' }}>.</span></div>
+                    </h1>
+                    <p className="hero-sub fade-after">
+                        Paste your key. CapMap reveals every model, capability, and permission it unlocks. Instantly. Securely. Free.
+                    </p>
+                    <div className="hero-ctas">
+                        <Link href="/app" className="btn invert btn-fade-up" style={{ animationDelay: '1100ms' }} data-hover="true">Analyze Your Key &rarr;</Link>
+                        <a href="https://github.com/jaggureddy11/API-CAPABILITY-DISCOVERY" className="btn btn-fade-up" style={{ 
+                            animationDelay: '1180ms', 
+                            display: 'inline-flex', 
+                            alignItems: 'center', 
+                            gap: '10px' 
+                        }} target="_blank" data-hover="true">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.041-1.416-4.041-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            View on GitHub
+                        </a>
+                    </div>
+
+                    <div className="hero-terminal" id="terminal-block" data-hover="true">
+                        <span className="term-border top"></span>
+                        <span className="term-border right"></span>
+                        <span className="term-border bottom"></span>
+                        <span className="term-border left"></span>
+                        <div id="typewriter" ref={typewriterRef}></div><span className="cursor-blink">█</span>
+                    </div>
+                </header>
+            </div>
+
+            <div className="trust-bar fade-up">
+                <div className="marquee">
+                    <div className="marquee-content">
+                        WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &middot; &nbsp; PERPLEXITY &nbsp; &nbsp; &nbsp;
+                        WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &middot; &nbsp; PERPLEXITY &nbsp; &nbsp; &nbsp;
+                    </div>
+                    <div className="marquee-content" aria-hidden="true">
+                        WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &middot; &nbsp; PERPLEXITY &nbsp; &nbsp; &nbsp;
+                        WORKS WITH &nbsp; OPENAI &nbsp; &middot; &nbsp; GOOGLE GEMINI &nbsp; &middot; &nbsp; ANTHROPIC &nbsp; &middot; &nbsp; GROQ &nbsp; &middot; &nbsp; PERPLEXITY &nbsp; &nbsp; &nbsp;
+                    </div>
+                </div>
+            </div>
+
+            <div className="container">
+                <section id="process" className="process fade-up">
+                    <span className="section-label">Process</span>
+                    <h2 className="process-title">Three steps to full clarity.</h2>
+
+                    <div className="process-grid">
+                        <div className="process-step" data-hover="true">
+                            <div className="process-num">01</div>
+                            <h3 className="display">Paste Key</h3>
+                            <p>Provide your token securely. Memory processing ensures nothing is logged or kept.</p>
+                        </div>
+                        <div className="process-step" data-hover="true">
+                            <div className="process-num">02</div>
+                            <h3 className="display">Run Discovery</h3>
+                            <p>Our engine actively tests standard endpoints to definitively prove capabilities.</p>
+                        </div>
+                        <div className="process-step" data-hover="true">
+                            <div className="process-num">03</div>
+                            <h3 className="display">See Everything</h3>
+                            <p>Review allowed models, rate limits, and actual permission denials transparently.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="features" className="features fade-up">
+                    <span className="section-label">Capabilities</span>
+                    <div className="feature-grid">
+                        <div className="feature-cell" data-hover="true">
+                            <div className="feature-label">Key Validation</div>
+                            <p>Instantly confirm your key is active and practically usable for generation tasks.</p>
+                        </div>
+                        <div className="feature-cell" data-hover="true">
+                            <div className="feature-label">Model Discovery</div>
+                            <p>See every precise model variation your specific API tier genuinely unlocks.</p>
+                        </div>
+                        <div className="feature-cell" data-hover="true">
+                            <div className="feature-label">Capability Detection</div>
+                            <p>Text, embeddings, image, audio &mdash; all verified with micro live endpoint tests.</p>
+                        </div>
+                        <div className="feature-cell" data-hover="true">
+                            <div className="feature-label">Permission Testing</div>
+                            <p>We trigger real HTTP hits, not heuristic guesswork, for 100% accuracy.</p>
+                        </div>
+                        <div className="feature-cell" data-hover="true">
+                            <div className="feature-label">Rate Limit Analysis</div>
+                            <p>Pull and decode hidden API token tracking straight from live response headers.</p>
+                        </div>
+                        <div className="feature-cell" data-hover="true">
+                            <div className="feature-label">Cost Estimation</div>
+                            <p>Calculate realistic spend metrics depending on your tested model allowances.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="demo fade-up">
+                    <div className="demo-box" data-hover="true">
+                        <div className="demo-box-header">
+                            <div className="demo-box-title">CAPMAP &mdash; CAPABILITY REPORT</div>
+                        </div>
+
+                        <div className="demo-row">
+                            <span className="muted">Provider</span>
+                            <span>OpenAI</span>
+                        </div>
+                        <div className="demo-row no-border">
+                            <span className="muted">Key Status</span>
+                            <span className="text-green">● Valid</span>
+                        </div>
+
+                        <div className="demo-section">Models</div>
+                        <div className="demo-row">
+                            <span>✓ gpt-4o</span>
+                            <span className="muted">[128k] [$5/1M]</span>
+                        </div>
+                        <div className="demo-row">
+                            <span>✓ gpt-4-turbo</span>
+                            <span className="muted">[128k] [$10/1M]</span>
+                        </div>
+                        <div className="demo-row no-border">
+                            <span className="muted">✗ gpt-4o-realtime</span>
+                            <span className="muted">[—] <span className="text-red">[Denied]</span></span>
+                        </div>
+
+                        <div className="demo-section">Capabilities</div>
+                        <div className="demo-row">
+                            <span>✓ Text Generation</span>
+                            <span className="muted"></span>
+                        </div>
+                        <div className="demo-row">
+                            <span>✓ Embeddings</span>
+                            <span className="muted"></span>
+                        </div>
+                        <div className="demo-row">
+                            <span>✓ Image Generation</span>
+                            <span className="muted"></span>
+                        </div>
+                        <div className="demo-row no-border">
+                            <span className="muted">✗ Audio Transcription</span>
+                            <span className="text-red">[Denied]</span>
+                        </div>
+                    </div>
+                    <div className="demo-caption">Actual output format from a live API key scan</div>
+                </section>
+
+                <section id="providers" className="providers fade-up">
+                    <span className="section-label">Providers</span>
+                    <div className="provider-grid">
+                        <div className="provider-card" data-hover="true">
+                            <div className="provider-icon-wrapper">
+                                <img src="https://svgl.app/library/openai.svg" alt="OpenAI logo" className="provider-logo logo-invert" />
+                            </div>
+                            <div className="provider-name">OpenAI</div>
+                            <div className="provider-desc">GPT, DALL-E, Embeddings, Whisper</div>
+                        </div>
+                        <div className="provider-card" data-hover="true">
+                            <div className="provider-icon-wrapper">
+                                <img src="https://svgl.app/library/gemini.svg" alt="Google Gemini logo" className="provider-logo" />
+                            </div>
+                            <div className="provider-name">Google Gemini</div>
+                            <div className="provider-desc">1.5 Pro, Flash, Imagen, Embeddings</div>
+                        </div>
+                        <div className="provider-card" data-hover="true">
+                            <div className="provider-icon-wrapper">
+                                <img src="https://cdn.simpleicons.org/anthropic/ccb4a1" alt="Anthropic logo" className="provider-logo" />
+                            </div>
+                            <div className="provider-name">Anthropic</div>
+                            <div className="provider-desc">Claude 3.5 Sonnet, Opus, Haiku</div>
+                        </div>
+                        <div className="provider-card" data-hover="true">
+                            <div className="provider-icon-wrapper">
+                                <img src="https://svgl.app/library/groq.svg" alt="Groq logo" className="provider-logo" />
+                            </div>
+                            <div className="provider-name">Groq</div>
+                            <div className="provider-desc">Llama 3, Mixtral, Gemma, Whisper</div>
+                        </div>
+                        <div className="provider-card" style={{ borderRight: 'none' }} data-hover="true">
+                            <div className="provider-icon-wrapper">
+                                <img src="https://svgl.app/library/perplexity.svg" alt="Perplexity logo" className="provider-logo" />
+                            </div>
+                            <div className="provider-name">Perplexity</div>
+                            <div className="provider-desc">Sonar, Sonar Pro, Reasoning, Web Search</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="pricing" className="pricing fade-up">
+                    <span className="section-label">Pricing</span>
+                    <h2 className="pricing-title">Simple. Transparent. Fair.</h2>
+
+                    <div className="pricing-grid">
+                        <div className="pricing-card" data-hover="true">
+                            <div className="plan-name">FREE</div>
+                            <div className="plan-price">$0</div>
+                            <ul className="plan-features">
+                                <li>✓ 25 key checks / month</li>
+                                <li>✓ All 5 providers supported</li>
+                                <li>✓ Basic AI features</li>
+                                <li>✓ Cost Estimator</li>
+                                <li>✓ No account required</li>
+                            </ul>
+                            <Link href="/app" className="btn">Get Started →</Link>
+                        </div>
+
+                        <div className="pricing-card" data-hover="true">
+                            <div className="coming-soon-badge">COMING SOON</div>
+                            <div className="plan-name">DEV</div>
+                            <div className="plan-price">$5<span style={{ fontSize: "1rem", fontFamily: "var(--font-sans)" }}>/mo</span></div>
+                            <ul className="plan-features">
+                                <li>✓ Unlimited key checks</li>
+                                <li>✓ Save up to 10 keys</li>
+                                <li>✓ Full scan history</li>
+                                <li>✓ Email alerts when key expires</li>
+                                <li>✓ Advanced AI features</li>
+                                <li>✓ Priority support</li>
+                            </ul>
+                            <button className="btn invert" onClick={() => setNotifiedDev(true)}>Notify Me</button>
+                            {notifiedDev && <div className="notify-message">We'll notify you at launch.</div>}
+                        </div>
+
+                        <div className="pricing-card" data-hover="true">
+                            <div className="coming-soon-badge">COMING SOON</div>
+                            <div className="plan-name">TEAM</div>
+                            <div className="plan-price">$15<span style={{ fontSize: "1rem", fontFamily: "var(--font-sans)" }}>/mo</span></div>
+                            <ul className="plan-features">
+                                <li>✓ Everything in Dev</li>
+                                <li>✓ Unlimited keys</li>
+                                <li>✓ Team sharing</li>
+                                <li>✓ API access</li>
+                                <li>✓ Custom integrations</li>
+                                <li>✓ Dedicated support</li>
+                            </ul>
+                            <button className="btn" onClick={() => setNotifiedTeam(true)}>Notify Me</button>
+                            {notifiedTeam && <div className="notify-message">We'll notify you at launch.</div>}
+                        </div>
+                    </div>
+
+                    <div style={{
+                        marginTop: '24px',
+                        textAlign: 'center',
+                        fontFamily: 'var(--font-sans)',
+                        fontWeight: 300,
+                        fontSize: '11px',
+                        color: 'var(--fg)',
+                        opacity: 0.3
+                    }}>
+                        * Free tier resets every 30 days. No credit card required.
+                    </div>
+                </section>
+
+                <section id="faq" className="faq fade-up">
+                    <span className="section-label">FAQ</span>
+                    <h2 className="faq-title">Questions, answered.</h2>
+
+                    <div className="faq-list">
+                        <div className="faq-item">
+                            <button className="faq-q" data-hover="true">
+                                Is my API key safe?
+                                <span className="faq-icon">+</span>
+                            </button>
+                            <div className="faq-a">
+                                <p>Yes. Keys are strictly processed in volatile runtime memory and immediately discarded after testing. We write absolutely nothing to persistent databases or server logs.</p>
+                            </div>
+                        </div>
+                        <div className="faq-item">
+                            <button className="faq-q" data-hover="true">
+                                How does browser-safe mode work?
+                                <span className="faq-icon">+</span>
+                            </button>
+                            <div className="faq-a">
                                 <p>For providers that support open CORS (like Gemini), we bypass our backend entirely. The network fetch happens straight from your client window directly to the provider&apos;s endpoint.</p>
+                            </div>
+                        </div>
+                        <div className="faq-item">
+                            <button className="faq-q" data-hover="true">
+                                Which providers are supported?
+                                <span className="faq-icon">+</span>
+                            </button>
+                            <div className="faq-a">
+                                <p>We currently natively decode universally recognized keys from OpenAI, Google Gemini, Anthropic, Groq, and Perplexity by examining their distinct prefix signatures.</p>
+                            </div>
+                        </div>
+                        <div className="faq-item">
+                            <button className="faq-q" data-hover="true">
+                                Is the source code open?
+                                <span className="faq-icon">+</span>
+                            </button>
+                            <div className="faq-a">
+                                <p>The core capability discovery engine is fully open source. You can view, audit, or host the underlying tests yourself by visiting our GitHub repository.</p>
+                            </div>
+                        </div>
+                        <div className="faq-item">
+                            <button className="faq-q" data-hover="true">
+                                Do you log or store anything?
+                                <span className="faq-icon">+</span>
+                            </button>
+                            <div className="faq-a">
+                                <p>Zero logging. As developers ourselves, we structured the architecture to inherently prevent caching, analytics tracking, or environment variable leaks.</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div className="faq-item">
-                    <button className="faq-q" data-hover="true">
-                        Which providers are supported?
-                        <span className="faq-icon">+</span>
-                    </button>
-                    <div className="faq-a">
-                        <p>We currently natively decode universally recognized keys from OpenAI, Google Gemini, Anthropic, and Groq by examining their distinct prefix signatures.</p>
-                    </div>
-                </div>
-                <div className="faq-item">
-                    <button className="faq-q" data-hover="true">
-                        Is the source code open?
-                        <span className="faq-icon">+</span>
-                    </button>
-                    <div className="faq-a">
-                        <p>The core capability discovery engine is fully open source. You can view, audit, or host the underlying tests yourself by visiting our GitHub repository.</p>
-                    </div>
-                </div>
-                <div className="faq-item">
-                    <button className="faq-q" data-hover="true">
-                        Do you log or store anything?
-                        <span className="faq-icon">+</span>
-                    </button>
-                    <div className="faq-a">
-                        <p>Zero logging. As developers ourselves, we structured the architecture to inherently prevent caching, analytics tracking, or environment variable leaks.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+                </section>
 
-        <section id="cta" className="final-cta fade-up">
-            <h2 className="final-title">
-                <span>Your key.</span>
-                <span>Your capabilities.</span>
-                <span>Fully visible.</span>
-            </h2>
-            <p className="final-sub">No more guessing which endpoints are enabled on your tier.</p>
-            <Link href="/app" className="btn invert" style={{marginTop: "var(--spacing-sm)"}} data-hover="true">Analyze Your Key Free &rarr;</Link>
-        </section>
+                <section id="cta" className="final-cta fade-up">
+                    <h2 className="final-title">
+                        <span>Your key.</span>
+                        <span>Your capabilities.</span>
+                        <span>Fully visible.</span>
+                    </h2>
+                    <p className="final-sub">No more guessing which endpoints are enabled on your tier.</p>
+                    <Link href="/app" className="btn invert" style={{ marginTop: "var(--spacing-sm)" }} data-hover="true">Analyze Your Key Free &rarr;</Link>
+                </section>
 
-        <footer>
-            <div className="footer-inner">
-                <div>
-                    <div className="footer-logo">APILens</div>
-                    <div className="footer-tagline">By developers. For engineers.</div>
-                </div>
-                <div className="footer-links">
-                    <a href="https://github.com/jaggureddy11/API-CAPABILITY-DISCOVERY" data-hover="true" target="_blank">GitHub</a>
-                    <a href="#" data-hover="true">Docs</a>
-                    <a href="#" data-hover="true">Privacy</a>
-                    <a href="#" data-hover="true">Terms</a>
-                </div>
-            </div>
-            <div className="footer-bottom">
-                Built for developers. Trusted by engineers. &copy; 2026 APILens.
-            </div>
-        </footer>
-    </div>
+                <section id="contact" className="contact fade-up">
+                    <div className="contact-top">
+                        <div className="contact-left">
+                            <span className="contact-label">CONTACT</span>
+                            <h2 className="contact-headline">Have a question or feedback?</h2>
+                            <p className="contact-subtext">Reach out directly — I read every message.</p>
+                        </div>
+                        <div className="contact-right"></div>
+                    </div>
+                    
+                    <div className="contact-divider"></div>
+                    
+                    <div className="contact-items-container">
+                        <a href="mailto:jaggureddy2004@gmail.com" target="_blank" rel="noopener noreferrer" className="contact-item" data-hover="true">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity="0.5">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <path d="M2 7l10 7 10-7"/>
+                            </svg>
+                            <div className="contact-text-block">
+                                <span className="contact-item-label">EMAIL</span>
+                                <span className="contact-value">jaggureddy2004@gmail.com</span>
+                            </div>
+                        </a>
+                        
+                        <a href="https://www.linkedin.com/in/jaggureddy/" target="_blank" rel="noopener noreferrer" className="contact-item" data-hover="true">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" opacity="0.5">
+                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                            </svg>
+                            <div className="contact-text-block">
+                                <span className="contact-item-label">LINKEDIN</span>
+                                <span className="contact-value">linkedin.com/in/jaggureddy/</span>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <p className="contact-note">Usually responds within 24 hours.</p>
+                </section>
 
-    
+                <footer>
+                    <div className="footer-inner">
+                        <div>
+                            <Link href="/" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '14px',
+                                textDecoration: 'none',
+                                marginBottom: '12px'
+                            }} data-hover="true">
+                                <svg
+                                    width="28"
+                                    height="36"
+                                    viewBox="0 0 28 40"
+                                    fill="none"
+                                >
+                                    <path
+                                        d="M 24 4 A 15 15 0 1 0 24 36"
+                                        stroke="var(--fg)"
+                                        strokeWidth="1.8"
+                                        strokeLinecap="round"
+                                    />
+                                    <circle
+                                        cx="24.5" cy="20" r="3"
+                                        fill="var(--fg)"
+                                    />
+                                </svg>
+                                <span style={{
+                                    fontFamily: "'Libre Baskerville', Georgia, serif",
+                                    fontStyle: 'italic',
+                                    fontWeight: 700,
+                                    fontSize: '26px',
+                                    color: 'var(--fg)',
+                                    letterSpacing: '0.5px',
+                                    lineHeight: 1
+                                }}>CapMap</span>
+                            </Link>
+                            <div className="footer-tagline">Mapping every capability your API key unlocks.</div>
+                        </div>
+                        <div className="footer-links">
+                            <a href="https://github.com/jaggureddy11/API-CAPABILITY-DISCOVERY" data-hover="true" target="_blank">GitHub</a>
+                            <a href="#" data-hover="true">Docs</a>
+                            <a href="#" data-hover="true">Privacy</a>
+                            <a href="#" data-hover="true">Terms</a>
+                        </div>
+                    </div>
+                    <div className="footer-bottom">
+                        <span style={{ opacity: 0.4 }}>&copy; 2026 CapMap &mdash; Built for developers. Trusted by engineers.</span>
+                    </div>
+                </footer>
+            </div>
+
+
         </div>
     );
 }

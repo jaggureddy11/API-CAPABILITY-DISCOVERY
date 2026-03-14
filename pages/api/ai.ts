@@ -47,7 +47,7 @@ export default async function handler(
   }
 
   if (!GROQ_KEY || GROQ_KEY.includes("your_token") || GROQ_KEY.includes("yourkey")) {
-    return res.status(500).json({ error: "GROQ_KEY not configured" });
+    return res.status(500).json({ error: "CapMap: Add GROQ_KEY to .env.local to enable AI features" });
   }
 
   const { feature, data } = req.body;
@@ -87,6 +87,7 @@ Rate limits: ${JSON.stringify(data.rateLimits ?? {})}`;
       const models = data.models?.slice(0,5).map((m:any) => m.id).join(", ") ?? "";
 
       const prompt = `You are an API advisor.
+Perplexity specializes in real-time web search AI. Sonar models have live internet access built in. Best for search-augmented applications.
 Give exactly 3 recommendations for this developer.
 Return ONLY a valid JSON array, no other text:
 [

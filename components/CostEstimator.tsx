@@ -16,7 +16,7 @@ interface ModelInfo {
   input: number;
   output: number;
   context: string;
-  provider: "openai" | "anthropic" | "google" | "groq";
+  provider: "openai" | "anthropic" | "google" | "groq" | "perplexity";
   tier: "flagship" | "balanced" | "budget";
   notes?: string;
 }
@@ -57,10 +57,17 @@ const MODEL_PRICING: Record<string, ModelInfo> = {
   "deepseek-r1-groq":  { input: 0.75,  output: 0.99,  context: "128k",  provider: "groq",      tier: "balanced", notes: "Reasoning model" },
   "mixtral-8x7b":      { input: 0.24,  output: 0.24,  context: "32k",   provider: "groq",      tier: "budget"   },
   "gemma2-9b":         { input: 0.20,  output: 0.20,  context: "8k",    provider: "groq",      tier: "budget"   },
+
+  // ── Perplexity ── (March 2026)
+  "sonar":               { input: 1.00, output: 1.00,  context: "128k", provider: "perplexity", tier: "budget"   },
+  "sonar-pro":           { input: 3.00, output: 15.00, context: "200k", provider: "perplexity", tier: "balanced" },
+  "sonar-reasoning":     { input: 1.00, output: 5.00,  context: "128k", provider: "perplexity", tier: "balanced", notes: "Chain of thought reasoning" },
+  "sonar-reasoning-pro": { input: 2.00, output: 8.00,  context: "128k", provider: "perplexity", tier: "flagship" },
+  "r1-1776":             { input: 2.00, output: 8.00,  context: "128k", provider: "perplexity", tier: "flagship", notes: "Offline — no web search" },
 };
 
 const PROVIDER_LABELS: Record<string, string> = {
-  openai: "OpenAI", anthropic: "Anthropic", google: "Google", groq: "Groq",
+  openai: "OpenAI", anthropic: "Anthropic", google: "Google", groq: "Groq", perplexity: "Perplexity",
 };
 
 interface CostEstimatorProps {
@@ -171,50 +178,50 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Syne:wght@400;700&family=Inter:wght@300;400&family=JetBrains+Mono:wght@400;500&display=swap');
-        .ce{font-family:'Inter',sans-serif;background: var(--bg)color: var(--fg);border:1px solid color-mix(in srgb, var(--fg) 15%, transparent);margin-top:2px}
-        .ce-hdr{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid color-mix(in srgb, var(--fg) 8%, transparent);cursor:pointer;user-select:none}
-        .ce-hdr:hover{background:color-mix(in srgb, var(--fg) 3%, transparent)}
-        .ce-ttl{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.2em;color:color-mix(in srgb, var(--fg) 45%, transparent)}
-        .ce-tgl{font-family:'JetBrains Mono',monospace;font-size:10px;color:color-mix(in srgb, var(--fg) 40%, transparent)}
-        .ce-hdr:hover .ce-tgl{color:color-mix(in srgb, var(--fg) 65%, transparent)}
+        .ce{font-family:'Inter',sans-serif;background: var(--bg);color: var(--fg);border:1px solid color-mix(in srgb, var(--fg) 15%, transparent);margin-top:2px}
+        .ce-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid color-mix(in srgb, var(--fg) 8%, transparent);cursor:pointer;user-select:none}
+        .ce-hdr:hover{background:color-mix(in srgb, var(--fg) 5%, transparent)}
+        .ce-ttl{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.15em;color:color-mix(in srgb, var(--fg) 75%, transparent)}
+        .ce-tgl{font-family:'JetBrains Mono',monospace;font-size:12px;color:color-mix(in srgb, var(--fg) 60%, transparent)}
+        .ce-hdr:hover .ce-tgl{color:color-mix(in srgb, var(--fg) 85%, transparent)}
         .ce-body{overflow:hidden;max-height:0;transition:max-height .4s cubic-bezier(.4,0,.2,1)}
-        .ce-body.open{max-height:900px}
-        .ce-inner{padding:24px}
-        .ce-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-        .ce-badge{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.14em;color:color-mix(in srgb, var(--fg) 65%, transparent);border:1px solid color-mix(in srgb, var(--fg) 10%, transparent);padding:3px 8px}
-        .ce-badge.hi{color:color-mix(in srgb, var(--fg) 85%, transparent);border-color:color-mix(in srgb, var(--fg) 35%, transparent)}
-        .ce-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
-        .ce-fld{display:flex;flex-direction:column;gap:4px}
+        .ce-body.open{max-height:1400px}
+        .ce-inner{padding:40px 32px}
+        .ce-badges{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+        .ce-badge{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.12em;color:color-mix(in srgb, var(--fg) 75%, transparent);border:1px solid color-mix(in srgb, var(--fg) 20%, transparent);padding:6px 14px}
+        .ce-badge.hi{color:color-mix(in srgb, var(--fg) 95%, transparent);border-color:color-mix(in srgb, var(--fg) 45%, transparent)}
+        .ce-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+        .ce-fld{display:flex;flex-direction:column;gap:10px}
         .ce-fld-full{grid-column:1/-1}
-        .ce-lbl{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.16em;color:color-mix(in srgb, var(--fg) 55%, transparent)}
-        .ce-sel,.ce-inp{background: var(--bg);border:1px solid color-mix(in srgb, var(--fg) 18%, transparent)color: var(--fg);font-family:'JetBrains Mono',monospace;font-size:12px;padding:8px 10px;outline:none;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;border-radius:0;transition:border-color .15s}
-        .ce-sel:focus,.ce-inp:focus{border-color:color-mix(in srgb, var(--fg) 55%, transparent)}
+        .ce-lbl{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;color:color-mix(in srgb, var(--fg) 75%, transparent)}
+        .ce-sel,.ce-inp{background: var(--bg);border:1px solid color-mix(in srgb, var(--fg) 25%, transparent);color: var(--fg);font-family:'JetBrains Mono',monospace;font-size:16px;padding:14px 18px;outline:none;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;border-radius:0;transition:border-color .15s}
+        .ce-sel:focus,.ce-inp:focus{border-color:color-mix(in srgb, var(--fg) 75%, transparent)}
         .ce-sel option,.ce-sel optgroup{background: var(--bg);font-family:'JetBrains Mono',monospace}
         .ce-sel-wrap{position:relative}
-        .ce-sel-wrap::after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:9px;color:color-mix(in srgb, var(--fg) 45%, transparent);pointer-events:none}
-        .ce-notes{font-family:'Inter',sans-serif;font-size:10px;font-weight:300;color:color-mix(in srgb, var(--fg) 45%, transparent);margin-top:4px;font-style:italic}
-        .ce-bar-wrap{margin:8px 0 14px 0}
-        .ce-bar{height:1px;background:color-mix(in srgb, var(--fg) 8%, transparent);margin-bottom:5px}
+        .ce-sel-wrap::after{content:'▾';position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:13px;color:color-mix(in srgb, var(--fg) 65%, transparent);pointer-events:none}
+        .ce-notes{font-family:'Inter',sans-serif;font-size:13px;font-weight:300;color:color-mix(in srgb, var(--fg) 65%, transparent);margin-top:8px;font-style:italic}
+        .ce-bar-wrap{margin:18px 0 24px 0}
+        .ce-bar{height:2px;background:color-mix(in srgb, var(--fg) 15%, transparent);margin-bottom:10px}
         .ce-bar-fill{height:100%;background: var(--fg);transition:width .35s ease}
         .ce-bar-labels{display:flex;justify-content:space-between}
-        .ce-bar-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:color-mix(in srgb, var(--fg) 45%, transparent)}
-        .ce-div{border:none;border-top:1px solid color-mix(in srgb, var(--fg) 7%, transparent);margin:14px 0}
-        .ce-row{display:flex;justify-content:space-between;align-items:center;min-height:48px;padding:12px 0;border-bottom:1px solid color-mix(in srgb, var(--fg) 5%, transparent)}
+        .ce-bar-lbl{font-family:'JetBrains Mono',monospace;font-size:12px;color:color-mix(in srgb, var(--fg) 65%, transparent)}
+        .ce-div{border:none;border-top:1px solid color-mix(in srgb, var(--fg) 15%, transparent);margin:24px 0}
+        .ce-row{display:flex;justify-content:space-between;align-items:center;min-height:64px;padding:18px 0;border-bottom:1px solid color-mix(in srgb, var(--fg) 10%, transparent)}
         .ce-row:last-child{border-bottom:none}
-        .ce-row-lbl{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.16em;color:color-mix(in srgb, var(--fg) 45%, transparent)}
-        .ce-row-val{font-family:'Playfair Display',serif;font-size:17px;font-weight:700color: var(--fg);transition:opacity .12s}
+        .ce-row-lbl{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;color:color-mix(in srgb, var(--fg) 75%, transparent)}
+        .ce-row-val{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color: var(--fg);transition:opacity .12s}
         .ce-row-val.dim{opacity:0.25}
-        .ce-row.hl{padding:16px 0}
-        .ce-row.hl .ce-row-lbl{color:color-mix(in srgb, var(--fg) 65%, transparent)}
-        .ce-row.hl .ce-row-val{font-size:26px}
-        .ce-tip{margin-top:12px;padding:9px 12px;border:1px solid color-mix(in srgb, var(--fg) 8%, transparent);font-family:'Inter',sans-serif;font-size:10px;font-weight:300;color:color-mix(in srgb, var(--fg) 65%, transparent);line-height:1.6}
-        .ce-src{margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:8px;color:color-mix(in srgb, var(--fg) 40%, transparent);letter-spacing:0.05em}
+        .ce-row.hl{padding:28px 0}
+        .ce-row.hl .ce-row-lbl{color:color-mix(in srgb, var(--fg) 85%, transparent)}
+        .ce-row.hl .ce-row-val{font-size:44px}
+        .ce-tip{margin-top:20px;padding:16px 20px;border:1px solid color-mix(in srgb, var(--fg) 15%, transparent);font-family:'Inter',sans-serif;font-size:13px;font-weight:300;color:color-mix(in srgb, var(--fg) 85%, transparent);line-height:1.6}
+        .ce-src{margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:11px;color:color-mix(in srgb, var(--fg) 65%, transparent);letter-spacing:0.05em}
         @media(max-width:480px){.ce-grid{grid-template-columns:1fr}.ce-fld-full{grid-column:1}}
       `}</style>
 
       <div className="ce">
         <div className="ce-hdr" onClick={() => setExpanded(v => !v)}>
-          <span className="ce-ttl">COST ESTIMATOR</span>
+          <span className="ce-ttl" style={{ fontSize: '14px', color: 'var(--fg)', letterSpacing: '0.1em' }}>COST ESTIMATION</span>
           <span className="ce-tgl">{expanded ? "[ − COLLAPSE ]" : "[ + EXPAND ]"}</span>
         </div>
 
@@ -321,7 +328,7 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
             {tip && <div className="ce-tip">↳ {tip}</div>}
 
             <div className="ce-src">
-              PRICING — OpenAI · Anthropic · Google AI · Groq — MARCH 2026
+              PRICING — OpenAI · Anthropic · Google AI · Groq · Perplexity — MARCH 2026
             </div>
           </div>
         </div>
