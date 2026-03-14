@@ -410,8 +410,11 @@ export default function LandingPage() {
         .nav-link:hover {
             color: var(--fg-muted);
         }
+        .hide-mobile { display: block; }
+        .show-mobile { display: none; }
         @media (max-width: 768px) {
-            .nav-link.hide-mobile { display: none; }
+            .hide-mobile { display: none !important; }
+            .show-mobile { display: block !important; }
             .nav-inner { 
                 height: 60px; 
                 position: relative;
@@ -1310,7 +1313,10 @@ export default function LandingPage() {
                         <div className="theme-toggle-desktop">
                             <ThemeToggle />
                         </div>
-                        <Link href="/app" className="btn hide-mobile" style={{ padding: "0.45rem 1rem", fontSize: "0.6rem" }} data-hover="true">Analyze Key</Link>
+                        <Link href="/app" className="btn" style={{ padding: "0.45rem 1rem", fontSize: "0.6rem", display: 'flex', alignItems: 'center', justifyContent: 'center' }} data-hover="true">
+                            <span className="hide-mobile">Analyze Key</span>
+                            <span className="show-mobile" style={{ fontSize: '1.2rem', lineHeight: 1 }}>→</span>
+                        </Link>
                     </div>
                 </div>
 
