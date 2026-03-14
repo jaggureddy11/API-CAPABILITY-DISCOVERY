@@ -171,44 +171,44 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Syne:wght@400;700&family=Inter:wght@300;400&family=JetBrains+Mono:wght@400;500&display=swap');
-        .ce{font-family:'Inter',sans-serif;background:#000;color:#fff;border:1px solid rgba(255,255,255,0.15);margin-top:2px}
-        .ce-hdr{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid rgba(255,255,255,0.08);cursor:pointer;user-select:none}
-        .ce-hdr:hover{background:rgba(255,255,255,0.03)}
-        .ce-ttl{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.2em;color:rgba(255,255,255,0.45)}
-        .ce-tgl{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.40)}
-        .ce-hdr:hover .ce-tgl{color:rgba(255,255,255,0.65)}
+        .ce{font-family:'Inter',sans-serif;background: var(--bg)color: var(--fg);border:1px solid color-mix(in srgb, var(--fg) 15%, transparent);margin-top:2px}
+        .ce-hdr{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid color-mix(in srgb, var(--fg) 8%, transparent);cursor:pointer;user-select:none}
+        .ce-hdr:hover{background:color-mix(in srgb, var(--fg) 3%, transparent)}
+        .ce-ttl{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.2em;color:color-mix(in srgb, var(--fg) 45%, transparent)}
+        .ce-tgl{font-family:'JetBrains Mono',monospace;font-size:10px;color:color-mix(in srgb, var(--fg) 40%, transparent)}
+        .ce-hdr:hover .ce-tgl{color:color-mix(in srgb, var(--fg) 65%, transparent)}
         .ce-body{overflow:hidden;max-height:0;transition:max-height .4s cubic-bezier(.4,0,.2,1)}
         .ce-body.open{max-height:900px}
         .ce-inner{padding:24px}
         .ce-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-        .ce-badge{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.14em;color:rgba(255,255,255,0.65);border:1px solid rgba(255,255,255,0.1);padding:3px 8px}
-        .ce-badge.hi{color:rgba(255,255,255,0.85);border-color:rgba(255,255,255,0.35)}
+        .ce-badge{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.14em;color:color-mix(in srgb, var(--fg) 65%, transparent);border:1px solid color-mix(in srgb, var(--fg) 10%, transparent);padding:3px 8px}
+        .ce-badge.hi{color:color-mix(in srgb, var(--fg) 85%, transparent);border-color:color-mix(in srgb, var(--fg) 35%, transparent)}
         .ce-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
         .ce-fld{display:flex;flex-direction:column;gap:4px}
         .ce-fld-full{grid-column:1/-1}
-        .ce-lbl{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.16em;color:rgba(255,255,255,0.55)}
-        .ce-sel,.ce-inp{background:#000;border:1px solid rgba(255,255,255,0.18);color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:8px 10px;outline:none;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;border-radius:0;transition:border-color .15s}
-        .ce-sel:focus,.ce-inp:focus{border-color:rgba(255,255,255,0.55)}
-        .ce-sel option,.ce-sel optgroup{background:#111;font-family:'JetBrains Mono',monospace}
+        .ce-lbl{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.16em;color:color-mix(in srgb, var(--fg) 55%, transparent)}
+        .ce-sel,.ce-inp{background: var(--bg);border:1px solid color-mix(in srgb, var(--fg) 18%, transparent)color: var(--fg);font-family:'JetBrains Mono',monospace;font-size:12px;padding:8px 10px;outline:none;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;border-radius:0;transition:border-color .15s}
+        .ce-sel:focus,.ce-inp:focus{border-color:color-mix(in srgb, var(--fg) 55%, transparent)}
+        .ce-sel option,.ce-sel optgroup{background: var(--bg);font-family:'JetBrains Mono',monospace}
         .ce-sel-wrap{position:relative}
-        .ce-sel-wrap::after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:9px;color:rgba(255,255,255,0.45);pointer-events:none}
-        .ce-notes{font-family:'Inter',sans-serif;font-size:10px;font-weight:300;color:rgba(255,255,255,0.45);margin-top:4px;font-style:italic}
+        .ce-sel-wrap::after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:9px;color:color-mix(in srgb, var(--fg) 45%, transparent);pointer-events:none}
+        .ce-notes{font-family:'Inter',sans-serif;font-size:10px;font-weight:300;color:color-mix(in srgb, var(--fg) 45%, transparent);margin-top:4px;font-style:italic}
         .ce-bar-wrap{margin:8px 0 14px 0}
-        .ce-bar{height:1px;background:rgba(255,255,255,0.08);margin-bottom:5px}
-        .ce-bar-fill{height:100%;background:#fff;transition:width .35s ease}
+        .ce-bar{height:1px;background:color-mix(in srgb, var(--fg) 8%, transparent);margin-bottom:5px}
+        .ce-bar-fill{height:100%;background: var(--fg);transition:width .35s ease}
         .ce-bar-labels{display:flex;justify-content:space-between}
-        .ce-bar-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,0.45)}
-        .ce-div{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:14px 0}
-        .ce-row{display:flex;justify-content:space-between;align-items:center;min-height:48px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+        .ce-bar-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:color-mix(in srgb, var(--fg) 45%, transparent)}
+        .ce-div{border:none;border-top:1px solid color-mix(in srgb, var(--fg) 7%, transparent);margin:14px 0}
+        .ce-row{display:flex;justify-content:space-between;align-items:center;min-height:48px;padding:12px 0;border-bottom:1px solid color-mix(in srgb, var(--fg) 5%, transparent)}
         .ce-row:last-child{border-bottom:none}
-        .ce-row-lbl{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.16em;color:rgba(255,255,255,0.45)}
-        .ce-row-val{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:#fff;transition:opacity .12s}
+        .ce-row-lbl{font-family:'Syne',sans-serif;font-size:8px;font-weight:700;letter-spacing:0.16em;color:color-mix(in srgb, var(--fg) 45%, transparent)}
+        .ce-row-val{font-family:'Playfair Display',serif;font-size:17px;font-weight:700color: var(--fg);transition:opacity .12s}
         .ce-row-val.dim{opacity:0.25}
         .ce-row.hl{padding:16px 0}
-        .ce-row.hl .ce-row-lbl{color:rgba(255,255,255,0.65)}
+        .ce-row.hl .ce-row-lbl{color:color-mix(in srgb, var(--fg) 65%, transparent)}
         .ce-row.hl .ce-row-val{font-size:26px}
-        .ce-tip{margin-top:12px;padding:9px 12px;border:1px solid rgba(255,255,255,0.08);font-family:'Inter',sans-serif;font-size:10px;font-weight:300;color:rgba(255,255,255,0.65);line-height:1.6}
-        .ce-src{margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(255,255,255,0.40);letter-spacing:0.05em}
+        .ce-tip{margin-top:12px;padding:9px 12px;border:1px solid color-mix(in srgb, var(--fg) 8%, transparent);font-family:'Inter',sans-serif;font-size:10px;font-weight:300;color:color-mix(in srgb, var(--fg) 65%, transparent);line-height:1.6}
+        .ce-src{margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:8px;color:color-mix(in srgb, var(--fg) 40%, transparent);letter-spacing:0.05em}
         @media(max-width:480px){.ce-grid{grid-template-columns:1fr}.ce-fld-full{grid-column:1}}
       `}</style>
 
@@ -223,7 +223,7 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
 
             <>
               <div className="mb-6">
-                <span className="font-display text-[9px] tracking-[0.2em] text-[rgba(255,255,255,0.45)] block mb-3 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>ASK AI</span>
+                <span className="font-display text-[9px] tracking-[0.2em] text-[var(--fg-muted)] block mb-3 uppercase" style={{ fontFamily: "Syne, sans-serif" }}>ASK AI</span>
                 <form onSubmit={handleAskAI} className="flex flex-col gap-2">
                   <div className="flex w-full">
                     <input
@@ -237,12 +237,12 @@ export default function CostEstimator({ availableModels }: CostEstimatorProps) {
                     <button
                       type="submit"
                       disabled={aiCostQueryLoading || !aiCostQuery.trim()}
-                      className="w-[48px] bg-black border border-[rgba(255,255,255,0.18)] border-l-0 text-white hover:bg-white hover:text-black transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed outline-none rounded-none flex items-center justify-center font-bold"
+                      className="w-[48px] bg-[var(--bg)] border border-[var(--border)] border-l-0 text-[var(--fg)] hover:bg-[var(--fg)] hover:text-[var(--bg)] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed outline-none rounded-none flex items-center justify-center font-bold"
                     >→</button>
                   </div>
                   {aiCostQueryLoading && <div className="mt-1"><AILoading /></div>}
                   {aiCostQueryExplanation && aiCostQueryExplanation !== "one sentence" && !aiCostQueryLoading && (
-                      <div className="font-sans font-light text-[11px] text-[rgba(255,255,255,0.65)] italic animate-in fade-in duration-500 mt-1">
+                      <div className="font-sans font-light text-[11px] text-[var(--fg-muted)] italic animate-in fade-in duration-500 mt-1">
                           {aiCostQueryExplanation}
                       </div>
                   )}

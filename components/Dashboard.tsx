@@ -111,7 +111,7 @@ export default function Dashboard() {
       }, [lineIdx, lines]);
   
       return (
-          <div className="font-mono text-[0.85rem] text-white/80 p-8 flex flex-col gap-3 relative animate-in fade-in duration-300 flex-1">
+          <div className="font-mono text-[0.85rem] text-[var(--fg)]/80 p-8 flex flex-col gap-3 relative animate-in fade-in duration-300 flex-1">
               <div className="terminal-scanline"></div>
               {visibleLines.map((l, i) => <div key={i}>{l}</div>)}
               {lineIdx < lines.length && <div>{currentLineStr}<span className="cursor-blink">█</span></div>}
@@ -271,29 +271,29 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="w-full text-white font-sans max-w-[1400px] mx-auto animate-in fade-in duration-700">
+    <div className="w-full text-[var(--fg)] font-sans max-w-[1400px] mx-auto animate-in fade-in duration-700">
       
       {/* PAGE HEADER */}
       <div className="mb-[32px] text-center md:text-left flex flex-col items-center md:items-start w-full">
-          <span className="font-display text-[9px] uppercase text-[rgba(255,255,255,0.40)] tracking-[0.25em] mb-[12px] block">Capability Discovery</span>
+          <span className="font-display text-[9px] uppercase text-[color-mix(in_srgb,var(--fg)_40%,transparent)] tracking-[0.25em] mb-[12px] block">Capability Discovery</span>
           <h1 className="font-serif font-bold tracking-tighter leading-none m-[8px_0_6px_0] text-[clamp(40px,4vw,64px)]">
               ANALYZE YOUR KEY.
           </h1>
-          <p className="font-sans text-[rgba(255,255,255,0.65)] font-light text-[15px] mb-[32px]">
+          <p className="font-sans text-[var(--fg-muted)] font-light text-[15px] mb-[32px]">
               Your key never touches our servers. Results are instant and discarded immediately.
           </p>
       </div>
 
       <div className="flex flex-col md:flex-row w-full gap-[2px] mb-[2px]">
-        <div className="w-full md:w-[300px] lg:w-[360px] shrink-0 border border-[rgba(255,255,255,0.12)] border-r md:border-r-[rgba(255,255,255,0.08)] bg-black p-[28px] flex flex-col md:sticky top-[80px] h-fit z-10">
+        <div className="w-full md:w-[300px] lg:w-[360px] shrink-0 border border-[var(--border)] border-r md:border-[var(--border)] bg-[var(--bg)] p-[28px] flex flex-col md:sticky top-[80px] h-fit z-10">
             <form onSubmit={handleDiscover} className="flex flex-col w-full">
                 <div className="mb-[8px]">
-                    <label className="font-display text-[9px] uppercase tracking-[0.2em] text-[rgba(255,255,255,0.5)] block mb-[8px]">Provider</label>
+                    <label className="font-display text-[9px] uppercase tracking-[0.2em] text-[var(--fg-muted)] block mb-[8px]">Provider</label>
                     <div className="relative">
                         <select 
                             value={provider} 
                             onChange={(e) => setProvider(e.target.value as ProviderType | 'auto')}
-                            className="w-full appearance-none bg-black border border-[rgba(255,255,255,0.15)] text-white p-3 font-mono text-sm uppercase outline-none focus:border-white transition-colors cursor-pointer rounded-none"
+                            className="w-full appearance-none bg-[var(--bg)] border border-[var(--border)] text-[var(--fg)] p-3 font-mono text-sm uppercase outline-none focus:border-[var(--fg)] transition-colors cursor-pointer rounded-none"
                         >
                             <option value="auto">✦ Auto-Detect</option>
                             <option value="openai">OpenAI</option>
@@ -301,17 +301,17 @@ export default function Dashboard() {
                             <option value="groq">Groq</option>
                             <option value="gemini">Google Gemini</option>
                         </select>
-                        <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-white/50">▾</div>
+                        <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-[var(--fg)]/50">▾</div>
                     </div>
                 </div>
 
                 <div className="mt-[20px] mb-[8px]">
-                    <label className="font-display text-[9px] uppercase tracking-[0.2em] text-[rgba(255,255,255,0.5)] block mb-[8px]">API Key</label>
+                    <label className="font-display text-[9px] uppercase tracking-[0.2em] text-[var(--fg-muted)] block mb-[8px]">API Key</label>
                     <input
                         type="password"
                         value={apiKey}
                         onChange={(e) => setApiKey(e.target.value)}
-                        className="w-full bg-black border border-[rgba(255,255,255,0.15)] text-white p-3 font-mono text-sm outline-none focus:border-white transition-colors rounded-none placeholder-white/20"
+                        className="w-full bg-[var(--bg)] border border-[var(--border)] text-[var(--fg)] p-3 font-mono text-sm outline-none focus:border-[var(--fg)] transition-colors rounded-none placeholder-[color-mix(in_srgb,var(--fg)_20%,transparent)]"
                         placeholder={provider === 'auto' ? "sk-..." : "Paste key here..."}
                         required
                     />
@@ -319,38 +319,38 @@ export default function Dashboard() {
 
                 {/* FEATURE 2: LIVE PARSER STRIP */}
                 <div className={`overflow-hidden transition-all duration-300 ${apiKey.trim() ? "max-h-[200px] opacity-100 mt-[12px] mb-[16px]" : "max-h-0 opacity-0 mb-0"}`}>
-                    <div className="border border-[rgba(255,255,255,0.15)] bg-black p-[20px] text-white font-mono text-[10px] leading-relaxed relative">
-                        <div className="mb-2 text-[rgba(255,255,255,0.80)] break-all">{apiKey.substring(0, 24)}{apiKey.length > 24 ? '...' : ''}</div>
-                        <div className="flex gap-4 text-[rgba(255,255,255,0.20)] mb-2 whitespace-pre">── ── ── ── ── ── ── ── ── ──</div>
+                    <div className="border border-[var(--border)] bg-[var(--bg)] p-[20px] text-[var(--fg)] font-mono text-[10px] leading-relaxed relative">
+                        <div className="mb-2 text-[color-mix(in_srgb,var(--fg)_80%,transparent)] break-all">{apiKey.substring(0, 24)}{apiKey.length > 24 ? '...' : ''}</div>
+                        <div className="flex gap-4 text-[color-mix(in_srgb,var(--fg)_20%,transparent)] mb-2 whitespace-pre">── ── ── ── ── ── ── ── ── ──</div>
                         <div className="grid grid-cols-[60px_1fr_20px] gap-2 items-center">
                             <div className="parser-row col-span-3 grid grid-cols-subgrid">
-                                <span className="font-display uppercase text-[rgba(255,255,255,0.45)] tracking-widest text-[8px]">FORMAT</span>
-                                <span className="text-[rgba(255,255,255,0.80)]">{keyFormat?.label}</span>
-                                <span className={keyFormat?.valid ? "text-[rgba(255,255,255,0.70)]" : "text-[rgba(255,255,255,0.40)]"}>{keyFormat?.valid ? "✓" : "✗"}</span>
+                                <span className="font-display uppercase text-[var(--fg-muted)] tracking-widest text-[8px]">FORMAT</span>
+                                <span className="text-[color-mix(in_srgb,var(--fg)_80%,transparent)]">{keyFormat?.label}</span>
+                                <span className={keyFormat?.valid ? "text-[color-mix(in_srgb,var(--fg)_70%,transparent)]" : "text-[color-mix(in_srgb,var(--fg)_40%,transparent)]"}>{keyFormat?.valid ? "✓" : "✗"}</span>
                             </div>
 
                             <div className="parser-row col-span-3 grid grid-cols-subgrid">
-                                <span className="font-display uppercase text-[rgba(255,255,255,0.45)] tracking-widest text-[8px]">PROVIDER</span>
-                                <span className="text-[rgba(255,255,255,0.80)]">{keyFormat?.provider !== 'auto' && keyFormat ? providerNames[keyFormat.provider] : 'Unknown'}</span>
-                                <span className={keyFormat?.valid ? "text-[rgba(255,255,255,0.70)]" : "text-[rgba(255,255,255,0.40)]"}>{keyFormat?.valid ? "✓" : "✗"}</span>
+                                <span className="font-display uppercase text-[var(--fg-muted)] tracking-widest text-[8px]">PROVIDER</span>
+                                <span className="text-[color-mix(in_srgb,var(--fg)_80%,transparent)]">{keyFormat?.provider !== 'auto' && keyFormat ? providerNames[keyFormat.provider] : 'Unknown'}</span>
+                                <span className={keyFormat?.valid ? "text-[color-mix(in_srgb,var(--fg)_70%,transparent)]" : "text-[color-mix(in_srgb,var(--fg)_40%,transparent)]"}>{keyFormat?.valid ? "✓" : "✗"}</span>
                             </div>
 
                             <div className="parser-row col-span-3 grid grid-cols-subgrid">
-                                <span className="font-display uppercase text-[rgba(255,255,255,0.45)] tracking-widest text-[8px]">LENGTH</span>
-                                <span className="text-[rgba(255,255,255,0.80)]">{apiKey.trim().length >= 10 ? 'Valid' : 'Too Short'}</span>
-                                <span className={apiKey.trim().length >= 10 ? "text-[rgba(255,255,255,0.70)]" : "text-[rgba(255,255,255,0.40)]"}>{apiKey.trim().length >= 10 ? "✓" : "✗"}</span>
+                                <span className="font-display uppercase text-[var(--fg-muted)] tracking-widest text-[8px]">LENGTH</span>
+                                <span className="text-[color-mix(in_srgb,var(--fg)_80%,transparent)]">{apiKey.trim().length >= 10 ? 'Valid' : 'Too Short'}</span>
+                                <span className={apiKey.trim().length >= 10 ? "text-[color-mix(in_srgb,var(--fg)_70%,transparent)]" : "text-[color-mix(in_srgb,var(--fg)_40%,transparent)]"}>{apiKey.trim().length >= 10 ? "✓" : "✗"}</span>
                             </div>
 
                             <div className="parser-row col-span-3 grid grid-cols-subgrid">
-                                <span className="font-display uppercase text-[rgba(255,255,255,0.45)] tracking-widest text-[8px]">PREFIX</span>
-                                <span className="text-[rgba(255,255,255,0.80)]">{keyFormat?.prefix}</span>
-                                <span className={keyFormat?.valid ? "text-[rgba(255,255,255,0.70)]" : "text-[rgba(255,255,255,0.40)]"}>{keyFormat?.valid ? "✓" : "✗"}</span>
+                                <span className="font-display uppercase text-[var(--fg-muted)] tracking-widest text-[8px]">PREFIX</span>
+                                <span className="text-[color-mix(in_srgb,var(--fg)_80%,transparent)]">{keyFormat?.prefix}</span>
+                                <span className={keyFormat?.valid ? "text-[color-mix(in_srgb,var(--fg)_70%,transparent)]" : "text-[color-mix(in_srgb,var(--fg)_40%,transparent)]"}>{keyFormat?.valid ? "✓" : "✗"}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className={`text-[rgba(255,255,255,0.65)] text-[11px] font-sans font-light leading-relaxed mb-[20px] ${apiKey.trim() ? "mt-[16px]" : ""}`}>
+                <div className={`text-[var(--fg-muted)] text-[11px] font-sans font-light leading-relaxed mb-[20px] ${apiKey.trim() ? "mt-[16px]" : ""}`}>
                     Keys are never stored or logged. Discarded instantly in volatile memory.
                 </div>
 
@@ -358,7 +358,7 @@ export default function Dashboard() {
                     <button
                         type="submit"
                         disabled={loading || !apiKey.trim()}
-                        className="w-full bg-white text-black font-display font-bold text-[11px] uppercase tracking-[0.2em] h-[52px] border border-white hover:bg-black hover:text-white transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed outline-none flex items-center justify-center cursor-pointer"
+                        className="w-full bg-[var(--fg)] text-[var(--bg)] font-display font-bold text-[11px] uppercase tracking-[0.2em] h-[52px] border border-[var(--fg)] hover:bg-[var(--bg)] hover:text-[var(--fg)] transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed outline-none flex items-center justify-center cursor-pointer"
                     >
                         {loading ? 'DISCOVERING...' : 'DISCOVER →'}
                     </button>
@@ -367,7 +367,7 @@ export default function Dashboard() {
                         <button
                             type="button"
                             onClick={clearForm}
-                            className="w-full bg-transparent text-[rgba(255,255,255,0.4)] font-display text-[10px] uppercase tracking-[0.1em] h-[44px] border border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.05)] hover:text-white transition-colors duration-300 flex items-center justify-center cursor-pointer"
+                            className="w-full bg-transparent text-[var(--fg-muted)] font-display text-[10px] uppercase tracking-[0.1em] h-[44px] border border-[var(--border)] hover:bg-[color-mix(in_srgb,var(--fg)_5%,transparent)] hover:text-[var(--fg)] transition-colors duration-300 flex items-center justify-center cursor-pointer"
                         >
                         CLEAR
                         </button> 
@@ -377,17 +377,17 @@ export default function Dashboard() {
         </div>
 
         {/* RIGHT COLUMN: Results Panel */}
-        <div className="flex-1 min-w-0 border border-[rgba(255,255,255,0.12)] md:border-l-0 bg-black flex flex-col relative overflow-y-auto md:max-h-[calc(100vh-200px)] custom-scrollbar">
+        <div className="flex-1 min-w-0 border border-[var(--border)] md:border-l-0 bg-[var(--bg)] flex flex-col relative overflow-y-auto md:max-h-[calc(100vh-200px)] custom-scrollbar">
             
             {/* 1. Empty State */}
             {!loading && !result && !error && (
-                <div className="flex-1 flex flex-col items-center justify-center p-[32px] text-center border-[rgba(255,255,255,0.15)] animate-in fade-in duration-500 min-h-[400px]">
-                    <div className="flex flex-col items-center text-[rgba(255,255,255,0.40)] w-full max-w-[320px]">
+                <div className="flex-1 flex flex-col items-center justify-center p-[32px] text-center border-[var(--border)] animate-in fade-in duration-500 min-h-[400px]">
+                    <div className="flex flex-col items-center text-[color-mix(in_srgb,var(--fg)_40%,transparent)] w-full max-w-[320px]">
                         <h3 className="font-display text-[12px] tracking-[0.2em] uppercase mb-[24px]">Ready for Discovery</h3>
-                        <p className="font-sans font-light text-[14px] leading-relaxed mb-[32px] text-[rgba(255,255,255,0.65)]">
+                        <p className="font-sans font-light text-[14px] leading-relaxed mb-[32px] text-[var(--fg-muted)]">
                             Paste your API key on the left to begin analysis.
                         </p>
-                        <div className="font-sans font-light text-[14px] flex flex-col gap-[12px] items-center text-center text-[rgba(255,255,255,0.65)]">
+                        <div className="font-sans font-light text-[14px] flex flex-col gap-[12px] items-center text-center text-[var(--fg-muted)]">
                             <div>─ Active endpoint testing</div>
                             <div>─ Live capability detection</div>
                             <div>─ AI-powered insights</div>
@@ -403,7 +403,7 @@ export default function Dashboard() {
             {error && !loading && (
                 <div className="flex-1 font-mono text-sm p-8 flex flex-col items-start gap-4 animate-in fade-in slide-in-from-bottom-4">
                     <span className="font-display text-[0.7rem] tracking-[0.2em] text-[#ff4444] uppercase font-bold border border-[#ff4444]/30 bg-[#ff4444]/10 px-3 py-1">ERROR</span>
-                    <div className="text-white/80 leading-relaxed whitespace-pre-wrap mt-2">{error}</div>
+                    <div className="text-[var(--fg)]/80 leading-relaxed whitespace-pre-wrap mt-2">{error}</div>
                 </div>
             )}
 
@@ -412,22 +412,22 @@ export default function Dashboard() {
                 <div className="flex-1 font-mono text-[14px] leading-[1.6] px-[16px] xl:px-[28px] py-[28px] relative">
                     
                     {/* TIMESTAMP HEADER */}
-                    <div className="absolute top-[28px] right-[28px] font-mono text-[10px] text-[rgba(255,255,255,0.2)]">
+                    <div className="absolute top-[28px] right-[28px] font-mono text-[10px] text-[var(--fg-muted)]">
                         Scanned {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
 
                     <div className="res-stagger res-delay-0 flex flex-col gap-2 pb-[28px]">
                         <span className="font-display text-[9px] tracking-[0.2em] block mb-[16px] uppercase">
-                            <span className="text-[rgba(255,255,255,0.40)]">01 — </span><span className="text-[rgba(255,255,255,0.50)]">Provider</span>
+                            <span className="text-[color-mix(in_srgb,var(--fg)_40%,transparent)]">01 — </span><span className="text-[color-mix(in_srgb,var(--fg)_50%,transparent)]">Provider</span>
                         </span>
                         <div className="flex justify-between items-center w-full">
-                            <span className="font-display text-[9px] uppercase tracking-[0.2em] text-[rgba(255,255,255,0.45)]">PROVIDER</span>
-                            <span className="font-sans font-semibold text-[15px] text-[rgba(255,255,255,0.85)]">{providerNames[result.provider] || result.provider}</span>
+                            <span className="font-display text-[9px] uppercase tracking-[0.2em] text-[var(--fg-muted)]">PROVIDER</span>
+                            <span className="font-sans font-semibold text-[15px] text-[var(--fg-muted)]">{providerNames[result.provider] || result.provider}</span>
                         </div>
                         <div className="flex justify-between items-center w-full mt-[8px]">
-                            <span className="font-display text-[9px] uppercase tracking-[0.2em] text-[rgba(255,255,255,0.45)]">STATUS</span>
-                            <span className={`text-[15px] font-semibold text-[rgba(255,255,255,0.90)] flex items-center gap-2 ${result.status === 'valid' ? 'status-pulse' : 'status-invalid'}`}>
-                                <span className={`w-[8px] h-[8px] rounded-full ${result.status === 'valid' ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'bg-red-500 shadow-[0_0_8px_rgba(255,0,0,0.8)]'}`}></span> 
+                            <span className="font-display text-[9px] uppercase tracking-[0.2em] text-[var(--fg-muted)]">STATUS</span>
+                            <span className={`text-[15px] font-semibold text-[color-mix(in_srgb,var(--fg)_90%,transparent)] flex items-center gap-2 ${result.status === 'valid' ? 'status-pulse' : 'status-invalid'}`}>
+                                <span className={`w-[8px] h-[8px] rounded-full ${result.status === 'valid' ? 'bg-[var(--fg)] shadow-[0_0_8px_color-mix(in srgb, var(--fg) 80%, transparent)]' : 'bg-red-500 shadow-[0_0_8px_rgba(255,0,0,0.8)]'}`}></span> 
                                 {result.status === 'valid' ? 'VALID' : 'INVALID'}
                             </span>
                         </div>
@@ -435,20 +435,20 @@ export default function Dashboard() {
 
                     {result.status === 'valid' && (
                         <>
-                            <div className="w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
+                            <div className="w-full h-[1px] bg-[color-mix(in_srgb,var(--fg)_7%,transparent)]"></div>
                                     <div className="res-stagger res-delay-1 py-[28px] flex flex-col items-start min-h-[100px]">
                                         <span className="font-display text-[9px] tracking-[0.2em] block mb-[8px] uppercase">
-                                            <span className="text-[rgba(255,255,255,0.40)]">02 — </span><span className="text-[rgba(255,255,255,0.50)]">AI Summary</span>
+                                            <span className="text-[color-mix(in_srgb,var(--fg)_40%,transparent)]">02 — </span><span className="text-[color-mix(in_srgb,var(--fg)_50%,transparent)]">AI Summary</span>
                                         </span>
                                         {aiSummaryLoading ? (
                                             <AILoading />
                                         ) : aiSummary ? (
-                                            <p className="font-sans font-light text-[15px] text-[rgba(255,255,255,0.75)] leading-[1.8] w-full max-w-full m-0 p-0 animate-in fade-in duration-500">
+                                            <p className="font-sans font-light text-[15px] text-[var(--fg-muted)] leading-[1.8] w-full max-w-full m-0 p-0 animate-in fade-in duration-500">
                                                 {aiSummary}
                                             </p>
                                         ) : (
                                             <span 
-                                                className="font-sans font-light text-[12px] text-white/25 italic cursor-pointer hover:text-white/50 transition-colors mt-[8px]" 
+                                                className="font-sans font-light text-[12px] text-[var(--fg)]/25 italic cursor-pointer hover:text-[var(--fg)]/50 transition-colors mt-[8px]" 
                                                 onClick={() => {
                                                     setAiSummaryLoading(true);
                                                     getScanSummary(result).then(setAiSummary).catch(()=>setAiSummary("")).finally(()=>setAiSummaryLoading(false));
@@ -458,38 +458,38 @@ export default function Dashboard() {
                                     </div>
 
                             {/* CAPABILITIES */}
-                            <div className="w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
+                            <div className="w-full h-[1px] bg-[color-mix(in_srgb,var(--fg)_7%,transparent)]"></div>
                             <div className="res-stagger res-delay-1 py-[28px]">
                                 <span className="font-display text-[9px] uppercase tracking-[0.2em] block mb-[16px]">
-                                    <span className="text-[rgba(255,255,255,0.40)]">03 — </span><span className="text-[rgba(255,255,255,0.50)]">Capabilities</span>
+                                    <span className="text-[color-mix(in_srgb,var(--fg)_40%,transparent)]">03 — </span><span className="text-[color-mix(in_srgb,var(--fg)_50%,transparent)]">Capabilities</span>
                                 </span>
                                 <div className="flex flex-col">
-                                    <div className="res-cap-row border-b border-[rgba(255,255,255,0.05)] last:border-0"><CapabilityRow name="Text Generation" cap={result.capabilities.textGeneration} /></div>
-                                    <div className="res-cap-row border-b border-[rgba(255,255,255,0.05)] last:border-0"><CapabilityRow name="Embeddings" cap={result.capabilities.embeddings} /></div>
-                                    <div className="res-cap-row border-b border-[rgba(255,255,255,0.05)] last:border-0"><CapabilityRow name="Image Generation" cap={result.capabilities.imageGeneration} /></div>
-                                    <div className="res-cap-row border-b border-[rgba(255,255,255,0.05)] last:border-0"><CapabilityRow name="Audio Processing" cap={result.capabilities.audioGeneration} /></div>
-                                    <div className="res-cap-row border-b border-[rgba(255,255,255,0.05)] last:border-0"><CapabilityRow name="Video Generation" cap={result.capabilities.videoGeneration} /></div>
+                                    <div className="res-cap-row border-b border-[var(--border)] last:border-0"><CapabilityRow name="Text Generation" cap={result.capabilities.textGeneration} /></div>
+                                    <div className="res-cap-row border-b border-[var(--border)] last:border-0"><CapabilityRow name="Embeddings" cap={result.capabilities.embeddings} /></div>
+                                    <div className="res-cap-row border-b border-[var(--border)] last:border-0"><CapabilityRow name="Image Generation" cap={result.capabilities.imageGeneration} /></div>
+                                    <div className="res-cap-row border-b border-[var(--border)] last:border-0"><CapabilityRow name="Audio Processing" cap={result.capabilities.audioGeneration} /></div>
+                                    <div className="res-cap-row border-b border-[var(--border)] last:border-0"><CapabilityRow name="Video Generation" cap={result.capabilities.videoGeneration} /></div>
                                 </div>
                             </div>
 
                             {/* MODELS */}
-                            <div className="res-stagger res-delay-2 w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
+                            <div className="res-stagger res-delay-2 w-full h-[1px] bg-[color-mix(in_srgb,var(--fg)_7%,transparent)]"></div>
                             <div className="res-stagger res-delay-2 py-[28px]">
                                 <span className="font-display text-[9px] uppercase tracking-[0.2em] block mb-[16px]">
-                                    <span className="text-[rgba(255,255,255,0.40)]">04 — </span><span className="text-[rgba(255,255,255,0.50)]">Models</span>
+                                    <span className="text-[color-mix(in_srgb,var(--fg)_40%,transparent)]">04 — </span><span className="text-[color-mix(in_srgb,var(--fg)_50%,transparent)]">Models</span>
                                 </span>
                                 
                                 {result.topModels.filter(m => !m.permissionDenied).length > 0 && (
                                     <div className="mb-6">
-                                        <div className="font-display text-[8px] text-white/30 uppercase tracking-widest mb-2">AUTHORIZED</div>
+                                        <div className="font-display text-[8px] text-[var(--fg)]/30 uppercase tracking-widest mb-2">AUTHORIZED</div>
                                         <div className="flex flex-col">
                                             {result.topModels.filter(m => !m.permissionDenied).map(m => (
-                                                <div key={m.id} className="res-model-row flex justify-between items-center w-full py-[12px] border-b border-[rgba(255,255,255,0.05)] last:border-0">
+                                                <div key={m.id} className="res-model-row flex justify-between items-center w-full py-[12px] border-b border-[var(--border)] last:border-0">
                                                     <div className="flex items-center flex-1">
-                                                        <span className="cap-check text-[rgba(255,255,255,0.80)] text-lg mr-3">✓</span>
-                                                        <span className="text-[rgba(255,255,255,0.85)] font-mono text-[13px] text-left">{m.id}</span>
+                                                        <span className="cap-check text-[color-mix(in_srgb,var(--fg)_80%,transparent)] text-lg mr-3">✓</span>
+                                                        <span className="text-[var(--fg-muted)] font-mono text-[13px] text-left">{m.id}</span>
                                                     </div>
-                                                    <div className="flex items-center gap-6 flex-1 justify-end font-mono text-[12px] text-[rgba(255,255,255,0.50)]">
+                                                    <div className="flex items-center gap-6 flex-1 justify-end font-mono text-[12px] text-[color-mix(in_srgb,var(--fg)_50%,transparent)]">
                                                         {m.maxInputTokens && <span className="w-[60px] text-right">{Math.round(m.maxInputTokens / 1000)}k</span>}
                                                         {(provider === 'openai' || provider === 'auto') && (m.id.includes('4') || m.id.includes('mini')) && (
                                                             <span className="w-[80px] text-right hidden sm:block">${m.id.includes('mini') ? '0.15' : '5'}/1M</span>
@@ -503,17 +503,17 @@ export default function Dashboard() {
 
                                 {result.topModels.filter(m => m.permissionDenied).length > 0 && (
                                     <div>
-                                        <div className="w-full h-[1px] bg-[rgba(255,255,255,0.07)] my-4"></div>
-                                        <div className="font-display text-[8px] text-[rgba(255,255,255,0.40)] uppercase tracking-widest mb-2">RESTRICTED</div>
+                                        <div className="w-full h-[1px] bg-[color-mix(in_srgb,var(--fg)_7%,transparent)] my-4"></div>
+                                        <div className="font-display text-[8px] text-[color-mix(in_srgb,var(--fg)_40%,transparent)] uppercase tracking-widest mb-2">RESTRICTED</div>
                                         <div className="flex flex-col">
                                             {result.topModels.filter(m => m.permissionDenied).map(m => (
-                                                <div key={m.id} className="res-model-row flex justify-between items-center w-full py-[12px] border-b border-[rgba(255,255,255,0.05)] last:border-0">
+                                                <div key={m.id} className="res-model-row flex justify-between items-center w-full py-[12px] border-b border-[var(--border)] last:border-0">
                                                     <div className="flex items-center flex-1">
-                                                        <span className="cap-cross text-[rgba(255,255,255,0.40)] text-lg mr-3">✗</span>
-                                                        <span className="text-[rgba(255,255,255,0.40)] font-mono text-[13px] text-left line-through">{m.id}</span>
+                                                        <span className="cap-cross text-[color-mix(in_srgb,var(--fg)_40%,transparent)] text-lg mr-3">✗</span>
+                                                        <span className="text-[color-mix(in_srgb,var(--fg)_40%,transparent)] font-mono text-[13px] text-left line-through">{m.id}</span>
                                                     </div>
                                                     <div className="flex flex-1 justify-end items-center">
-                                                        <span className="font-display text-[0.6rem] tracking-wider border border-[rgba(255,255,255,0.25)] text-[rgba(255,255,255,0.50)] px-1 py-0.5 uppercase">Denied</span>
+                                                        <span className="font-display text-[0.6rem] tracking-wider border border-[var(--border)] text-[color-mix(in_srgb,var(--fg)_50%,transparent)] px-1 py-0.5 uppercase">Denied</span>
                                                     </div>
                                                 </div>
                                             ))}
@@ -522,7 +522,7 @@ export default function Dashboard() {
                                 )}
 
                                 {result.allModels.length > result.topModels.length && (
-                                    <div className="text-[rgba(255,255,255,0.40)] mt-4 italic font-sans font-light">
+                                    <div className="text-[color-mix(in_srgb,var(--fg)_40%,transparent)] mt-4 italic font-sans font-light">
                                         + {result.allModels.length - result.topModels.length} older models
                                     </div>
                                 )}
@@ -531,22 +531,22 @@ export default function Dashboard() {
                             {/* RATE LIMITS */}
                             {(result.rateLimits?.requestsPerMinute || result.rateLimits?.tokensPerMinute) && (
                                 <>
-                                    <div className="res-stagger res-delay-3 w-full h-[1px] bg-[rgba(255,255,255,0.07)]"></div>
+                                    <div className="res-stagger res-delay-3 w-full h-[1px] bg-[color-mix(in_srgb,var(--fg)_7%,transparent)]"></div>
                                     <div className="res-stagger res-delay-3 py-[28px]">
                                         <span className="font-display text-[9px] uppercase tracking-[0.2em] block mb-[16px]">
-                                            <span className="text-[rgba(255,255,255,0.40)]">05 — </span><span className="text-[rgba(255,255,255,0.50)]">Rate Limits</span>
+                                            <span className="text-[color-mix(in_srgb,var(--fg)_40%,transparent)]">05 — </span><span className="text-[color-mix(in_srgb,var(--fg)_50%,transparent)]">Rate Limits</span>
                                         </span>
                                         <div className="flex flex-col gap-3">
                                             {result.rateLimits.requestsPerMinute && (
                                                 <div className="flex justify-between items-center w-full max-w-[300px]">
-                                                    <span className="text-[14px] text-[rgba(255,255,255,0.45)]">Requests / min</span>
-                                                    <span className="text-[14px] text-[rgba(255,255,255,0.85)]">{result.rateLimits.requestsPerMinute.toLocaleString()}</span>
+                                                    <span className="text-[14px] text-[var(--fg-muted)]">Requests / min</span>
+                                                    <span className="text-[14px] text-[var(--fg-muted)]">{result.rateLimits.requestsPerMinute.toLocaleString()}</span>
                                                 </div>
                                             )}
                                             {result.rateLimits.tokensPerMinute && (
                                                 <div className="flex justify-between items-center w-full max-w-[300px]">
-                                                    <span className="text-[14px] text-[rgba(255,255,255,0.45)]">Tokens / min</span>
-                                                    <span className="text-[14px] text-[rgba(255,255,255,0.85)]">{result.rateLimits.tokensPerMinute.toLocaleString()}</span>
+                                                    <span className="text-[14px] text-[var(--fg-muted)]">Tokens / min</span>
+                                                    <span className="text-[14px] text-[var(--fg-muted)]">{result.rateLimits.tokensPerMinute.toLocaleString()}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -566,8 +566,8 @@ export default function Dashboard() {
           <div className="w-full flex flex-col items-center">
               
               {/* AI ADVISOR */}
-              <div className="w-full border border-[rgba(255,255,255,0.12)] bg-black p-[28px] md:p-[28px_32px] mb-[2px]">
-                  <span className="font-display text-[9px] uppercase tracking-[0.2em] block mb-[16px]"><span className="text-[rgba(255,255,255,0.40)]">06 — </span><span className="text-[rgba(255,255,255,0.50)]">AI Advisor</span></span>
+              <div className="w-full border border-[var(--border)] bg-[var(--bg)] p-[28px] md:p-[28px_32px] mb-[2px]">
+                  <span className="font-display text-[9px] uppercase tracking-[0.2em] block mb-[16px]"><span className="text-[color-mix(in_srgb,var(--fg)_40%,transparent)]">06 — </span><span className="text-[color-mix(in_srgb,var(--fg)_50%,transparent)]">AI Advisor</span></span>
                   {advisorLoading ? (
                       <AILoading />
                   ) : advisorCards.length > 0 ? (
@@ -575,20 +575,20 @@ export default function Dashboard() {
                           {advisorCards.map((card, idx) => (
                               <div 
                                   key={idx} 
-                                  className="flex-1 w-full flex flex-col border border-[rgba(255,255,255,0.20)] p-[24px] bg-[#050505] hover:border-[rgba(255,255,255,0.40)] transition-colors duration-200 min-h-[140px]"
+                                  className="flex-1 w-full flex flex-col border border-[var(--border)] p-[24px] bg-[var(--bg-2)] hover:border-[var(--border)] transition-colors duration-200 min-h-[140px]"
                                   style={{ animationDelay: `${idx * 80}ms` }}
                               >
-                                  <div className="font-display text-[9px] text-[rgba(255,255,255,0.55)] tracking-[0.15em] uppercase">
+                                  <div className="font-display text-[9px] text-[var(--fg-muted)] tracking-[0.15em] uppercase">
                                       {card.type === 'warning' ? '⚠ WARNING' : card.type === 'tip' ? '→ TIP' : '◆ INSIGHT'}
                                   </div>
-                                  <div className="font-display text-[13px] text-[rgba(255,255,255,0.95)] font-bold mt-[12px] uppercase">{card.title}</div>
-                                  <div className="font-sans font-light text-[14px] text-[rgba(255,255,255,0.75)] leading-[1.7] mt-[8px]">{card.body}</div>
+                                  <div className="font-display text-[13px] text-[var(--fg-muted)] font-bold mt-[12px] uppercase">{card.title}</div>
+                                  <div className="font-sans font-light text-[14px] text-[var(--fg-muted)] leading-[1.7] mt-[8px]">{card.body}</div>
                               </div>
                           ))}
                       </div>
                   ) : (
                       <span 
-                          className="font-sans font-light text-[12px] text-white/25 italic cursor-pointer hover:text-white/50 transition-colors" 
+                          className="font-sans font-light text-[12px] text-[var(--fg)]/25 italic cursor-pointer hover:text-[var(--fg)]/50 transition-colors" 
                           onClick={() => {
                               setAdvisorLoading(true);
                               getAdvisorCards(result).then(setAdvisorCards).catch(()=>setAdvisorCards([])).finally(()=>setAdvisorLoading(false));
@@ -598,8 +598,8 @@ export default function Dashboard() {
               </div>
 
               {/* MODEL RECOMMENDER */}
-              <div className="w-full border border-[rgba(255,255,255,0.12)] bg-black p-[28px] md:p-[28px_32px] mb-[2px]">
-                  <span className="font-display text-[9px] tracking-[0.2em] block mb-[16px] uppercase"><span className="text-[rgba(255,255,255,0.40)]">07 — </span><span className="text-[rgba(255,255,255,0.50)]">Model Recommender</span></span>
+              <div className="w-full border border-[var(--border)] bg-[var(--bg)] p-[28px] md:p-[28px_32px] mb-[2px]">
+                  <span className="font-display text-[9px] tracking-[0.2em] block mb-[16px] uppercase"><span className="text-[color-mix(in_srgb,var(--fg)_40%,transparent)]">07 — </span><span className="text-[color-mix(in_srgb,var(--fg)_50%,transparent)]">Model Recommender</span></span>
                   <form onSubmit={handleRecommend} className="flex flex-col md:flex-row gap-[32px] w-full">
                       <div className="flex-1 flex flex-col justify-start">
                           <div className="flex w-full">
@@ -609,38 +609,38 @@ export default function Dashboard() {
                                   onChange={e => setUseCase(e.target.value)}
                                   placeholder={recommendPlaceholders[recommendPlaceholderIdx]}
                                   disabled={recommendLoading}
-                                  className="flex-1 bg-black border border-[rgba(255,255,255,0.18)] font-mono text-[14px] text-[rgba(255,255,255,0.90)] px-4 h-[48px] placeholder-[rgba(255,255,255,0.40)] outline-none rounded-none focus:border-white transition-colors min-w-0"
+                                  className="flex-1 bg-[var(--bg)] border border-[var(--border)] font-mono text-[14px] text-[color-mix(in_srgb,var(--fg)_90%,transparent)] px-4 h-[48px] placeholder-[color-mix(in_srgb,var(--fg)_40%,transparent)] outline-none rounded-none focus:border-[var(--fg)] transition-colors min-w-0"
                               />
                               <button 
                                   type="submit" 
                                   disabled={recommendLoading || !useCase.trim()}
-                                  className="w-[48px] h-[48px] bg-black border border-[rgba(255,255,255,0.18)] border-l-0 text-white hover:bg-white hover:text-black transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed outline-none rounded-none flex items-center justify-center font-bold"
+                                  className="w-[48px] h-[48px] bg-[var(--bg)] border border-[var(--border)] border-l-0 text-[var(--fg)] hover:bg-[var(--fg)] hover:text-[var(--bg)] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed outline-none rounded-none flex items-center justify-center font-bold"
                               >→</button>
                           </div>
                       </div>
                       
-                      <div className="flex-1 flex flex-col md:border-l border-[rgba(255,255,255,0.12)] md:pl-[32px] min-h-[100px]">
+                      <div className="flex-1 flex flex-col md:border-l border-[var(--border)] md:pl-[32px] min-h-[100px]">
                           {(recommendLoading || recommendation) ? (
                               recommendLoading ? (
                                   <AILoading />
                               ) : recommendation ? (
                                   <div className="animate-in fade-in duration-500">
-                                      <div className="font-display text-[9px] text-[rgba(255,255,255,0.35)] uppercase">RECOMMENDED</div>
+                                      <div className="font-display text-[9px] text-[var(--fg-muted)] uppercase">RECOMMENDED</div>
                                       <div 
-                                          className="font-mono text-[20px] text-white mt-1 cursor-pointer hover:underline decoration-white/60 transition-all w-fit"
+                                          className="font-mono text-[20px] text-[var(--fg)] mt-1 cursor-pointer hover:underline decoration-white/60 transition-all w-fit"
                                           onClick={() => {
                                               window.dispatchEvent(new CustomEvent('set-cost-model', { detail: recommendation.recommended }));
                                           }}
                                       >{recommendation.recommended}</div>
-                                      <div className="font-sans font-light text-[14px] text-[rgba(255,255,255,0.65)] leading-[1.7] mt-[8px]">{recommendation.reason}</div>
+                                      <div className="font-sans font-light text-[14px] text-[var(--fg-muted)] leading-[1.7] mt-[8px]">{recommendation.reason}</div>
                                       <div className="mt-4 flex flex-col gap-1">
-                                          <div className="flex gap-2 items-center"><span className="font-display text-[9px] text-[rgba(255,255,255,0.3)] uppercase">TRADEOFF</span> <span className="font-sans font-light text-[13px] text-[rgba(255,255,255,0.45)]">{recommendation.tradeoff}</span></div>
-                                          <div className="flex gap-2 items-center"><span className="font-display text-[9px] text-[rgba(255,255,255,0.3)] uppercase">EST. COST</span> <span className="font-sans font-light text-[13px] text-[rgba(255,255,255,0.45)]">{recommendation.estimatedCost}</span></div>
+                                          <div className="flex gap-2 items-center"><span className="font-display text-[9px] text-[var(--fg-muted)] uppercase">TRADEOFF</span> <span className="font-sans font-light text-[13px] text-[var(--fg-muted)]">{recommendation.tradeoff}</span></div>
+                                          <div className="flex gap-2 items-center"><span className="font-display text-[9px] text-[var(--fg-muted)] uppercase">EST. COST</span> <span className="font-sans font-light text-[13px] text-[var(--fg-muted)]">{recommendation.estimatedCost}</span></div>
                                       </div>
                                   </div>
                               ) : null
                           ) : (
-                              <div className="text-[rgba(255,255,255,0.40)] font-sans italic text-[14px] flex items-center">
+                              <div className="text-[color-mix(in_srgb,var(--fg)_40%,transparent)] font-sans italic text-[14px] flex items-center">
                                   Describe your use case to generate a model recommendation...
                               </div>
                           )}
@@ -649,8 +649,8 @@ export default function Dashboard() {
               </div>
 
               {/* COST ESTIMATOR */}
-              <div className="w-full border border-[rgba(255,255,255,0.12)] bg-black p-[28px] md:p-[28px_32px] mb-[2px]">
-                  <span className="font-display text-[9px] tracking-[0.2em] block mb-[16px] uppercase"><span className="text-[rgba(255,255,255,0.40)]">08 — </span><span className="text-[rgba(255,255,255,0.50)]">Cost Estimator</span></span>
+              <div className="w-full border border-[var(--border)] bg-[var(--bg)] p-[28px] md:p-[28px_32px] mb-[2px]">
+                  <span className="font-display text-[9px] tracking-[0.2em] block mb-[16px] uppercase"><span className="text-[color-mix(in_srgb,var(--fg)_40%,transparent)]">08 — </span><span className="text-[color-mix(in_srgb,var(--fg)_50%,transparent)]">Cost Estimator</span></span>
                   <CostEstimator availableModels={result.allModels.map(m => m.id)} />
               </div>
               
@@ -658,7 +658,7 @@ export default function Dashboard() {
               <div className="flex flex-col md:flex-row gap-[2px] w-full mt-[24px]">
                   <button
                       onClick={handleCopyReport}
-                      className="flex-1 bg-white text-black font-display font-bold uppercase tracking-[0.15em] text-[11px] border border-white hover:bg-black hover:text-white transition-colors rounded-none outline-none overflow-hidden h-[56px] flex items-center justify-center p-0"
+                      className="flex-1 bg-[var(--fg)] text-[var(--bg)] font-display font-bold uppercase tracking-[0.15em] text-[11px] border border-[var(--fg)] hover:bg-[var(--bg)] hover:text-[var(--fg)] transition-colors rounded-none outline-none overflow-hidden h-[56px] flex items-center justify-center p-0"
                   >
                       <div className="flip-wrapper h-full flex flex-col items-center justify-center relative w-full">
                           <span className={`flip-text absolute ${copied ? 'out' : ''}`}>COPY REPORT</span>
@@ -667,7 +667,7 @@ export default function Dashboard() {
                   </button>
                   <button
                       onClick={handleExportJson}
-                      className="flex-1 bg-black text-white font-display font-bold uppercase tracking-[0.15em] text-[11px] border border-[rgba(255,255,255,0.12)] hover:bg-[rgba(255,255,255,0.1)] transition-colors rounded-none outline-none h-[56px] flex items-center justify-center"
+                      className="flex-1 bg-[var(--bg)] text-[var(--fg)] font-display font-bold uppercase tracking-[0.15em] text-[11px] border border-[var(--border)] hover:bg-[color-mix(in_srgb,var(--fg)_10%,transparent)] transition-colors rounded-none outline-none h-[56px] flex items-center justify-center"
                   >
                       EXPORT JSON
                   </button>
@@ -677,20 +677,20 @@ export default function Dashboard() {
 
       {/* FOOTER BADGE */}
       <div className="flex justify-center w-full mt-8">
-          <div className="inline-flex items-center justify-center px-4 py-3 rounded-full border border-[rgba(255,255,255,0.15)] bg-[rgba(255,255,255,0.02)]">
+          <div className="inline-flex items-center justify-center px-4 py-3 rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--fg)_2%,transparent)]">
               <span className="mr-2 text-[14px]">🔒</span>
-              <span className="font-sans font-light text-[0.8rem] text-[rgba(255,255,255,0.55)]">Your key was never sent to our servers. Processed in-browser and discarded.</span>
+              <span className="font-sans font-light text-[0.8rem] text-[var(--fg-muted)]">Your key was never sent to our servers. Processed in-browser and discarded.</span>
           </div>
       </div>
         <style dangerouslySetInnerHTML={{ __html: `
             .custom-scrollbar {
                 scrollbar-width: thin;
-                scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+                scrollbar-color: color-mix(in srgb, var(--fg) 15%, transparent) transparent;
             }
             .custom-scrollbar::-webkit-scrollbar { width: 4px; }
             .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-            .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
-            .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+            .custom-scrollbar::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--fg) 15%, transparent); border-radius: 4px; }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--fg) 30%, transparent); }
         ` }} />
 
     </div>
@@ -702,10 +702,10 @@ function CapabilityRow({ name, cap }: { name: string, cap: CapabilityStatus }) {
         return (
             <div className="flex justify-between items-center w-full py-[14px]">
                 <div className="flex items-center flex-1">
-                    <span className="text-[rgba(255,255,255,0.80)] text-[14px] mr-3">−</span>
-                    <span className="text-[rgba(255,255,255,0.80)] text-[14px]">{name}</span>
+                    <span className="text-[color-mix(in_srgb,var(--fg)_80%,transparent)] text-[14px] mr-3">−</span>
+                    <span className="text-[color-mix(in_srgb,var(--fg)_80%,transparent)] text-[14px]">{name}</span>
                 </div>
-                <span className="font-display text-[0.6rem] tracking-wider text-[rgba(255,255,255,0.50)] uppercase">Untested</span>
+                <span className="font-display text-[0.6rem] tracking-wider text-[color-mix(in_srgb,var(--fg)_50%,transparent)] uppercase">Untested</span>
             </div>
         )
     }
@@ -714,17 +714,17 @@ function CapabilityRow({ name, cap }: { name: string, cap: CapabilityStatus }) {
         return (
             <div className="flex justify-between items-center w-full py-[14px] relative group cursor-help transition-all duration-300">
                 <div className="flex items-center flex-1">
-                    <span className="cap-cross text-[rgba(255,255,255,0.40)] text-[14px] mr-3 z-[1]">✗</span>
-                    <span className="text-[rgba(255,255,255,0.45)] text-[14px] flex items-center">
+                    <span className="cap-cross text-[color-mix(in_srgb,var(--fg)_40%,transparent)] text-[14px] mr-3 z-[1]">✗</span>
+                    <span className="text-[var(--fg-muted)] text-[14px] flex items-center">
                         {name}
                         {cap.error && (
-                            <div className="absolute left-0 bottom-full mb-2 bg-white text-black text-xs p-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 border border-white">
+                            <div className="absolute left-0 bottom-full mb-2 bg-[var(--fg)] text-[var(--bg)] text-xs p-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 border border-[var(--fg)]">
                                 HTTP {cap.error}
                             </div>
                         )}
                     </span>
                 </div>
-                <span className="font-display text-[0.6rem] tracking-wider border border-[rgba(255,255,255,0.25)] text-[rgba(255,255,255,0.50)] px-1 py-0.5 uppercase z-[1]">Denied</span>
+                <span className="font-display text-[0.6rem] tracking-wider border border-[var(--border)] text-[color-mix(in_srgb,var(--fg)_50%,transparent)] px-1 py-0.5 uppercase z-[1]">Denied</span>
             </div>
         )
     }
@@ -732,8 +732,8 @@ function CapabilityRow({ name, cap }: { name: string, cap: CapabilityStatus }) {
     return (
         <div className="flex justify-between items-center w-full py-[14px]">
             <div className="flex items-center flex-1">
-                <span className="cap-check text-[rgba(255,255,255,0.80)] text-[14px] mr-3">✓</span>
-                <span className="text-[rgba(255,255,255,0.85)] text-[14px] font-medium">{name}</span>
+                <span className="cap-check text-[color-mix(in_srgb,var(--fg)_80%,transparent)] text-[14px] mr-3">✓</span>
+                <span className="text-[var(--fg-muted)] text-[14px] font-medium">{name}</span>
             </div>
         </div>
     )

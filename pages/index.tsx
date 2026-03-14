@@ -1,43 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function LandingPage() {
-    const cursorRef = useRef<HTMLDivElement>(null);
     const navRef = useRef<HTMLElement>(null);
     const typewriterRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // Custom Cursor
-        const cursor = cursorRef.current;
-        if (!cursor) return;
-
-        const hoverElements = document.querySelectorAll('[data-hover], a, button');
-        
-        let cursorX = window.innerWidth / 2;
-        let cursorY = window.innerHeight / 2;
-        cursor.style.transform = `translate(calc(-50% + ${cursorX}px), calc(-50% + ${cursorY}px))`;
-
-        const moveCursor = (e: MouseEvent) => {
-            cursorX = e.clientX;
-            cursorY = e.clientY;
-            cursor.style.transform = `translate(calc(-50% + ${cursorX}px), calc(-50% + ${cursorY}px))`;
-        };
-
-        document.addEventListener('mousemove', moveCursor);
-
-        const handleMouseEnter = () => cursor.classList.add('hovering');
-        const handleMouseLeave = () => cursor.classList.remove('hovering');
-        const handleMouseDown = () => cursor.classList.add('clicking');
-        const handleMouseUp = () => cursor.classList.remove('clicking');
-
-        hoverElements.forEach(el => {
-            el.addEventListener('mouseenter', handleMouseEnter);
-            el.addEventListener('mouseleave', handleMouseLeave);
-        });
-        document.addEventListener('mousedown', handleMouseDown);
-        document.addEventListener('mouseup', handleMouseUp);
-
         // Intersection Observer
         const fadeElements = document.querySelectorAll('.fade-up');
         const observer = new IntersectionObserver((entries, observerInstance) => {
@@ -113,14 +83,7 @@ export default function LandingPage() {
         timeoutId = setTimeout(typeWriter, 2400);
 
         return () => {
-            document.removeEventListener('mousemove', moveCursor);
-            document.removeEventListener('mousedown', handleMouseDown);
-            document.removeEventListener('mouseup', handleMouseUp);
             window.removeEventListener('scroll', handleScroll);
-            hoverElements.forEach(el => {
-                el.removeEventListener('mouseenter', handleMouseEnter);
-                el.removeEventListener('mouseleave', handleMouseLeave);
-            });
             clearTimeout(timeoutId);
             observer.disconnect();
         };
@@ -183,12 +146,12 @@ export default function LandingPage() {
             </Head>
             <style dangerouslySetInnerHTML={{ __html: `
         :root {
-            --bg: #000000;
-            --fg: #ffffff;
-            --fg-muted: rgba(255, 255, 255, 0.6);
-            --fg-faint: rgba(255, 255, 255, 0.4);
-            --border: rgba(255, 255, 255, 0.15);
-            --border-strong: rgba(255, 255, 255, 0.4);
+            
+            
+            
+            --fg-faint: color-mix(in srgb, var(--fg) 40%, transparent);
+            
+            --border-strong: color-mix(in srgb, var(--fg) 40%, transparent);
             
             --font-serif: 'Playfair Display', serif;
             --font-sans: 'Inter', sans-serif;
@@ -206,8 +169,7 @@ export default function LandingPage() {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            cursor: none; /* Custom cursor everywhere */
-        }
+            }
 
         .landing-theme {
             background-color: var(--bg);
@@ -218,21 +180,6 @@ export default function LandingPage() {
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* CUSTOM CURSOR */
-        .cursor {
-            width: 6px; height: 6px; background: var(--fg); border-radius: 50%;
-            position: fixed; pointer-events: none; z-index: 9999;
-            top: 0; left: 0;
-            transition: width 0.2s, height 0.2s, background-color 0.2s, border 0.2s, mix-blend-mode 0.2s;
-        }
-        .cursor.hovering {
-            width: 40px; height: 40px; background: rgba(255, 255, 255, 1); border: 0.5px solid var(--fg); mix-blend-mode: difference;
-        }
-        .cursor.clicking {
-            transform: scale(0.8) !important;
-            transition: transform 150ms var(--ease-out), width 0.2s, height 0.2s, background-color 0.2s !important;
         }
 
         /* TYPOGRAPHY */
@@ -290,7 +237,7 @@ export default function LandingPage() {
             color: var(--bg);
         }
         .btn.invert:hover {
-            background: rgba(255, 255, 255, 0.85);
+            background: color-mix(in srgb, var(--fg) 85%, transparent);
             color: var(--bg);
         }
 
@@ -330,7 +277,7 @@ export default function LandingPage() {
         nav.scrolled {
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            background: rgba(0, 0, 0, 0.7);
+            background: color-mix(in srgb, var(--bg) 70%, transparent);
         }
         nav:not(.scrolled) {
             backdrop-filter: blur(0px);
@@ -486,7 +433,7 @@ export default function LandingPage() {
         .process-num {
             font-family: var(--font-serif);
             font-size: 6rem;
-            color: rgba(255, 255, 255, 0.1);
+            color: color-mix(in srgb, var(--fg) 10%, transparent);
             line-height: 1;
             margin-bottom: var(--spacing-sm);
         }
@@ -676,7 +623,7 @@ export default function LandingPage() {
             font-size: 0.9rem;
             color: var(--fg-muted);
             margin-bottom: var(--spacing-xs);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid color-mix(in srgb, var(--fg) 5%, transparent);
             padding-bottom: var(--spacing-xs);
         }
         @media (max-width: 900px) {
@@ -816,7 +763,7 @@ export default function LandingPage() {
         }
         .footer-links a:hover { color: var(--fg); }
         .footer-bottom {
-            border-top: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid color-mix(in srgb, var(--fg) 5%, transparent);
             padding-top: var(--spacing-md);
             font-size: 0.75rem;
             color: var(--fg-faint);
@@ -831,8 +778,6 @@ export default function LandingPage() {
 
 
     <div className="noise"></div>
-    <div className="cursor" id="cursor" ref={cursorRef}></div>
-
     <nav id="navbar" ref={navRef}>
         <div className="container nav-inner">
             <a href="#" className="nav-logo" data-hover="true">APILens</a>
@@ -840,6 +785,7 @@ export default function LandingPage() {
                 <a href="#process" className="nav-link hide-mobile" data-hover="true">Process</a>
                 <a href="#features" className="nav-link hide-mobile" data-hover="true">Capabilities</a>
                 <a href="#pricing" className="nav-link hide-mobile" data-hover="true">Pricing</a>
+                <ThemeToggle />
                 <Link href="/app" className="btn" style={{padding: "0.6rem 1.2rem", fontSize: "0.65rem"}} data-hover="true">Analyze Key</Link>
             </div>
         </div>

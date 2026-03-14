@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Dashboard from '../components/Dashboard';
+import ThemeToggle from '../components/ThemeToggle';
 
 interface HistoryEntry {
   id: string;
@@ -50,7 +51,7 @@ export default function App() {
   }
 
   return (
-    <div className="landing-theme min-h-screen bg-black text-white font-sans selection:bg-white selection:text-black">
+    <div className="landing-theme min-h-screen bg-[var(--bg)] text-[var(--fg)] font-sans selection:bg-[var(--fg)] selection:text-[var(--bg)]">
       <Head>
         <title>APILens | Analyze Your Key</title>
         <meta name="description" content="Discover the capabilities securely for your API keys." />
@@ -59,11 +60,11 @@ export default function App() {
       
       <style dangerouslySetInnerHTML={{ __html: `
         :root {
-            --bg: #000000;
-            --fg: #ffffff;
-            --fg-muted: rgba(255, 255, 255, 0.6);
-            --fg-faint: rgba(255, 255, 255, 0.4);
-            --border: rgba(255, 255, 255, 0.15);
+            
+            
+            
+            --fg-faint: color-mix(in srgb, var(--fg) 40%, transparent);
+            
             
             --font-serif: 'Playfair Display', serif;
             --font-sans: 'Inter', sans-serif;
@@ -86,18 +87,19 @@ export default function App() {
       `}} />
 
       {/* Navbar exactly like landing page */}
-      <nav className="sticky top-0 left-0 w-full z-[100] border-b border-[rgba(255,255,255,0.1)] backdrop-blur-md bg-black/70 transition-transform duration-400">
+      <nav className="sticky top-0 left-0 w-full z-[100] border-b border-[var(--border)] backdrop-blur-md bg-[var(--bg)]/70 transition-transform duration-400">
           <div className="max-w-[1400px] mx-auto px-4 md:px-16 flex justify-between items-center h-[80px]">
-              <Link href="/" className="font-serif italic text-2xl text-white no-underline transition-colors hover:text-white/80">APILens</Link>
+              <Link href="/" className="font-serif italic text-2xl text-[var(--fg)] no-underline transition-colors hover:text-[var(--fg)]/80">APILens</Link>
               <div className="flex items-center gap-8">
-                  <Link href="/#process" className="hidden md:block font-display uppercase text-[0.7rem] tracking-[0.2em] text-white hover:text-white/60 transition-colors">Process</Link>
-                  <Link href="/#features" className="hidden md:block font-display uppercase text-[0.7rem] tracking-[0.2em] text-white hover:text-white/60 transition-colors">Capabilities</Link>
-                  <Link href="/#pricing" className="hidden md:block font-display uppercase text-[0.7rem] tracking-[0.2em] text-white hover:text-white/60 transition-colors">Pricing</Link>
-                  <Link href="/app" className="font-display text-[0.65rem] uppercase tracking-[0.15em] px-5 py-2.5 border border-[rgba(255,255,255,0.15)] bg-transparent text-white font-bold hover:bg-white hover:text-black transition-colors duration-200">Analyze Key</Link>
-                  <button onClick={() => setHistoryOpen(true)} className="relative flex items-center justify-center text-white hover:text-white/70 transition-colors outline-none ml-2">
+                  <Link href="/#process" className="hidden md:block font-display uppercase text-[0.7rem] tracking-[0.2em] text-[var(--fg)] hover:text-[var(--fg)]/60 transition-colors">Process</Link>
+                  <Link href="/#features" className="hidden md:block font-display uppercase text-[0.7rem] tracking-[0.2em] text-[var(--fg)] hover:text-[var(--fg)]/60 transition-colors">Capabilities</Link>
+                  <Link href="/#pricing" className="hidden md:block font-display uppercase text-[0.7rem] tracking-[0.2em] text-[var(--fg)] hover:text-[var(--fg)]/60 transition-colors">Pricing</Link>
+                  <Link href="/app" className="font-display text-[0.65rem] uppercase tracking-[0.15em] px-5 py-2.5 border border-[var(--border)] bg-transparent text-[var(--fg)] font-bold hover:bg-[var(--fg)] hover:text-[var(--bg)] transition-colors duration-200">Analyze Key</Link>
+                  <ThemeToggle />
+                  <button onClick={() => setHistoryOpen(true)} className="relative flex items-center justify-center text-[var(--fg)] hover:text-[var(--fg)]/70 transition-colors outline-none ml-2">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                       {history.length > 0 && (
-                          <span className="absolute -top-2 -right-3 font-mono text-[9px] bg-white text-black px-1 min-w-[16px] text-center font-bold">
+                          <span className="absolute -top-2 -right-3 font-mono text-[9px] bg-[var(--fg)] text-[var(--bg)] px-1 min-w-[16px] text-center font-bold">
                               {history.length}
                           </span>
                       )}
@@ -113,31 +115,31 @@ export default function App() {
       {/* HISTORY DRAWER */}
       {/* Overlay */}
       <div 
-        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] transition-opacity duration-300 ${historyOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 bg-[var(--bg)]/60 backdrop-blur-sm z-[200] transition-opacity duration-300 ${historyOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setHistoryOpen(false)}
       ></div>
 
       {/* Drawer */}
-      <div className={`fixed top-0 left-0 h-full w-full md:w-[280px] bg-black border-r border-[rgba(255,255,255,0.15)] z-[210] transform transition-transform duration-300 flex flex-col ${historyOpen ? 'translate-x-[0%]' : 'translate-x-[-100%]'}`}>
-        <div className="p-6 border-b border-[rgba(255,255,255,0.15)] flex justify-between items-center bg-black">
-          <span className="font-display text-[0.7rem] uppercase tracking-widest text-white">Scan History</span>
-          <button onClick={() => setHistoryOpen(false)} className="text-white/50 hover:text-white text-sm font-mono outline-none">[×]</button>
+      <div className={`fixed top-0 left-0 h-full w-full md:w-[280px] bg-[var(--bg)] border-r border-[var(--border)] z-[210] transform transition-transform duration-300 flex flex-col ${historyOpen ? 'translate-x-[0%]' : 'translate-x-[-100%]'}`}>
+        <div className="p-6 border-b border-[var(--border)] flex justify-between items-center bg-[var(--bg)]">
+          <span className="font-display text-[0.7rem] uppercase tracking-widest text-[var(--fg)]">Scan History</span>
+          <button onClick={() => setHistoryOpen(false)} className="text-[var(--fg)]/50 hover:text-[var(--fg)] text-sm font-mono outline-none">[×]</button>
         </div>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar bg-black">
+        <div className="flex-1 overflow-y-auto custom-scrollbar bg-[var(--bg)]">
           {history.length === 0 ? (
-            <div className="p-8 text-center text-white/30 font-sans text-[0.8rem] font-light italic">
+            <div className="p-8 text-center text-[var(--fg)]/30 font-sans text-[0.8rem] font-light italic">
               No recent scans found.
             </div>
           ) : (
             history.map((h) => (
-              <div key={h.id} className="p-5 border-b border-[rgba(255,255,255,0.08)] hover:bg-[rgba(255,255,255,0.05)] transition-colors cursor-default group">
-                <div className="font-display font-bold text-white text-[0.85rem] uppercase tracking-wide mb-1 flex items-center justify-between">
+              <div key={h.id} className="p-5 border-b border-[var(--border)] hover:bg-[color-mix(in_srgb,var(--fg)_5%,transparent)] transition-colors cursor-default group">
+                <div className="font-display font-bold text-[var(--fg)] text-[0.85rem] uppercase tracking-wide mb-1 flex items-center justify-between">
                     {h.provider === 'gemini' ? 'Google Gemini' : (h.provider || '').charAt(0).toUpperCase() + (h.provider || '').slice(1)}
-                    {h.status === 'valid' && <span className="text-white opacity-50 text-[10px]">✓</span>}
+                    {h.status === 'valid' && <span className="text-[var(--fg)] opacity-50 text-[10px]">✓</span>}
                 </div>
-                <div className="font-mono text-white/40 text-[0.7rem] mb-2">{h.keyHint}</div>
-                <div className="font-sans text-[0.65rem] text-white/30 tracking-wide flex items-center justify-between">
+                <div className="font-mono text-[var(--fg)]/40 text-[0.7rem] mb-2">{h.keyHint}</div>
+                <div className="font-sans text-[0.65rem] text-[var(--fg)]/30 tracking-wide flex items-center justify-between">
                     <span>{timeAgo(h.scannedAt)}</span>
                     <span>·</span>
                     <span>{h.modelCount} models</span>
@@ -150,7 +152,7 @@ export default function App() {
         {history.length > 0 && (
           <button 
             onClick={clearHistory}
-            className="w-full text-center p-4 border-t border-[rgba(255,255,255,0.1)] font-display text-[0.65rem] uppercase tracking-widest text-white/40 hover:text-white hover:bg-white/5 transition-colors outline-none"
+            className="w-full text-center p-4 border-t border-[var(--border)] font-display text-[0.65rem] uppercase tracking-widest text-[var(--fg)]/40 hover:text-[var(--fg)] hover:bg-[var(--fg)]/5 transition-colors outline-none"
           >
             Clear History
           </button>
