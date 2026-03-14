@@ -3,62 +3,54 @@ import Head from 'next/head';
 import Link from 'next/link';
 
 export default function LandingPage() {
-    const cursorRef = useRef<HTMLDivElement>(null);
     const navRef = useRef<HTMLElement>(null);
     const typewriterRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         // Custom Cursor
-        const cursor = cursorRef.current;
-        if (!cursor) return;
+        const dot = document.getElementById('cursor-dot');
+        const ring = document.getElementById('cursor-ring');
+        if (!dot || !ring) return;
 
         const hoverElements = document.querySelectorAll('[data-hover], a, button');
         
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
-        let cursorX = mouseX;
-        let cursorY = mouseY;
         
-        const t1 = document.getElementById('t1');
-        const t2 = document.getElementById('t2');
-        const trail1 = { x: mouseX, y: mouseY };
-        const trail2 = { x: mouseX, y: mouseY };
-
+        let ringX = mouseX;
+        let ringY = mouseY;
+        
         const moveCursor = (e: MouseEvent) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
+            
+            // Dot follows instantly
+            dot.style.left = e.clientX + 'px';
+            dot.style.top = e.clientY + 'px';
         };
 
         let rafId: number;
-        const renderCursor = () => {
-            cursorX += (mouseX - cursorX) * 0.12;
-            cursorY += (mouseY - cursorY) * 0.12;
+        const animateRing = () => {
+            // Ring follows with minimal lerp
+            ringX += (mouseX - ringX) * 0.15;
+            ringY += (mouseY - ringY) * 0.15;
             
-            trail1.x += (cursorX - trail1.x) * 0.2;
-            trail1.y += (cursorY - trail1.y) * 0.2;
-            trail2.x += (trail1.x - trail2.x) * 0.2;
-            trail2.y += (trail1.y - trail2.y) * 0.2;
-
-            cursor.style.transform = `translate(calc(-50% + ${cursorX}px), calc(-50% + ${cursorY}px))`;
-            if (t1) t1.style.transform = `translate(calc(-50% + ${trail1.x}px), calc(-50% + ${trail1.y}px))`;
-            if (t2) t2.style.transform = `translate(calc(-50% + ${trail2.x}px), calc(-50% + ${trail2.y}px))`;
-            rafId = requestAnimationFrame(renderCursor);
+            ring.style.left = ringX + 'px';
+            ring.style.top = ringY + 'px';
+            
+            rafId = requestAnimationFrame(animateRing);
         };
-        rafId = requestAnimationFrame(renderCursor);
+        rafId = requestAnimationFrame(animateRing);
 
         document.addEventListener('mousemove', moveCursor);
 
-        const handleMouseEnter = () => { cursor.classList.add('hovering'); [t1, t2].forEach(t => t?.classList.add('hidden')); };
-        const handleMouseLeave = () => { cursor.classList.remove('hovering'); [t1, t2].forEach(t => t?.classList.remove('hidden')); };
-        const handleMouseDown = () => cursor.classList.add('clicking');
-        const handleMouseUp = () => cursor.classList.remove('clicking');
+        const handleMouseEnter = () => ring.classList.add('hovering');
+        const handleMouseLeave = () => ring.classList.remove('hovering');
 
         hoverElements.forEach(el => {
             el.addEventListener('mouseenter', handleMouseEnter);
             el.addEventListener('mouseleave', handleMouseLeave);
         });
-        document.addEventListener('mousedown', handleMouseDown);
-        document.addEventListener('mouseup', handleMouseUp);
 
         // Intersection Observer
         const fadeElements = document.querySelectorAll('.fade-up');
@@ -137,8 +129,6 @@ export default function LandingPage() {
         return () => {
             cancelAnimationFrame(rafId);
             document.removeEventListener('mousemove', moveCursor);
-            document.removeEventListener('mousedown', handleMouseDown);
-            document.removeEventListener('mouseup', handleMouseUp);
             window.removeEventListener('scroll', handleScroll);
             hoverElements.forEach(el => {
                 el.removeEventListener('mouseenter', handleMouseEnter);
@@ -229,7 +219,13 @@ export default function LandingPage() {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            cursor: none; /* Custom cursor everywhere */
+        @media (min-width: 768px) {
+            * { cursor: none !important; }
+        }
+
+        @media (hover: none) {
+            * { cursor: auto !important; }
+            .cursor-dot, .cursor-ring { display: none !important; }
         }
 
         .landing-theme {
@@ -244,28 +240,32 @@ export default function LandingPage() {
         }
 
         /* CUSTOM CURSOR */
-        .cursor-trail {
-            width: 6px; height: 6px; background: var(--fg); border-radius: 50%;
-            position: fixed; pointer-events: none; z-index: 9998;
-            top: 0; left: 0;
-            transition: opacity 0.2s;
-            will-change: transform;
+        .cursor-dot {
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
         }
-        .cursor-trail.t1 { opacity: 0.3; } .cursor-trail.t2 { opacity: 0.15; }
-        .cursor-trail.hidden { opacity: 0; }
 
-        .cursor {
-            width: 6px; height: 6px; background: var(--fg); border-radius: 50%;
-            position: fixed; pointer-events: none; z-index: 9999;
-            top: 0; left: 0;
-            transition: width 0.2s, height 0.2s, background-color 0.2s, border 0.2s, mix-blend-mode 0.2s;
+        .cursor-ring {
+            width: 20px;
+            height: 20px;
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s;
         }
-        .cursor.hovering {
-            width: 40px; height: 40px; background: rgba(255, 255, 255, 1); border: 0.5px solid var(--fg); mix-blend-mode: difference;
-        }
-        .cursor.clicking {
-            transform: scale(0.8) !important;
-            transition: transform 150ms var(--ease-out), width 0.2s, height 0.2s, background-color 0.2s !important;
+        
+        .cursor-ring.hovering {
+            width: 32px;
+            height: 32px;
         }
 
         /* TYPOGRAPHY */
@@ -864,9 +864,8 @@ export default function LandingPage() {
 
 
     <div className="noise"></div>
-    <div className="cursor-trail t2" id="t2"></div>
-    <div className="cursor-trail t1" id="t1"></div>
-    <div className="cursor" id="cursor" ref={cursorRef}></div>
+    <div className="cursor-dot" id="cursor-dot"></div>
+    <div className="cursor-ring" id="cursor-ring"></div>
 
     <nav id="navbar" ref={navRef}>
         <div className="container nav-inner">
