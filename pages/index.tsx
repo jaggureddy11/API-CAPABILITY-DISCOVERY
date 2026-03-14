@@ -12,13 +12,31 @@ export default function LandingPage() {
         const cursor = cursorRef.current;
         if (!cursor) return;
 
+        const hoverElements = document.querySelectorAll('[data-hover], a, button');
+        
+        let cursorX = window.innerWidth / 2;
+        let cursorY = window.innerHeight / 2;
+        cursor.style.transform = `translate(calc(-50% + ${cursorX}px), calc(-50% + ${cursorY}px))`;
+
         const moveCursor = (e: MouseEvent) => {
-            if (window.innerWidth > 768) {
-                cursor.style.transform = `translate(calc(-50% + ${e.clientX}px), calc(-50% + ${e.clientY}px))`;
-            }
+            cursorX = e.clientX;
+            cursorY = e.clientY;
+            cursor.style.transform = `translate(calc(-50% + ${cursorX}px), calc(-50% + ${cursorY}px))`;
         };
 
         document.addEventListener('mousemove', moveCursor);
+
+        const handleMouseEnter = () => cursor.classList.add('hovering');
+        const handleMouseLeave = () => cursor.classList.remove('hovering');
+        const handleMouseDown = () => cursor.classList.add('clicking');
+        const handleMouseUp = () => cursor.classList.remove('clicking');
+
+        hoverElements.forEach(el => {
+            el.addEventListener('mouseenter', handleMouseEnter);
+            el.addEventListener('mouseleave', handleMouseLeave);
+        });
+        document.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mouseup', handleMouseUp);
 
         // Intersection Observer
         const fadeElements = document.querySelectorAll('.fade-up');
@@ -96,7 +114,13 @@ export default function LandingPage() {
 
         return () => {
             document.removeEventListener('mousemove', moveCursor);
+            document.removeEventListener('mousedown', handleMouseDown);
+            document.removeEventListener('mouseup', handleMouseUp);
             window.removeEventListener('scroll', handleScroll);
+            hoverElements.forEach(el => {
+                el.removeEventListener('mouseenter', handleMouseEnter);
+                el.removeEventListener('mouseleave', handleMouseLeave);
+            });
             clearTimeout(timeoutId);
             observer.disconnect();
         };
@@ -182,10 +206,7 @@ export default function LandingPage() {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-        }
-        
-        @media (min-width: 769px) {
-            * { cursor: none !important; }
+            cursor: none; /* Custom cursor everywhere */
         }
 
         .landing-theme {
@@ -204,10 +225,14 @@ export default function LandingPage() {
             width: 6px; height: 6px; background: var(--fg); border-radius: 50%;
             position: fixed; pointer-events: none; z-index: 9999;
             top: 0; left: 0;
+            transition: width 0.2s, height 0.2s, background-color 0.2s, border 0.2s, mix-blend-mode 0.2s;
         }
-
-        @media (max-width: 768px) {
-            .cursor { display: none !important; }
+        .cursor.hovering {
+            width: 40px; height: 40px; background: rgba(255, 255, 255, 1); border: 0.5px solid var(--fg); mix-blend-mode: difference;
+        }
+        .cursor.clicking {
+            transform: scale(0.8) !important;
+            transition: transform 150ms var(--ease-out), width 0.2s, height 0.2s, background-color 0.2s !important;
         }
 
         /* TYPOGRAPHY */
