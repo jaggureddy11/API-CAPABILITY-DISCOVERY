@@ -3,54 +3,22 @@ import Head from 'next/head';
 import Link from 'next/link';
 
 export default function LandingPage() {
+    const cursorRef = useRef<HTMLDivElement>(null);
     const navRef = useRef<HTMLElement>(null);
     const typewriterRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         // Custom Cursor
-        const dot = document.getElementById('cursor-dot');
-        const ring = document.getElementById('cursor-ring');
-        if (!dot || !ring) return;
+        const cursor = cursorRef.current;
+        if (!cursor) return;
 
-        const hoverElements = document.querySelectorAll('[data-hover], a, button');
-        
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-        
-        let ringX = mouseX;
-        let ringY = mouseY;
-        
         const moveCursor = (e: MouseEvent) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            
-            // Dot follows instantly
-            dot.style.left = e.clientX + 'px';
-            dot.style.top = e.clientY + 'px';
+            if (window.innerWidth > 768) {
+                cursor.style.transform = `translate(calc(-50% + ${e.clientX}px), calc(-50% + ${e.clientY}px))`;
+            }
         };
-
-        let rafId: number;
-        const animateRing = () => {
-            // Ring follows with minimal lerp
-            ringX += (mouseX - ringX) * 0.15;
-            ringY += (mouseY - ringY) * 0.15;
-            
-            ring.style.left = ringX + 'px';
-            ring.style.top = ringY + 'px';
-            
-            rafId = requestAnimationFrame(animateRing);
-        };
-        rafId = requestAnimationFrame(animateRing);
 
         document.addEventListener('mousemove', moveCursor);
-
-        const handleMouseEnter = () => ring.classList.add('hovering');
-        const handleMouseLeave = () => ring.classList.remove('hovering');
-
-        hoverElements.forEach(el => {
-            el.addEventListener('mouseenter', handleMouseEnter);
-            el.addEventListener('mouseleave', handleMouseLeave);
-        });
 
         // Intersection Observer
         const fadeElements = document.querySelectorAll('.fade-up');
@@ -127,13 +95,8 @@ export default function LandingPage() {
         timeoutId = setTimeout(typeWriter, 2400);
 
         return () => {
-            cancelAnimationFrame(rafId);
             document.removeEventListener('mousemove', moveCursor);
             window.removeEventListener('scroll', handleScroll);
-            hoverElements.forEach(el => {
-                el.removeEventListener('mouseenter', handleMouseEnter);
-                el.removeEventListener('mouseleave', handleMouseLeave);
-            });
             clearTimeout(timeoutId);
             observer.disconnect();
         };
@@ -219,13 +182,10 @@ export default function LandingPage() {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-        @media (min-width: 768px) {
-            * { cursor: none !important; }
         }
-
-        @media (hover: none) {
-            * { cursor: auto !important; }
-            .cursor-dot, .cursor-ring { display: none !important; }
+        
+        @media (min-width: 769px) {
+            * { cursor: none !important; }
         }
 
         .landing-theme {
@@ -240,32 +200,14 @@ export default function LandingPage() {
         }
 
         /* CUSTOM CURSOR */
-        .cursor-dot {
-            width: 6px;
-            height: 6px;
-            background: white;
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
+        .cursor {
+            width: 6px; height: 6px; background: var(--fg); border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 9999;
+            top: 0; left: 0;
         }
 
-        .cursor-ring {
-            width: 20px;
-            height: 20px;
-            border: 1px solid rgba(255,255,255,0.4);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9998;
-            transform: translate(-50%, -50%);
-            transition: width 0.2s, height 0.2s;
-        }
-        
-        .cursor-ring.hovering {
-            width: 32px;
-            height: 32px;
+        @media (max-width: 768px) {
+            .cursor { display: none !important; }
         }
 
         /* TYPOGRAPHY */
@@ -864,8 +806,7 @@ export default function LandingPage() {
 
 
     <div className="noise"></div>
-    <div className="cursor-dot" id="cursor-dot"></div>
-    <div className="cursor-ring" id="cursor-ring"></div>
+    <div className="cursor" id="cursor" ref={cursorRef}></div>
 
     <nav id="navbar" ref={navRef}>
         <div className="container nav-inner">
