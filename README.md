@@ -1,47 +1,76 @@
-# CapMap — API Capability Discovery
+# CapMap — AI Capability Discovery Engine
 
-A secure, stateless Next.js developer tool designed to securely inspect an AI API key and discover the underlying capabilities (Models available, text generation, image generation, etc.) without logging or storing the keys.
+**By developers. For engineers.**
+A state-of-the-art, secure, and stateless developer tool designed to meticulously inspect AI API keys and map their underlying capabilities—without ever storing or compromising your keys.
 
-## Features
+![CapMap Dashboard](https://github.com/jaggureddy11/API-CAPABILITY-DISCOVERY/raw/main/public/og-image.png)
 
-- **Secure & Stateless:** Keys are processed exclusively in-memory and discarded instantly.
-- **Provider Support:** Current primary support for Google Gemini API, extensible to OpenAI and Anthropic.
-- **Browser-Safe Mode:** Discover capabilities purely client-side without reaching the `/api` backend.
-- **Instant Capability Mapping:** Decodes limits, available generation methods (text, embeddings, images).
-- **Responsive Dashboard:** Made with Tailwind CSS for an elegant UI.
+## 🌐 Live Site
+Visit [CapMap.io](https://capmap.io) (or your deployment URL) to map your keys.
 
-## Tech Stack
+## ✨ Core Pillars
 
-- **Frontend:** React, Next.js (pages router for legacy support), Tailwind CSS 4.0
-- **Backend:** Next.js `/api` endpoints
-- **Styling Icons:** Lucide-React
+- **🛡️ Security First:** Stateless design. Keys are processed exclusively in-memory or client-side and discarded instantly. Your keys never touch a database.
+- **🗺️ Multi-Provider Support:** Comprehensive mapping for **OpenAI, Anthropic, Google Gemini, Groq, and Perplexity**.
+- **🧠 Intelligence Layer:** Automatically generated AI analysis of your key's potential, providing use-case recommendations and architectural insights.
+- **🎨 Premium Aesthetics:** A bespoke design system built with custom CSS, featuring glassmorphism, smooth animations, and a focus on visual excellence.
+- **⚡ Instant Validation:** Direct model-lineage inspection, capability detection (Vision, Function Calling, Embeddings), and rate-limit estimates.
 
-## Getting Started
+## 🛠️ Tech Stack
 
-1. **Install Dependencies:** Check that you have node installed.
+- **Frontend:** [Next.js](https://nextjs.org/) (React), [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** Custom Vanilla CSS (Design Tokens, Glassmorphism, Premium Typography)
+- **AI Integration:** Direct Provider API Integrations + CapMap Intelligence Engine
+- **Icons:** Custom SVG + Lucide React
+- **Typography:** Syne, Inter, Libre Baskerville (Google Fonts)
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- npm / pnpm / yarn
+
+### Installation
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/jaggureddy11/API-CAPABILITY-DISCOVERY.git
+   cd capability-discovery
+   ```
+
+2. **Install dependencies:**
    ```bash
    npm install
    ```
 
-2. **Run the Development Server:**
+3. **Configure Environment (Optional for Local AI Features):**
+   ```bash
+   cp .env.example .env.local
+   # Add your GEMINI_API_KEY for the internal AI advisor features
+   ```
+
+4. **Launch Development Server:**
    ```bash
    npm run dev
    ```
 
-3. **Open the browser:** Open [http://localhost:3000](http://localhost:3000).
+5. **Access the App:** 
+   Open [http://localhost:3000](http://localhost:3000)
 
-## Project Structure
+## 📂 Project Architecture
 
-- `/components`: Contains `Dashboard.tsx`
-- `/pages`: Contains Next.js views and `api/discover.ts`
-- `/lib/capabilityEngine`: The discovery Facade mapping providers.
-- `/lib/providers`: The specific mapping logic for `gemini`, `openai`, etc.
-- `/types`: Contains standard TypeScript Interfaces `.ts`
+- **`/pages`**: Next.js Router (Landing page, App views, and API proxy endpoints)
+- **`/components`**: Reusable UI blocks (`Dashboard`, `CostEstimator`, `ThemeToggle`, `AILoading`)
+- **`/lib/capabilityEngine`**: The core facade that normalizes multi-provider discovery logic.
+- **`/lib/providers`**: Specialized adapter logic for each AI ecosystem (Anthropic, Gemini, Groq, etc.).
+- **`/styles`**: Custom global design system and variable tokens.
 
-## Deployment
+## 📜 Deployment
 
-Deploy this project on Vercel seamlessly by connecting your GitHub repository. Since the API keys are provided via the UI by the end user, no back-end environment variables are required!
+Deploy seamlessly on **Vercel** or any Node-ready infrastructure.
 
 ```bash
 vercel --prod
 ```
+
+---
+Built with passion for the developer community. Map your potential.
