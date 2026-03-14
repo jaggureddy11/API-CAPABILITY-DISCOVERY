@@ -1598,7 +1598,7 @@ export default function LandingPage() {
                         <div className="faq-item">
                             <button className="faq-q" data-hover="true">
                                 Is my API key safe?
-                                <span className="faq-icon">+</span>
+                                <span className="faq-icon"></span>
                             </button>
                             <div className="faq-a">
                                 <p>Yes. Keys are strictly processed in volatile runtime memory and immediately discarded after testing. We write absolutely nothing to persistent databases or server logs.</p>
@@ -1607,7 +1607,7 @@ export default function LandingPage() {
                         <div className="faq-item">
                             <button className="faq-q" data-hover="true">
                                 How does browser-safe mode work?
-                                <span className="faq-icon">+</span>
+                                <span className="faq-icon"></span>
                             </button>
                             <div className="faq-a">
                                 <p>For providers that support open CORS (like Gemini), we bypass our backend entirely. The network fetch happens straight from your client window directly to the provider&apos;s endpoint.</p>
@@ -1616,7 +1616,7 @@ export default function LandingPage() {
                         <div className="faq-item">
                             <button className="faq-q" data-hover="true">
                                 Which providers are supported?
-                                <span className="faq-icon">+</span>
+                                <span className="faq-icon"></span>
                             </button>
                             <div className="faq-a">
                                 <p>We currently natively decode universally recognized keys from OpenAI, Google Gemini, Anthropic, Groq, and Perplexity by examining their distinct prefix signatures.</p>
@@ -1625,7 +1625,7 @@ export default function LandingPage() {
                         <div className="faq-item">
                             <button className="faq-q" data-hover="true">
                                 Is the source code open?
-                                <span className="faq-icon">+</span>
+                                <span className="faq-icon"></span>
                             </button>
                             <div className="faq-a">
                                 <p>The core capability discovery engine is fully open source. You can view, audit, or host the underlying tests yourself by visiting our GitHub repository.</p>
@@ -1634,7 +1634,7 @@ export default function LandingPage() {
                         <div className="faq-item">
                             <button className="faq-q" data-hover="true">
                                 Do you log or store anything?
-                                <span className="faq-icon">+</span>
+                                <span className="faq-icon"></span>
                             </button>
                             <div className="faq-a">
                                 <p>Zero logging. As developers ourselves, we structured the architecture to inherently prevent caching, analytics tracking, or environment variable leaks.</p>
