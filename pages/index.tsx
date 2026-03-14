@@ -225,20 +225,40 @@ export default function LandingPage() {
             color: var(--fg);
             text-decoration: none;
             display: inline-block;
-            transition: background 0s, color 0s;
+            transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 700;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--fg);
+            transform: translateY(100%);
+            transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
         }
         .btn:hover {
-            background: var(--fg);
             color: var(--bg);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px color-mix(in srgb, var(--fg) 40%, transparent);
+        }
+        .btn:hover::before {
+            transform: translateY(0);
         }
         .btn.invert {
             background: var(--fg);
             color: var(--bg);
+            border-color: var(--fg);
+        }
+        .btn.invert::before {
+            background: var(--bg);
         }
         .btn.invert:hover {
-            background: color-mix(in srgb, var(--fg) 85%, transparent);
-            color: var(--bg);
+            color: var(--fg);
+            box-shadow: 0 15px 25px -10px color-mix(in srgb, var(--fg) 60%, transparent);
         }
 
         /* ANIMATIONS */
@@ -429,6 +449,15 @@ export default function LandingPage() {
             padding: var(--spacing-lg);
             border-right: 1px solid var(--border);
             position: relative;
+            transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: default;
+        }
+        .process-step:hover {
+            transform: translateY(-8px);
+        }
+        .process-step:hover .process-num {
+            color: var(--fg);
+            transform: scale(1.05) translateX(10px);
         }
         .process-num {
             font-family: var(--font-serif);
@@ -436,6 +465,8 @@ export default function LandingPage() {
             color: color-mix(in srgb, var(--fg) 10%, transparent);
             line-height: 1;
             margin-bottom: var(--spacing-sm);
+            transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block;
         }
         .process-step h3 {
             font-family: var(--font-display);
@@ -499,6 +530,11 @@ export default function LandingPage() {
             font-weight: 700;
             margin-bottom: var(--spacing-sm);
             color: var(--fg);
+            display: inline-block;
+            transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1), color 200ms ease;
+        }
+        .feature-cell:hover .feature-label {
+            transform: translateX(10px);
         }
         .feature-cell p {
             font-size: 0.95rem;
@@ -512,61 +548,138 @@ export default function LandingPage() {
         }
 
         /* DEMO MOCKUP */
-        .demo { padding: var(--spacing-xl) 0; }
+        .demo { padding: var(--spacing-xl) 0; display: flex; flex-direction: column; align-items: center; }
         .demo-box {
+            width: 100%;
+            max-width: 600px;
             border: 1px solid var(--border);
-            padding: var(--spacing-md);
+            padding: var(--spacing-lg) var(--spacing-xl);
             font-family: var(--font-mono);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--fg);
-            line-height: 1.8;
-            overflow-x: auto;
-            white-space: pre;
+            position: relative;
+            background: color-mix(in srgb, var(--bg) 95%, transparent);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 0 1px color-mix(in srgb, var(--fg) 0%, transparent);
+            transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .demo-box span.green { color: var(--fg); } /* No color, just standard */
-        .demo-box span.muted { color: var(--fg-faint); }
+        .demo-box:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 25px 50px -12px color-mix(in srgb, var(--fg) 10%, transparent), 0 0 0 1px color-mix(in srgb, var(--fg) 15%, transparent);
+            border-color: transparent;
+        }
+        .demo-box-header { margin-bottom: var(--spacing-md); }
+        .demo-box-title { color: var(--fg-faint); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.15em; font-family: var(--font-display); }
+        .demo-row { display: flex; justify-content: space-between; border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent); padding: 0.6rem 0; }
+        .demo-row.no-border { border-bottom: none; }
+        .demo-section { margin-top: var(--spacing-lg); color: var(--fg-faint); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.15em; margin-bottom: 0.2rem; font-family: var(--font-display); }
+        .demo-box .muted { color: var(--fg-muted); }
+        .demo-box .text-green { color: #10b981; }
+        .demo-box .text-red { color: #ef4444; }
         .demo-caption {
             font-family: var(--font-sans);
             font-size: 0.8rem;
             color: var(--fg-faint);
-            margin-top: var(--spacing-sm);
-            text-align: right;
+            margin-top: var(--spacing-md);
+            text-align: center;
         }
 
         /* PROVIDERS */
         .providers { padding: var(--spacing-xl) 0; }
-        .provider-row {
-            display: flex;
-            border: 1px solid var(--border);
-            border-right: none;
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            border-top: 1px solid var(--border);
+            border-left: 1px solid var(--border);
         }
-        .provider-cell {
-            flex: 1;
-            padding: var(--spacing-lg) var(--spacing-md);
+        .provider-card {
             border-right: 1px solid var(--border);
-            transition: background 0s, color 0s;
+            border-bottom: 1px solid var(--border);
+            padding: var(--spacing-xl) var(--spacing-md);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: var(--bg);
+            cursor: pointer;
+            z-index: 1;
         }
-        .provider-cell:hover {
+        .provider-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: var(--fg);
-            color: var(--bg);
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
         }
-        .provider-cell:hover .provider-name,
-        .provider-cell:hover .provider-desc {
-            color: var(--bg);
+        .provider-card:hover::before {
+            transform: scaleY(1);
         }
+        .provider-icon-wrapper {
+            margin-bottom: var(--spacing-md);
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .provider-card:hover .provider-icon-wrapper {
+            transform: translateY(-8px) scale(1.1);
+        }
+        .provider-logo {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1), filter 400ms ease;
+        }
+        .provider-card:hover .provider-logo {
+            transform: scale(1.15);
+        }
+        /* Adaptive OpenAI logo color for dark/light modes and card hover states */
+        .logo-invert {
+            filter: invert(1) brightness(2);
+        }
+        .provider-card:hover .logo-invert {
+            filter: invert(0);
+        }
+        [data-theme="light"] .logo-invert {
+            filter: invert(0);
+        }
+        [data-theme="light"] .provider-card:hover .logo-invert {
+            filter: invert(1) brightness(2);
+        }
+
         .provider-name {
             font-family: var(--font-serif);
             font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: var(--spacing-xs);
+            color: var(--fg);
+            transition: color 400ms ease;
+        }
+        .provider-card:hover .provider-name {
+            color: var(--bg);
         }
         .provider-desc {
             font-size: 0.85rem;
             color: var(--fg-muted);
+            transition: color 400ms ease, opacity 400ms ease;
         }
+        .provider-card:hover .provider-desc {
+            color: var(--bg);
+            opacity: 0.8;
+        }
+        
         @media (max-width: 900px) {
-            .provider-row { flex-direction: column; border-right: 1px solid var(--border); border-bottom: none; }
-            .provider-cell { border-right: none; border-bottom: 1px solid var(--border); }
+            .provider-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .provider-grid { grid-template-columns: 1fr; }
         }
 
         /* PRICING */
@@ -587,6 +700,13 @@ export default function LandingPage() {
             display: flex;
             flex-direction: column;
             position: relative;
+            background: var(--bg);
+            transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -15px color-mix(in srgb, var(--fg) 8%, transparent);
+            border-color: color-mix(in srgb, var(--fg) 30%, transparent);
         }
         .pricing-card.popular {
             border: 2px solid var(--fg);
@@ -890,42 +1010,82 @@ export default function LandingPage() {
 
         <section className="demo fade-up">
             <div className="demo-box" data-hover="true">
-┌─────────────────────────────────────┐
-│  APILens &mdash; Capability Report        │
-│  Provider   : OpenAI                │
-│  Key Status : ● Valid               │
-├─────────────────────────────────────┤
-│  MODELS                             │
-│  ✓ gpt-4o          [128k] [$5/1M]   │
-│  ✓ gpt-4-turbo     [128k] [$10/1M]  │
-│  <span className="muted">✗ gpt-4o-realtime [—]   [Denied]</span>   │
-├─────────────────────────────────────┤
-│  CAPABILITIES                       │
-│  ✓ Text Generation                  │
-│  ✓ Embeddings                       │
-│  ✓ Image Generation                 │
-│  <span className="muted">✗ Audio Transcription  [Denied]</span>    │
-└─────────────────────────────────────┘
+                <div className="demo-box-header">
+                    <div className="demo-box-title">APILens &mdash; Capability Report</div>
+                </div>
+                
+                <div className="demo-row">
+                    <span className="muted">Provider</span>
+                    <span>OpenAI</span>
+                </div>
+                <div className="demo-row no-border">
+                    <span className="muted">Key Status</span>
+                    <span className="text-green">● Valid</span>
+                </div>
+
+                <div className="demo-section">Models</div>
+                <div className="demo-row">
+                    <span>✓ gpt-4o</span>
+                    <span className="muted">[128k] [$5/1M]</span>
+                </div>
+                <div className="demo-row">
+                    <span>✓ gpt-4-turbo</span>
+                    <span className="muted">[128k] [$10/1M]</span>
+                </div>
+                <div className="demo-row no-border">
+                    <span className="muted">✗ gpt-4o-realtime</span>
+                    <span className="muted">[—] <span className="text-red">[Denied]</span></span>
+                </div>
+
+                <div className="demo-section">Capabilities</div>
+                <div className="demo-row">
+                    <span>✓ Text Generation</span>
+                    <span className="muted"></span>
+                </div>
+                <div className="demo-row">
+                    <span>✓ Embeddings</span>
+                    <span className="muted"></span>
+                </div>
+                <div className="demo-row">
+                    <span>✓ Image Generation</span>
+                    <span className="muted"></span>
+                </div>
+                <div className="demo-row no-border">
+                    <span className="muted">✗ Audio Transcription</span>
+                    <span className="text-red">[Denied]</span>
+                </div>
             </div>
             <div className="demo-caption">Actual output format from a live API key scan</div>
         </section>
 
         <section className="providers fade-up">
             <span className="section-label">Providers</span>
-            <div className="provider-row">
-                <div className="provider-cell" data-hover="true">
+            <div className="provider-grid">
+                <div className="provider-card" data-hover="true">
+                    <div className="provider-icon-wrapper">
+                        <img src="https://svgl.app/library/openai.svg" alt="OpenAI logo" className="provider-logo logo-invert" />
+                    </div>
                     <div className="provider-name">OpenAI</div>
                     <div className="provider-desc">GPT, DALL-E, Embeddings, Whisper</div>
                 </div>
-                <div className="provider-cell" data-hover="true">
+                <div className="provider-card" data-hover="true">
+                    <div className="provider-icon-wrapper">
+                        <img src="https://svgl.app/library/gemini.svg" alt="Google Gemini logo" className="provider-logo" />
+                    </div>
                     <div className="provider-name">Google Gemini</div>
                     <div className="provider-desc">1.5 Pro, Flash, Imagen, Embeddings</div>
                 </div>
-                <div className="provider-cell" data-hover="true">
+                <div className="provider-card" data-hover="true">
+                    <div className="provider-icon-wrapper">
+                        <img src="https://cdn.simpleicons.org/anthropic/ccb4a1" alt="Anthropic logo" className="provider-logo" />
+                    </div>
                     <div className="provider-name">Anthropic</div>
                     <div className="provider-desc">Claude 3.5 Sonnet, Opus, Haiku</div>
                 </div>
-                <div className="provider-cell" data-hover="true">
+                <div className="provider-card" data-hover="true">
+                    <div className="provider-icon-wrapper">
+                        <img src="https://svgl.app/library/groq.svg" alt="Groq logo" className="provider-logo" />
+                    </div>
                     <div className="provider-name">Groq</div>
                     <div className="provider-desc">Llama 3, Mixtral, Gemma, Whisper</div>
                 </div>
