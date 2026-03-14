@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<'dark'|'light'>('dark');
+  const [theme, setTheme] = useState<'dark'|'light'>('light');
 
   useEffect(() => {
     const t = document.documentElement.getAttribute('data-theme');
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (t === 'light') setTheme('light');
+    if (t === 'dark') setTheme('dark');
+    else setTheme('light');
   }, []);
 
   const toggleTheme = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -15,7 +16,7 @@ export default function ThemeToggle() {
     const x = rect.left + rect.width / 2;
     const y = rect.top + rect.height / 2;
 
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    const newTheme = theme === 'light' ? 'dark' : 'light';
     
     // Step 1: circular reveal overlay
     const overlay = document.createElement('div');
@@ -23,7 +24,7 @@ export default function ThemeToggle() {
     overlay.style.inset = '0';
     overlay.style.zIndex = '99999';
     overlay.style.pointerEvents = 'none';
-    overlay.style.background = newTheme === 'light' ? '#ffffff' : '#000000';
+    overlay.style.background = newTheme === 'dark' ? '#000000' : '#ffffff';
     overlay.style.clipPath = `circle(0% at ${x}px ${y}px)`;
     document.body.appendChild(overlay);
 
@@ -41,8 +42,8 @@ export default function ThemeToggle() {
 
     // Step 2: swap theme
     setTimeout(() => {
-      if (newTheme === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
+      if (newTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
       } else {
         document.documentElement.removeAttribute('data-theme');
       }
@@ -79,8 +80,8 @@ export default function ThemeToggle() {
         textTransform: 'uppercase'
       }}
     >
-      <span>{theme === 'dark' ? '○' : '●'}</span>
-      <span>{theme === 'dark' ? 'WHITE' : 'DARK'}</span>
+      <span>{theme === 'light' ? '○' : '●'}</span>
+      <span>{theme === 'light' ? 'DARK' : 'WHITE'}</span>
     </button>
   );
 }

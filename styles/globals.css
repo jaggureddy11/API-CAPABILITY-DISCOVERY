@@ -11,19 +11,19 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-io: cubic-bezier(0.4, 0, 0.2, 1);
-  --bg: #000000;
-  --bg-2: #0a0a0a;
-  --fg: #ffffff;
-  --fg-muted: rgba(255, 255, 255, 0.45);
-  --border: rgba(255, 255, 255, 0.12);
-}
-
-:root[data-theme='light'] {
   --bg: #ffffff;
   --bg-2: #ffffff;
   --fg: #000000;
   --fg-muted: rgba(0, 0, 0, 0.45);
   --border: rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme='dark'] {
+  --bg: #000000;
+  --bg-2: #0a0a0a;
+  --fg: #ffffff;
+  --fg-muted: rgba(255, 255, 255, 0.45);
+  --border: rgba(255, 255, 255, 0.12);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -155,9 +155,13 @@
   to { background-position: 0 100vh; }
 }
 
-/* Less noise in light mode for whiter aesthetic */
-:root[data-theme='light'] .noise {
-  opacity: 0.015;
+/* Noise texture visibility adjustments */
+.noise {
+  opacity: 0.015 !important;
+}
+
+:root[data-theme='dark'] .noise {
+  opacity: 0.04 !important;
 }
 
 /* Security Ticker */

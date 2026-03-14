@@ -15,7 +15,8 @@ export default function Document() {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=JetBrains+Mono&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Syne:wght@400;500;700&display=swap" rel="stylesheet" />
         <script dangerouslySetInnerHTML={{ __html: `
           const t = localStorage.getItem('capmap-theme') || localStorage.getItem('apilens-theme');
-          if (t === 'light') document.documentElement.setAttribute('data-theme','light');
+          if (t === 'dark') document.documentElement.setAttribute('data-theme','dark');
+          else if (t === 'light') document.documentElement.removeAttribute('data-theme');
         `}} />
       </Head>
       <body className="antialiased" style={{ background: 'var(--bg)' }}>
