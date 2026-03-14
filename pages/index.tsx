@@ -40,53 +40,117 @@ export default function LandingPage() {
         window.addEventListener('scroll', handleScroll);
 
         // Typewriter Animation
-        const terminalLines = [
-            "> Validating key... ✓",
-            "> Provider detected: OpenAI",
-            "> Provider detected: Anthropic",
-            "> Provider detected: Perplexity",
-            "> Fetching models... ✓",
-            "> gpt-4o ✓  gpt-4-turbo ✓  gpt-3.5-turbo ✓",
-            "> Capabilities: Text ✓  Embeddings ✓  Images ✓",
-            "> Rate limit: 10,000 req/day"
+        const providerData = [
+            {
+                name: "OpenAI",
+                models: "gpt-4o ✓  gpt-4-turbo ✓  gpt-3.5-turbo ✓",
+                caps: "Text ✓  Embeddings ✓  Images ✓",
+                rate: "10,000 req/day"
+            },
+            {
+                name: "Anthropic",
+                models: "claude-3-5-sonnet ✓  claude-3-opus ✓  claude-3-haiku ✓",
+                caps: "Text ✓  Vision ✓  Tool Use ✓",
+                rate: "5,000 req/day"
+            },
+            {
+                name: "Google Gemini",
+                models: "gemini-1.5-pro ✓  gemini-1.5-flash ✓  gemini-1.0-ultra ✓",
+                caps: "Multi-Modal ✓  Long-Context ✓  Search ✓",
+                rate: "Unrated (Free Tier Available)"
+            },
+            {
+                name: "Groq",
+                models: "llama-3-70b ✓  mixtral-8x7b ✓  gemma-7b ✓",
+                caps: "Ultra-Fast Inference ✓  Production APIs ✓",
+                rate: "30-50 requests/min"
+            },
+            {
+                name: "Perplexity",
+                models: "sonar-small ✓  sonar-large ✓  mistral-7b ✓",
+                caps: "Live Search ✓  Citations ✓  Research ✓",
+                rate: "1,000 requests/month"
+            }
         ];
 
+        let providerIdx = 0;
         let lineIdx = 0;
         let charIdx = 0;
-        let charsTyped = 0;
         let timeoutId: ReturnType<typeof setTimeout>;
         let isAlive = true;
+        let accumulatedText = "";
 
         const terminalEl = typewriterRef.current;
-        if (terminalEl) terminalEl.innerHTML = '';
+        if (terminalEl) terminalEl.innerHTML = '<span class="cursor-blink">█</span>';
+
+        const getLines = (idx: number) => {
+            const p = providerData[idx];
+            return [
+                "> Validating key... ✓",
+                `> Provider detected: ${p.name}`,
+                "> Fetching models... ✓",
+                `> ${p.models}`,
+                `> Capabilities: ${p.caps}`,
+                `> Rate limit: ${p.rate}`
+            ];
+        };
 
         const typeWriter = () => {
             const el = typewriterRef.current;
             if (!el || !isAlive) return;
 
-            if (lineIdx < terminalLines.length) {
+            const currentLines = getLines(providerIdx);
+
+            if (lineIdx < currentLines.length) {
+                const currentLine = currentLines[lineIdx];
+                
                 if (charIdx === 0 && lineIdx > 0) {
-                    el.innerHTML += '<br />';
+                    accumulatedText += '<br />';
                 }
 
-                if (charIdx < terminalLines[lineIdx].length) {
-                    el.innerHTML += terminalLines[lineIdx].charAt(charIdx);
-                    charIdx++;
-                    charsTyped++;
-
-                    let delay = Math.random() * 17 + 28;
-                    if (terminalLines[lineIdx].includes('✓') && !terminalLines[lineIdx].startsWith('> ✓')) delay = 45;
-                    else if (terminalLines[lineIdx].startsWith('>')) delay = 20;
-
-                    if (charsTyped % (Math.floor(Math.random() * 3) + 3) === 0) delay += Math.random() * 100 + 50;
-
+                if (charIdx < currentLine.length) {
+                    if (charIdx === 0 && currentLine.startsWith('> ')) {
+                        accumulatedText += '> ';
+                        charIdx = 2;
+                    } else {
+                        accumulatedText += currentLine.charAt(charIdx);
+                        charIdx++;
+                    }
+                    
+                    el.innerHTML = accumulatedText + '<span class="cursor-blink">█</span>';
+                    
+                    let delay = Math.random() * 8 + 10;
+                    if (accumulatedText.endsWith('✓')) delay = 400;
+                    if (accumulatedText.endsWith(':')) delay = 150;
+                    if (accumulatedText.endsWith('...')) delay = 300;
+                    
                     timeoutId = setTimeout(typeWriter, delay);
                 } else {
                     lineIdx++;
                     charIdx = 0;
-                    timeoutId = setTimeout(typeWriter, 400);
+                    timeoutId = setTimeout(typeWriter, 300);
                 }
+            } else {
+                // Provider complete: wait, then move to the next one
+                timeoutId = setTimeout(() => {
+                    if (!isAlive || !el) return;
+                    providerIdx = (providerIdx + 1) % providerData.length;
+                    lineIdx = 0;
+                    charIdx = 0;
+                    accumulatedText = "";
+                    el.innerHTML = '<span class="cursor-blink">█</span>';
+                    typeWriter();
+                }, 3000);
             }
+        };
+
+        timeoutId = setTimeout(typeWriter, 2400);
+
+        return () => {
+            isAlive = false;
+            window.removeEventListener('scroll', handleScroll);
+            clearTimeout(timeoutId);
+            observer.disconnect();
         };
 
         timeoutId = setTimeout(typeWriter, 2400);
@@ -1299,7 +1363,7 @@ export default function LandingPage() {
                         <span className="term-border right"></span>
                         <span className="term-border bottom"></span>
                         <span className="term-border left"></span>
-                        <div id="typewriter" ref={typewriterRef}></div><span className="cursor-blink">█</span>
+                        <div id="typewriter" ref={typewriterRef}></div>
                     </div>
                 </header>
             </div>
