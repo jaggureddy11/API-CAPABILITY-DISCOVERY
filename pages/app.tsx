@@ -158,6 +158,25 @@ export default function App() {
             transform: translateX(100%);
             transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
         }
+        .mobile-menu-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: var(--fg);
+            cursor: pointer;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 110;
+        }
+        .mobile-menu-close:hover {
+            transform: scale(1.1);
+            opacity: 0.7;
+        }
         .mobile-menu.open {
             transform: translateX(0);
         }
@@ -242,6 +261,11 @@ export default function App() {
           </div>
 
           <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
+              <button className="mobile-menu-close" onClick={() => setIsMenuOpen(false)} aria-label="Close Menu">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M18 6L6 18M6 6l12 12"/>
+                  </svg>
+              </button>
               <Link href="/#process" className="nav-link" onClick={() => setIsMenuOpen(false)}>Process</Link>
               <Link href="/#features" className="nav-link" onClick={() => setIsMenuOpen(false)}>Capabilities</Link>
               <Link href="/#pricing" className="nav-link" onClick={() => setIsMenuOpen(false)}>Pricing</Link>

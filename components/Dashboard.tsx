@@ -687,19 +687,27 @@ export default function Dashboard() {
                             <div className={`cell flex flex-col md:flex-row gap-12 ${showResults ? 'res-stagger res-delay-4' : 'opacity-0'}`}>
                                 <div className="flex-1">
                                     <span className="label">MODEL RECOMMENDER</span>
-                                    <div className="mt-4">
-                                        <input
-                                            type="text"
-                                            value={useCase}
-                                            onChange={e => setUseCase(e.target.value)}
-                                            placeholder="describe use case →"
-                                            className="w-full bg-transparent border-b border-[var(--border)] hover:border-[var(--fg)]/30 transition-colors py-4 text-[18px] md:text-[22px] font-serif outline-none placeholder-[var(--fg)]/45 text-[var(--fg)]"
-                                            onKeyDown={e => e.key === 'Enter' && handleRecommend(e)}
-                                        />
-                                        <p className="text-[var(--fg)]/65 text-[11px] font-sans mt-4 max-w-[300px] leading-relaxed">
-                                            Describe your speed, cost and volume requirements.
-                                        </p>
+                                    <div className="mt-4 flex flex-col md:flex-row md:items-center gap-4">
+                                        <div className="relative flex-1">
+                                            <input
+                                                type="text"
+                                                value={useCase}
+                                                onChange={e => setUseCase(e.target.value)}
+                                                placeholder="describe use case →"
+                                                className="w-full bg-transparent border-b border-[var(--border)] hover:border-[var(--fg)]/30 transition-colors py-4 text-[18px] md:text-[22px] font-serif outline-none placeholder-[var(--fg)]/45 text-[var(--fg)]"
+                                                onKeyDown={e => e.key === 'Enter' && handleRecommend(e)}
+                                            />
+                                        </div>
+                                        <button 
+                                            onClick={(e: any) => handleRecommend(e)}
+                                            className="font-display text-[10px] uppercase tracking-[0.2em] px-8 h-[54px] border border-[var(--fg)]/20 hover:border-[var(--fg)] hover:bg-[var(--fg)] hover:text-[var(--bg)] transition-all whitespace-nowrap mt-2 md:mt-0"
+                                        >
+                                            RECOMMEND
+                                        </button>
                                     </div>
+                                    <p className="text-[var(--fg)]/65 text-[11px] font-sans mt-4 max-w-[300px] leading-relaxed">
+                                        Describe your speed, cost and volume requirements.
+                                    </p>
                                 </div>
                                 <div className="flex-1 border-[var(--border)]/50 md:border-l md:pl-12 flex flex-col justify-center min-h-[140px]">
                                     {recommendLoading ? <AILoading /> : recommendation ? (
